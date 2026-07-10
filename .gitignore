@@ -1,2 +1,14 @@
 # GitShift personal account configuration
 **/github-accounts.json
+
+# Astro / Node
+node_modules/
+dist/
+.astro/
+npm-debug.log*
+
+# Env
+.env
+.env.*
+!.env.example
+

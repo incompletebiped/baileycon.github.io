@@ -1,0 +1,106 @@
+:root {
+  /* backgrounds */
+  --bc-bg: #0e0a30;
+  --bc-bg-gradient: linear-gradient(165deg, #1b1f5c 0%, #141048 42%, #0e0a30 100%);
+  --bc-card-gradient: linear-gradient(165deg, rgba(30, 26, 82, 0.7), rgba(14, 10, 48, 0.7));
+  --bc-card-gradient-strong: linear-gradient(165deg, rgba(30, 26, 82, 0.85), rgba(14, 10, 48, 0.85));
+  --bc-trading-gradient: linear-gradient(180deg, #241a52, #130c34);
+
+  /* violet */
+  --bc-violet: #5a37b0;
+  --bc-violet-deep: #2a1560;
+  --bc-violet-bright: #7b45e0;
+  --bc-violet-brighter: #8b6bff;
+  --bc-violet-light: #a78bf0;
+
+  /* blue */
+  --bc-blue: #3b7ef0;
+  --bc-blue-hero: #4da3ff;
+  --bc-blue-light: #6fa0ff;
+  --bc-blue-lighter: #a9e0ff;
+  --bc-blue-muted: #a9b6f0;
+
+  /* gold */
+  --bc-gold: #ffcf5c;
+  --bc-gold-light: #ffe08a;
+  --bc-gold-lighter: #fff0c0;
+  --bc-gold-deep: #e0a53a;
+  --bc-gold-deeper: #d99a2c;
+
+  /* ink / text */
+  --bc-ink: #160e38;
+  --bc-text: #f2ecff;
+  --bc-text-muted: #bcc4f0;
+  --bc-text-faint: #8a80c8;
+
+  /* parchment */
+  --bc-parchment-1: #eeeafb;
+  --bc-parchment-2: #dcd6f4;
+
+  /* rarity */
+  --bc-mythic: #ffcf5c;
+  --bc-epic: #a78bf0;
+  --bc-rare: #6fa0ff;
+
+  --bc-max-width: 1160px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background: var(--bc-bg);
+  font-family: 'EB Garamond', Georgia, serif;
+  color: var(--bc-text);
+}
+
+a {
+  color: var(--bc-blue-light);
+  text-decoration: none;
+}
+
+a:hover {
+  color: var(--bc-blue-lighter);
+}
+
+main {
+  background: var(--bc-bg-gradient);
+  min-height: 100vh;
+}
+
+.bc-field {
+  width: 100%;
+  box-sizing: border-box;
+  background: rgba(14, 10, 48, 0.6);
+  border: 1px solid rgba(139, 107, 255, 0.5);
+  border-radius: 5px;
+  color: var(--bc-text);
+  font-family: 'EB Garamond', serif;
+  font-size: 16px;
+  padding: 11px 13px;
+  outline: none;
+  transition: border-color 0.12s;
+}
+
+.bc-field:focus {
+  border-color: var(--bc-gold);
+}
+
+.bc-field::placeholder {
+  color: #6a629c;
+}
+
+select.bc-field option {
+  background: #1b1440;
+  color: var(--bc-text);
+}
+
+textarea.bc-field {
+  resize: vertical;
+}

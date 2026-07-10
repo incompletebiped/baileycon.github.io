@@ -1,0 +1,87 @@
+---
+import Crest from './Crest.astro';
+
+const links = [
+  { label: 'Home', href: '/' },
+  { label: 'Games', href: '/games/' },
+  { label: 'Reviews', href: '/reviews/' },
+  { label: 'Wall', href: '/wall/' },
+  { label: 'Guests', href: '/guests/' },
+];
+---
+
+<footer class="bc-footer">
+  <div class="bc-footer-inner">
+    <Crest size={38} />
+    <div class="bc-tagline">&ldquo;Long may thy dice roll true, and thy tankard ne&rsquo;er run dry.&rdquo;</div>
+    <div class="bc-meta">
+      <span>BaileyCon &middot; Third Annual</span>
+      <span class="bc-dot">&#9670;</span>
+      <span>Knight Watch Games, San Antonio TX</span>
+      <span class="bc-dot">&#9670;</span>
+      <span>Noon &ndash; Midnight</span>
+    </div>
+    <nav class="bc-footer-nav">
+      {links.map((l) => (
+        <a href={l.href}>{l.label}</a>
+      ))}
+    </nav>
+  </div>
+</footer>
+
+<style>
+  .bc-footer {
+    border-top: 1px solid rgba(255, 207, 92, 0.28);
+    background: linear-gradient(180deg, rgba(20, 16, 72, 0), rgba(20, 16, 72, 0.6));
+    margin-top: 64px;
+  }
+  .bc-footer-inner {
+    max-width: var(--bc-max-width);
+    margin: 0 auto;
+    padding: 40px 28px 48px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+    text-align: center;
+  }
+  .bc-tagline {
+    font-family: 'IM Fell English', serif;
+    font-style: italic;
+    font-size: 16px;
+    color: #c3b2ef;
+  }
+  .bc-meta {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: center;
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    color: var(--bc-text-faint);
+    text-transform: uppercase;
+  }
+  .bc-dot {
+    color: #4a4a8a;
+  }
+  .bc-footer-nav {
+    display: flex;
+    gap: 18px;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 4px;
+  }
+  .bc-footer-nav a {
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    color: var(--bc-blue-light);
+    text-transform: uppercase;
+    text-decoration: none;
+  }
+  .bc-footer-nav a:hover {
+    color: var(--bc-blue-lighter);
+  }
+</style>

@@ -1,0 +1,66 @@
+---
+interface Props {
+  inputId?: string;
+}
+
+const { inputId = 'bc-stars-input' } = Astro.props;
+---
+
+<div class="bc-star-rating" data-star-rating>
+  <input type="hidden" id={inputId} data-star-value value="0" />
+  {[1, 2, 3, 4, 5].map((n) => (
+    <button type="button" class="bc-star-btn" data-star={n} aria-label={`${n} star${n > 1 ? 's' : ''}`}>
+      &#9733;
+    </button>
+  ))}
+</div>
+
+<style>
+  .bc-star-rating {
+    display: flex;
+    gap: 6px;
+  }
+  .bc-star-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    font-size: 30px;
+    line-height: 1;
+    color: rgba(139, 107, 255, 0.4);
+    transition: color 0.12s;
+  }
+  .bc-star-btn.is-on {
+    color: var(--bc-gold);
+    text-shadow: 0 0 10px rgba(255, 207, 92, 0.5);
+  }
+</style>
+
+<script>
+  function initStarRating(root: HTMLElement) {
+    const buttons = Array.from(root.querySelectorAll<HTMLButtonElement>('[data-star]'));
+    const input = root.querySelector<HTMLInputElement>('[data-star-value]');
+    if (!input) return;
+
+    function paint(active: number) {
+      buttons.forEach((btn) => {
+        const n = Number(btn.dataset.star);
+        btn.classList.toggle('is-on', n <= active);
+      });
+    }
+
+    buttons.forEach((btn) => {
+      const n = Number(btn.dataset.star);
+      btn.addEventListener('click', () => {
+        input.value = String(n);
+        input.dispatchEvent(new Event('change', { bubbles: true }));
+        paint(n);
+      });
+      btn.addEventListener('mouseenter', () => paint(n));
+    });
+
+    root.addEventListener('mouseleave', () => paint(Number(input.value)));
+  }
+
+  document.querySelectorAll<HTMLElement>('[data-star-rating]').forEach(initStarRating);
+</script>

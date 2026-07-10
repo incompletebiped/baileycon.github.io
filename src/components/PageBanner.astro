@@ -1,0 +1,71 @@
+---
+interface Props {
+  eyebrow: string;
+  title: string;
+  subtitle: string;
+}
+
+const { eyebrow, title, subtitle } = Astro.props;
+---
+
+<section class="bc-banner">
+  <div class="bc-banner-glow"></div>
+  <div class="bc-banner-content">
+    <div class="bc-fleuron">&#10087;</div>
+    <div class="bc-eyebrow">{eyebrow}</div>
+    <h1 class="bc-title">{title}</h1>
+    <p class="bc-subtitle">{subtitle}</p>
+  </div>
+</section>
+
+<style>
+  .bc-banner {
+    position: relative;
+    overflow: hidden;
+    text-align: center;
+    padding: 56px 28px 34px;
+  }
+  .bc-banner-glow {
+    position: absolute;
+    left: 50%;
+    top: -100px;
+    transform: translateX(-50%);
+    width: 520px;
+    height: 360px;
+    background: radial-gradient(ellipse, rgba(123, 69, 224, 0.22), transparent 70%);
+    pointer-events: none;
+  }
+  .bc-banner-content {
+    position: relative;
+    z-index: 2;
+  }
+  .bc-fleuron {
+    color: var(--bc-text-faint);
+    font-size: 16px;
+    letter-spacing: 6px;
+    margin-bottom: 10px;
+  }
+  .bc-eyebrow {
+    font-family: 'Cinzel', serif;
+    font-size: 12px;
+    letter-spacing: 5px;
+    color: var(--bc-blue-light);
+    margin-bottom: 12px;
+  }
+  .bc-title {
+    margin: 0;
+    font-family: 'Cinzel Decorative', serif;
+    font-weight: 900;
+    font-size: 64px;
+    color: var(--bc-gold);
+    line-height: 1;
+  }
+  .bc-subtitle {
+    font-family: 'IM Fell English', serif;
+    font-style: italic;
+    font-size: 20px;
+    color: var(--bc-text-muted);
+    max-width: 640px;
+    margin: 16px auto 0;
+  }
+</style>

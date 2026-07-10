@@ -1,0 +1,348 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageBanner from '../components/PageBanner.astro';
+import StarRating from '../components/StarRating.astro';
+import { games } from '../data/games';
+
+const gameOptions = [...games.map((g) => g.name), 'Something else entirely'];
+---
+
+<BaseLayout title="Reviews — BaileyCon" active="reviews">
+  <PageBanner
+    eyebrow="THE CHRONICLE OF PLAY"
+    title="Reviews"
+    subtitle="Played something legendary &mdash; or lost a friendship to it? Record thy verdict for posterity."
+  />
+
+  <section class="bc-reviews-section">
+    <!-- FORM -->
+    <div class="bc-review-form">
+      <h2 class="bc-form-title">Pen a Review</h2>
+
+      <label class="bc-label" for="review-game">THE GAME</label>
+      <select class="bc-field" id="review-game" style="margin-bottom:16px;">
+        <option value="">&mdash; choose a game &mdash;</option>
+        {gameOptions.map((g) => (
+          <option value={g}>{g}</option>
+        ))}
+      </select>
+
+      <label class="bc-label" for="review-name">THY NAME (OR STAY MYSTERIOUS)</label>
+      <input class="bc-field" type="text" id="review-name" placeholder="A mysterious traveler" style="margin-bottom:16px;" />
+
+      <label class="bc-label">THY VERDICT</label>
+      <div style="margin-bottom:18px;">
+        <StarRating inputId="review-stars" />
+      </div>
+
+      <label class="bc-label" for="review-text">THE TALE OF THE TABLE</label>
+      <textarea class="bc-field" id="review-text" placeholder="How did it play? Who won? Who wept?" rows="4" style="resize:vertical;margin-bottom:20px;"></textarea>
+
+      <button id="review-submit" class="bc-submit-btn" disabled>POST THY REVIEW</button>
+      <p id="review-status" class="bc-status" hidden></p>
+    </div>
+
+    <!-- LIST -->
+    <div>
+      <div class="bc-list-head">
+        <h2 class="bc-list-title">The Ledger</h2>
+        <span id="review-count" class="bc-count">&hellip;</span>
+      </div>
+      <div id="review-list" class="bc-list">
+        <p class="bc-loading">Fetching the ledger&hellip;</p>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<template id="review-card-template">
+  <div class="bc-review-card">
+    <div class="bc-review-head">
+      <span class="bc-review-game"></span>
+      <span class="bc-review-stars"></span>
+    </div>
+    <p class="bc-review-quote"></p>
+    <div class="bc-review-meta">
+      <span class="bc-review-name"></span>
+      <span class="bc-review-dot">&#9670;</span>
+      <span class="bc-review-date"></span>
+    </div>
+  </div>
+</template>
+
+<style>
+  .bc-reviews-section {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 28px 40px;
+    display: grid;
+    grid-template-columns: 400px 1fr;
+    gap: 38px;
+    align-items: start;
+  }
+  .bc-review-form {
+    position: sticky;
+    top: 88px;
+    border: 1px solid var(--bc-gold);
+    border-radius: 10px;
+    background: var(--bc-card-gradient-strong);
+    padding: 26px 26px 28px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+  }
+  .bc-form-title {
+    margin: 0 0 18px;
+    font-family: 'Cinzel Decorative', serif;
+    font-weight: 700;
+    font-size: 24px;
+    color: var(--bc-gold);
+  }
+  .bc-label {
+    display: block;
+    font-family: 'Cinzel', serif;
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--bc-violet-light);
+    margin-bottom: 6px;
+  }
+  .bc-submit-btn {
+    width: 100%;
+    border: 1px solid var(--bc-gold);
+    border-radius: 5px;
+    padding: 13px;
+    font-family: 'Cinzel', serif;
+    font-weight: 600;
+    font-size: 13px;
+    letter-spacing: 2px;
+    cursor: not-allowed;
+    color: var(--bc-text-faint);
+    background: rgba(139, 107, 255, 0.15);
+    opacity: 0.7;
+    transition: opacity 0.12s;
+  }
+  .bc-submit-btn:not(:disabled) {
+    cursor: pointer;
+    color: #fff;
+    background: linear-gradient(180deg, #5a8bff, #3455d8);
+    opacity: 1;
+  }
+  .bc-status {
+    margin: 10px 0 0;
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    letter-spacing: 1px;
+    color: var(--bc-text-faint);
+    text-align: center;
+  }
+  .bc-status.is-error {
+    color: #ff8a8a;
+  }
+
+  .bc-list-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 18px;
+  }
+  .bc-list-title {
+    margin: 0;
+    font-family: 'Cinzel Decorative', serif;
+    font-weight: 700;
+    font-size: 24px;
+    color: #e6f0ff;
+  }
+  .bc-count {
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    letter-spacing: 2px;
+    color: var(--bc-text-faint);
+  }
+  .bc-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .bc-loading {
+    font-family: 'IM Fell English', serif;
+    font-style: italic;
+    color: var(--bc-text-faint);
+  }
+  .bc-review-card {
+    border: 1px solid rgba(139, 107, 255, 0.4);
+    border-radius: 10px;
+    background: var(--bc-card-gradient);
+    padding: 20px 22px;
+  }
+  .bc-review-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .bc-review-game {
+    font-family: 'Cinzel', serif;
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    color: #141048;
+    background: var(--bc-gold);
+    padding: 4px 11px;
+    border-radius: 20px;
+  }
+  .bc-review-stars {
+    font-size: 16px;
+    letter-spacing: 2px;
+    color: var(--bc-gold);
+  }
+  .bc-review-quote {
+    font-family: 'IM Fell English', serif;
+    font-style: italic;
+    font-size: 18px;
+    line-height: 1.55;
+    color: #e6ddff;
+    margin: 14px 0 12px;
+  }
+  .bc-review-meta {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    letter-spacing: 1px;
+    color: var(--bc-text-faint);
+  }
+  .bc-review-name {
+    color: var(--bc-blue-muted);
+  }
+  .bc-review-dot {
+    color: #4a4a8a;
+  }
+
+  @media (max-width: 860px) {
+    .bc-reviews-section {
+      grid-template-columns: 1fr;
+    }
+    .bc-review-form {
+      position: static;
+    }
+  }
+</style>
+
+<script>
+  import { supabase, supabaseConfigured } from '../lib/supabase';
+
+  interface ReviewRow {
+    id: number;
+    game: string;
+    name: string;
+    stars: number;
+    body: string;
+    created_at: string;
+  }
+
+  const gameSelect = document.getElementById('review-game') as HTMLSelectElement;
+  const nameInput = document.getElementById('review-name') as HTMLInputElement;
+  const textInput = document.getElementById('review-text') as HTMLTextAreaElement;
+  const starsInput = document.getElementById('review-stars') as HTMLInputElement;
+  const submitBtn = document.getElementById('review-submit') as HTMLButtonElement;
+  const statusEl = document.getElementById('review-status') as HTMLParagraphElement;
+  const listEl = document.getElementById('review-list') as HTMLDivElement;
+  const countEl = document.getElementById('review-count') as HTMLSpanElement;
+  const template = document.getElementById('review-card-template') as HTMLTemplateElement;
+
+  function starsStr(n: number) {
+    return '★'.repeat(n) + '☆'.repeat(5 - n);
+  }
+
+  function formatDate(iso: string) {
+    const d = new Date(iso);
+    return d.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
+  }
+
+  function renderList(rows: ReviewRow[]) {
+    listEl.innerHTML = '';
+    countEl.textContent = `${rows.length} ${rows.length === 1 ? 'ENTRY' : 'ENTRIES'}`;
+    if (!rows.length) {
+      const p = document.createElement('p');
+      p.className = 'bc-loading';
+      p.textContent = 'No reviews yet — be the first to record thy verdict.';
+      listEl.appendChild(p);
+      return;
+    }
+    for (const r of rows) {
+      const node = template.content.cloneNode(true) as DocumentFragment;
+      (node.querySelector('.bc-review-game') as HTMLElement).textContent = r.game;
+      (node.querySelector('.bc-review-stars') as HTMLElement).textContent = starsStr(r.stars);
+      (node.querySelector('.bc-review-quote') as HTMLElement).textContent = `“${r.body}”`;
+      (node.querySelector('.bc-review-name') as HTMLElement).textContent = `— ${r.name}`;
+      (node.querySelector('.bc-review-date') as HTMLElement).textContent = formatDate(r.created_at);
+      listEl.appendChild(node);
+    }
+  }
+
+  function updateSubmitState() {
+    const ok = Boolean(gameSelect.value && Number(starsInput.value) >= 1 && textInput.value.trim());
+    submitBtn.disabled = !ok;
+  }
+
+  [gameSelect, textInput].forEach((el) => el.addEventListener('input', updateSubmitState));
+  gameSelect.addEventListener('change', updateSubmitState);
+  starsInput.addEventListener('change', updateSubmitState);
+
+  async function loadReviews() {
+    if (!supabaseConfigured) {
+      listEl.innerHTML = '';
+      const p = document.createElement('p');
+      p.className = 'bc-loading';
+      p.textContent = 'Reviews backend is not configured yet — ask the host to finish Supabase setup.';
+      listEl.appendChild(p);
+      countEl.textContent = '0 ENTRIES';
+      return;
+    }
+    const { data, error } = await supabase
+      .from('reviews')
+      .select('*')
+      .order('created_at', { ascending: false });
+    if (error) {
+      listEl.innerHTML = `<p class="bc-loading">Could not load reviews (${error.message}).</p>`;
+      return;
+    }
+    renderList((data as ReviewRow[]) || []);
+  }
+
+  async function submitReview() {
+    const game = gameSelect.value;
+    const name = nameInput.value.trim() || 'A mysterious traveler';
+    const stars = Number(starsInput.value);
+    const body = textInput.value.trim();
+    if (!game || stars < 1 || !body) return;
+
+    submitBtn.disabled = true;
+    statusEl.hidden = true;
+    statusEl.classList.remove('is-error');
+
+    const { error } = await supabase.from('reviews').insert({ game, name, stars, body });
+    if (error) {
+      statusEl.textContent = `Could not post review (${error.message}).`;
+      statusEl.classList.add('is-error');
+      statusEl.hidden = false;
+      updateSubmitState();
+      return;
+    }
+
+    gameSelect.value = '';
+    nameInput.value = '';
+    textInput.value = '';
+    starsInput.value = '0';
+    starsInput.dispatchEvent(new Event('change'));
+    document.querySelectorAll('.bc-star-btn').forEach((btn) => btn.classList.remove('is-on'));
+    statusEl.textContent = 'Posted! Thy verdict has been recorded.';
+    statusEl.hidden = false;
+    updateSubmitState();
+    await loadReviews();
+  }
+
+  submitBtn.addEventListener('click', submitReview);
+
+  updateSubmitState();
+  loadReviews();
+</script>

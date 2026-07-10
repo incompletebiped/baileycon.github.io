@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <polygon points="50,1 99,26 99,74 50,99 1,74 1,26" fill="#ffcf5c"/>
+  <polygon points="50,6 94,28.5 94,71.5 50,94 6,71.5 6,28.5" fill="#5a37b0"/>
+  <polygon points="50,10 92,50 8,50" fill="#ffcf5c"/>
+  <text x="50" y="66" font-family="Georgia, serif" font-weight="700" font-size="46" fill="#ffcf5c" text-anchor="middle">B</text>
+</svg>

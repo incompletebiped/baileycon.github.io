@@ -1,0 +1,111 @@
+---
+import Crest from './Crest.astro';
+
+interface Props {
+  active: 'home' | 'games' | 'reviews' | 'wall' | 'guests';
+}
+
+const { active } = Astro.props;
+
+const items = [
+  { key: 'home', label: 'Home', href: '/' },
+  { key: 'games', label: 'Games', href: '/games/' },
+  { key: 'reviews', label: 'Reviews', href: '/reviews/' },
+  { key: 'wall', label: 'Wall', href: '/wall/' },
+  { key: 'guests', label: 'Guests', href: '/guests/' },
+];
+---
+
+<header class="bc-header">
+  <div class="bc-header-inner">
+    <a href="/" class="bc-brand">
+      <Crest size={40} />
+      <span class="bc-wordmark">BaileyCon</span>
+      <span class="bc-badge">III</span>
+    </a>
+
+    <nav class="bc-nav">
+      {items.map((it) => (
+        <a href={it.href} class:list={['bc-nav-link', { 'is-active': it.key === active }]}>
+          {it.label}
+        </a>
+      ))}
+    </nav>
+  </div>
+</header>
+
+<style>
+  .bc-header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: rgba(14, 10, 48, 0.82);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(255, 207, 92, 0.35);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+  }
+  .bc-header-inner {
+    max-width: var(--bc-max-width);
+    margin: 0 auto;
+    padding: 12px 28px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+  .bc-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-decoration: none;
+  }
+  .bc-wordmark {
+    font-family: 'Bangers', cursive;
+    font-weight: 400;
+    font-size: 27px;
+    letter-spacing: 1.5px;
+    background: linear-gradient(180deg, var(--bc-gold-lighter), var(--bc-gold) 60%, var(--bc-gold-deep));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .bc-badge {
+    font-family: 'Cinzel', serif;
+    font-weight: 700;
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: #141048;
+    background: #3f74f2;
+    padding: 3px 7px;
+    border-radius: 3px;
+  }
+  .bc-nav {
+    display: flex;
+    align-items: center;
+    gap: 22px;
+    flex-wrap: wrap;
+  }
+  .bc-nav-link {
+    font-family: 'Cinzel', serif;
+    font-size: 12px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    font-weight: 500;
+    color: var(--bc-blue-muted);
+    padding-bottom: 4px;
+    border-bottom: 2px solid transparent;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: color 0.12s, border-color 0.12s;
+  }
+  .bc-nav-link:hover {
+    color: var(--bc-gold-light);
+  }
+  .bc-nav-link.is-active {
+    font-weight: 700;
+    color: var(--bc-gold);
+    border-bottom-color: var(--bc-gold);
+  }
+</style>

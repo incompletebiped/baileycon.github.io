@@ -1,0 +1,240 @@
+---
+interface Stat {
+  label: string;
+  value: number;
+}
+
+interface Guest {
+  slug: string;
+  name: string;
+  title: string;
+  rarity: 'Mythic' | 'Epic' | 'Rare';
+  main: string;
+  align: string;
+  bio: string;
+  stats: Stat[];
+  num: string;
+}
+
+interface Props {
+  guest: Guest;
+}
+
+const { guest } = Astro.props;
+
+const rarityColors: Record<string, string> = {
+  Mythic: 'var(--bc-mythic)',
+  Epic: 'var(--bc-epic)',
+  Rare: 'var(--bc-rare)',
+};
+const rc = rarityColors[guest.rarity];
+
+function pips(n: number) {
+  return '◆'.repeat(n) + '◇'.repeat(5 - n);
+}
+---
+
+<div class="bc-guest-card" style={`border-top-color:${rc};`}>
+  <div class="bc-guest-namebar">
+    <div class="bc-guest-name">{guest.name}</div>
+    <div class="bc-guest-rarity">
+      <span class="bc-gem" style={`background:${rc};box-shadow:0 0 8px ${rc};`}></span>
+      <span class="bc-rarity-label" style={`color:${rc};`}>{guest.rarity}</span>
+    </div>
+  </div>
+
+  <div class="bc-portrait">
+    <div class="bc-portrait-placeholder">
+      <span>Drop {guest.name}&rsquo;s photo</span>
+    </div>
+    <img
+      src={`/images/guests/${guest.slug}.jpg`}
+      alt={guest.name}
+      class="bc-portrait-image"
+      loading="lazy"
+      onerror="this.style.display='none'"
+    />
+  </div>
+
+  <div class="bc-guest-body">
+    <div class="bc-guest-title" style={`color:${rc};`}>{guest.title}</div>
+
+    <div class="bc-stat-grid">
+      {guest.stats.map((s) => (
+        <div class="bc-stat-row">
+          <span class="bc-stat-label">{s.label}</span>
+          <span class="bc-stat-pips">{pips(s.value)}</span>
+        </div>
+      ))}
+    </div>
+
+    <div class="bc-guest-facts">
+      <div class="bc-fact-row">
+        <span class="bc-fact-label">MAIN GAME</span>
+        <span class="bc-fact-value">{guest.main}</span>
+      </div>
+      <div class="bc-fact-row">
+        <span class="bc-fact-label">ALIGNMENT</span>
+        <span class="bc-fact-value">{guest.align}</span>
+      </div>
+    </div>
+
+    <p class="bc-guest-bio">{guest.bio}</p>
+  </div>
+
+  <div class="bc-guest-footer">
+    <span>No. {guest.num} / 10</span>
+    <span>BAILEYCON &#9670; III</span>
+  </div>
+</div>
+
+<style>
+  .bc-guest-card {
+    border: 1px solid rgba(139, 107, 255, 0.45);
+    border-top: 3px solid;
+    border-radius: 12px;
+    overflow: hidden;
+    background: var(--bc-trading-gradient);
+    box-shadow: 0 10px 28px rgba(0, 0, 0, 0.4);
+    display: flex;
+    flex-direction: column;
+  }
+  .bc-guest-namebar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 13px 16px 11px;
+  }
+  .bc-guest-name {
+    font-family: 'Cinzel Decorative', serif;
+    font-weight: 700;
+    font-size: 22px;
+    color: var(--bc-gold);
+    line-height: 1;
+  }
+  .bc-guest-rarity {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .bc-gem {
+    width: 11px;
+    height: 11px;
+    transform: rotate(45deg);
+    display: inline-block;
+  }
+  .bc-rarity-label {
+    font-family: 'Cinzel', serif;
+    font-size: 9px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+  }
+  .bc-portrait {
+    position: relative;
+    height: 230px;
+    border-top: 2px solid var(--bc-gold);
+    border-bottom: 2px solid var(--bc-gold);
+    overflow: hidden;
+  }
+  .bc-portrait-placeholder {
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(135deg, rgba(139, 107, 255, 0.16) 0 10px, rgba(139, 107, 255, 0.06) 10px 20px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 0 20px;
+  }
+  .bc-portrait-placeholder span {
+    font-family: ui-monospace, Menlo, monospace;
+    font-size: 11px;
+    letter-spacing: 1px;
+    color: rgba(230, 221, 255, 0.5);
+    text-transform: uppercase;
+  }
+  .bc-portrait-image {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .bc-guest-body {
+    padding: 15px 18px 8px;
+  }
+  .bc-guest-title {
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+  .bc-stat-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 7px 16px;
+    margin-bottom: 13px;
+  }
+  .bc-stat-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+  .bc-stat-label {
+    font-family: 'Cinzel', serif;
+    font-size: 9px;
+    letter-spacing: 1px;
+    color: var(--bc-text-faint);
+  }
+  .bc-stat-pips {
+    font-size: 11px;
+    letter-spacing: 1px;
+    color: var(--bc-gold);
+  }
+  .bc-guest-facts {
+    border-top: 1px solid rgba(139, 107, 255, 0.28);
+    padding-top: 11px;
+    margin-bottom: 11px;
+  }
+  .bc-fact-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 5px;
+  }
+  .bc-fact-row:last-child {
+    margin-bottom: 0;
+  }
+  .bc-fact-label {
+    font-family: 'Cinzel', serif;
+    font-size: 9px;
+    letter-spacing: 1px;
+    color: var(--bc-text-faint);
+  }
+  .bc-fact-value {
+    font-family: 'Cinzel', serif;
+    font-size: 12px;
+    color: #e6f0ff;
+  }
+  .bc-guest-bio {
+    font-family: 'IM Fell English', serif;
+    font-style: italic;
+    font-size: 15px;
+    line-height: 1.5;
+    color: var(--bc-text-muted);
+    margin: 0;
+  }
+  .bc-guest-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 11px 18px 15px;
+    font-family: 'Cinzel', serif;
+    font-size: 9px;
+    letter-spacing: 1.5px;
+    color: #6a629c;
+  }
+</style>

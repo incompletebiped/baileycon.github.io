@@ -1,0 +1,41 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageBanner from '../components/PageBanner.astro';
+import GuestCard from '../components/GuestCard.astro';
+import { guests, guestStats, guestNum } from '../data/guests';
+
+const displayGuests = guests.map((g, i) => ({
+  ...g,
+  stats: guestStats(g),
+  num: guestNum(i),
+}));
+---
+
+<BaseLayout title="The Company — BaileyCon" active="guests">
+  <PageBanner
+    eyebrow="TEN GUESTS OF HONOUR"
+    title="The Company"
+    subtitle="The fellowship assembled for the third annual. Collect all ten."
+  />
+
+  <section class="bc-guests-section">
+    <div class="bc-guests-grid">
+      {displayGuests.map((g) => (
+        <GuestCard guest={g} />
+      ))}
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .bc-guests-section {
+    max-width: 1140px;
+    margin: 0 auto;
+    padding: 0 28px 30px;
+  }
+  .bc-guests-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+    gap: 24px;
+  }
+</style>

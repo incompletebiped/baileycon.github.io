@@ -1,0 +1,561 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Crest from '../components/Crest.astro';
+import GameCard from '../components/GameCard.astro';
+import { games } from '../data/games';
+import { guests } from '../data/guests';
+
+const featured = games.slice(0, 4);
+const initials = guests.map((g) => g.name[0]);
+---
+
+<BaseLayout title="BaileyCon — Third Annual" active="home">
+  <!-- ===== HERO ===== -->
+  <section class="bc-hero">
+    <div class="bc-hero-40">40</div>
+    <div class="bc-hero-glow"></div>
+
+    <div class="bc-hero-grid">
+      <!-- hanging banner -->
+      <div class="bc-banner-wrap">
+        <div class="bc-banner-rings">
+          <span></span>
+          <span></span>
+        </div>
+        <div class="bc-tapestry">
+          <div class="bc-tapestry-crest"><Crest size={116} /></div>
+          <div class="bc-tapestry-iii">III</div>
+          <div class="bc-tapestry-annval">ANNVAL</div>
+          <div class="bc-tapestry-divider"></div>
+          <div class="bc-tapestry-est">Est.<br />MMXXIV</div>
+        </div>
+      </div>
+
+      <!-- content -->
+      <div>
+        <div class="bc-hero-eyebrow">THIRD ANNUAL &middot; SAN ANTONIO, TX</div>
+        <h1 class="bc-hero-title">
+          <span class="bc-hero-bailey">Bailey</span><span class="bc-hero-con">Con</span>
+        </h1>
+        <p class="bc-hero-subtitle">
+          Twelve hours. Two taverns&rsquo; worth of halls. Ten guests of honour. One knight turning <span class="bc-hero-forty">forty</span>.
+        </p>
+
+        <div class="bc-badge-card">
+          <div class="bc-badge-punch"></div>
+          <div class="bc-badge-grid">
+            <div><div class="bc-badge-label">WHEN</div><div class="bc-badge-value">Sat, July 25</div></div>
+            <div><div class="bc-badge-label">HOURS</div><div class="bc-badge-value">Noon &ndash; Midnight</div></div>
+            <div><div class="bc-badge-label">WHERE</div><div class="bc-badge-value">Knight Watch Games</div></div>
+            <div><div class="bc-badge-label">DRESS</div><div class="bc-badge-value">Cloak optional</div></div>
+          </div>
+        </div>
+
+        <div class="bc-hero-ctas">
+          <a href="/guests/" class="bc-btn bc-btn--solid">MEET THE COMPANY</a>
+          <a href="/games/" class="bc-btn bc-btn--outline">BROWSE THE GAMES</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== THE TALE ===== -->
+  <section class="bc-tale">
+    <div class="bc-fleuron">&#10087;</div>
+    <div class="bc-eyebrow">THE TALE THUS FAR</div>
+    <p class="bc-tale-text">
+      Two years running we&rsquo;ve stormed the tavern with meeples and mischief. For the third annual &mdash; and Bailey&rsquo;s
+      <span class="bc-tale-highlight">fortieth</span> trip &rsquo;round the sun &mdash; we return to Knight Watch Games for a
+      full twelve hours of board games, card games, and glorious tabletop shenanigans. Bring your A-game and your worst poker face.
+    </p>
+  </section>
+
+  <!-- ===== THE TWO HALLS ===== -->
+  <section class="bc-section">
+    <div class="bc-section-head">
+      <div class="bc-eyebrow">TWO RESERVED HALLS</div>
+      <h2 class="bc-h2">Choose Thy Battlefield</h2>
+    </div>
+    <div class="bc-halls-grid">
+      <div class="bc-hall-card bc-hall-card--blue">
+        <div class="bc-hall-eyebrow bc-hall-eyebrow--blue">HALL THE FIRST</div>
+        <h3 class="bc-hall-title bc-hall-title--blue">The Renaissance Room</h3>
+        <p class="bc-hall-text bc-hall-text--blue">Where the deep thinkers dwell. Big-box strategy, sprawling campaigns, and games that eat an afternoon whole. Settle in.</p>
+      </div>
+      <div class="bc-hall-card bc-hall-card--violet">
+        <div class="bc-hall-eyebrow bc-hall-eyebrow--violet">HALL THE SECOND</div>
+        <h3 class="bc-hall-title bc-hall-title--violet">The Dark Ages Room</h3>
+        <p class="bc-hall-text bc-hall-text--violet">Where alliances go to die. Party games, bluffing, betrayal, and loud accusations. No friendships guaranteed to survive.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== FEATURED GAMES ===== -->
+  <section class="bc-section">
+    <div class="bc-section-row">
+      <div>
+        <div class="bc-eyebrow">ON THE TABLES</div>
+        <h2 class="bc-h2">Featured Quests</h2>
+      </div>
+      <a href="/games/" class="bc-see-all">SEE ALL GAMES &rarr;</a>
+    </div>
+    <div class="bc-featured-grid">
+      {featured.map((g) => (
+        <GameCard game={g} compact />
+      ))}
+    </div>
+  </section>
+
+  <!-- ===== THE COMPANY ===== -->
+  <section class="bc-section bc-company">
+    <div class="bc-eyebrow">TEN GUESTS OF HONOUR</div>
+    <h2 class="bc-h2 bc-h2--tight">The Fellowship of the Board</h2>
+    <div class="bc-avatar-row">
+      {initials.map((initial) => (
+        <div class="bc-avatar">{initial}</div>
+      ))}
+    </div>
+    <div class="bc-company-link">
+      <a href="/guests/">MEET THE COMPANY &rarr;</a>
+    </div>
+  </section>
+
+  <!-- ===== CTA BAND ===== -->
+  <section class="bc-cta-section">
+    <div class="bc-cta-band">
+      <div>
+        <h2 class="bc-cta-title">Played something grand?</h2>
+        <p class="bc-cta-text">Leave a review, or scrawl a secret upon the anonymous wall.</p>
+      </div>
+      <div class="bc-cta-buttons">
+        <a href="/reviews/" class="bc-btn bc-btn--solid">LEAVE A REVIEW</a>
+        <a href="/wall/" class="bc-btn bc-btn--outline">THE WALL</a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .bc-hero {
+    position: relative;
+    overflow: hidden;
+    padding: 60px 28px 68px;
+  }
+  .bc-hero-40 {
+    position: absolute;
+    right: -60px;
+    bottom: -140px;
+    font-family: 'Cinzel Decorative', serif;
+    font-weight: 900;
+    font-size: 520px;
+    line-height: 0.7;
+    color: rgba(123, 166, 255, 0.06);
+    pointer-events: none;
+    user-select: none;
+  }
+  .bc-hero-glow {
+    position: absolute;
+    left: 20%;
+    top: -120px;
+    width: 420px;
+    height: 420px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(123, 69, 224, 0.25), transparent 70%);
+    pointer-events: none;
+  }
+  .bc-hero-grid {
+    max-width: var(--bc-max-width);
+    margin: 0 auto;
+    position: relative;
+    z-index: 2;
+    display: grid;
+    grid-template-columns: 210px 1fr;
+    gap: 52px;
+    align-items: center;
+  }
+  .bc-banner-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .bc-banner-rings {
+    display: flex;
+    gap: 70px;
+    margin-bottom: -2px;
+  }
+  .bc-banner-rings span {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--bc-gold);
+    box-shadow: inset 0 -1px 2px rgba(0, 0, 0, 0.4);
+  }
+  .bc-tapestry {
+    width: 190px;
+    background: linear-gradient(180deg, var(--bc-violet-bright), #4826a8);
+    clip-path: polygon(0 0, 100% 0, 100% 91%, 50% 100%, 0 91%);
+    border: 2px solid var(--bc-gold);
+    border-top: 3px solid var(--bc-gold-light);
+    padding: 28px 14px 54px;
+    text-align: center;
+    box-shadow: 0 14px 40px rgba(123, 69, 224, 0.45);
+  }
+  .bc-tapestry-crest {
+    display: flex;
+    justify-content: center;
+    margin: 0 auto 18px;
+  }
+  .bc-tapestry-iii {
+    font-family: 'Cinzel Decorative', serif;
+    font-weight: 900;
+    font-size: 40px;
+    color: var(--bc-gold-light);
+    line-height: 1;
+  }
+  .bc-tapestry-annval {
+    font-family: 'Cinzel', serif;
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: #e6d8ff;
+    margin-top: 6px;
+  }
+  .bc-tapestry-divider {
+    height: 1px;
+    width: 60%;
+    margin: 13px auto;
+    background: rgba(255, 224, 138, 0.5);
+  }
+  .bc-tapestry-est {
+    font-family: 'IM Fell English', serif;
+    font-style: italic;
+    font-size: 13px;
+    color: #f0e6ff;
+    line-height: 1.4;
+  }
+  .bc-hero-eyebrow {
+    font-family: 'Cinzel', serif;
+    font-size: 13px;
+    letter-spacing: 5px;
+    color: var(--bc-blue-light);
+    margin-bottom: 12px;
+  }
+  .bc-hero-title {
+    margin: 0;
+    font-family: 'Bangers', cursive;
+    font-weight: 400;
+    font-size: 104px;
+    line-height: 0.92;
+    letter-spacing: 2px;
+    white-space: nowrap;
+  }
+  .bc-hero-bailey {
+    color: var(--bc-blue-hero);
+    -webkit-text-stroke: 2.5px var(--bc-ink);
+    text-shadow: 5px 6px 0 rgba(0, 0, 0, 0.35);
+  }
+  .bc-hero-con {
+    color: var(--bc-gold);
+    -webkit-text-stroke: 2.5px var(--bc-ink);
+    text-shadow: 5px 6px 0 rgba(0, 0, 0, 0.35);
+  }
+  .bc-hero-subtitle {
+    font-family: 'IM Fell English', serif;
+    font-style: italic;
+    font-size: 22px;
+    line-height: 1.5;
+    color: var(--bc-text-muted);
+    max-width: 520px;
+    margin: 20px 0 28px;
+  }
+  .bc-hero-forty {
+    font-family: 'Cinzel', serif;
+    font-style: normal;
+    font-weight: 600;
+    color: var(--bc-gold);
+  }
+  .bc-badge-card {
+    position: relative;
+    background: linear-gradient(135deg, var(--bc-parchment-1), var(--bc-parchment-2));
+    color: #241452;
+    border: 1px solid var(--bc-violet-brighter);
+    border-radius: 6px;
+    padding: 22px 26px 20px;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
+    max-width: 520px;
+  }
+  .bc-badge-punch {
+    position: absolute;
+    top: 9px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 46px;
+    height: 7px;
+    border-radius: 5px;
+    background: rgba(36, 20, 82, 0.3);
+  }
+  .bc-badge-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px 30px;
+    margin-top: 12px;
+  }
+  .bc-badge-label {
+    font-family: 'Cinzel', serif;
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: #6b45c8;
+  }
+  .bc-badge-value {
+    font-family: 'Cinzel', serif;
+    font-weight: 600;
+    font-size: 16px;
+  }
+  .bc-hero-ctas {
+    display: flex;
+    gap: 14px;
+    flex-wrap: wrap;
+    margin-top: 26px;
+  }
+  .bc-btn {
+    display: inline-block;
+    padding: 13px 30px;
+    font-family: 'Cinzel', serif;
+    font-weight: 600;
+    font-size: 13px;
+    letter-spacing: 2px;
+    border-radius: 4px;
+    border: 1px solid var(--bc-gold);
+  }
+  .bc-btn--solid {
+    background: linear-gradient(180deg, #5a8bff, #3455d8);
+    color: #fff;
+    box-shadow: 0 4px 16px rgba(63, 116, 242, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.22);
+  }
+  .bc-btn--outline {
+    background: transparent;
+    color: var(--bc-gold);
+  }
+
+  .bc-tale {
+    max-width: 820px;
+    margin: 0 auto;
+    padding: 20px 28px 64px;
+    text-align: center;
+  }
+  .bc-fleuron {
+    color: var(--bc-text-faint);
+    font-size: 16px;
+    letter-spacing: 6px;
+    margin-bottom: 8px;
+  }
+  .bc-eyebrow {
+    font-family: 'Cinzel', serif;
+    font-size: 12px;
+    letter-spacing: 5px;
+    color: var(--bc-blue-light);
+    margin-bottom: 14px;
+  }
+  .bc-tale-text {
+    font-family: 'IM Fell English', serif;
+    font-style: italic;
+    font-size: 23px;
+    line-height: 1.6;
+    color: #e6ddff;
+    margin: 0;
+  }
+  .bc-tale-highlight {
+    font-family: 'Cinzel', serif;
+    font-style: normal;
+    color: var(--bc-gold);
+    font-weight: 600;
+  }
+
+  .bc-section {
+    max-width: var(--bc-max-width);
+    margin: 0 auto;
+    padding: 0 28px 64px;
+  }
+  .bc-section-head {
+    text-align: center;
+    margin-bottom: 34px;
+  }
+  .bc-section-row {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 28px;
+  }
+  .bc-h2 {
+    margin: 0;
+    font-family: 'Cinzel Decorative', serif;
+    font-weight: 900;
+    font-size: 42px;
+    color: var(--bc-gold);
+  }
+  .bc-h2--tight {
+    margin-bottom: 24px;
+  }
+  .bc-see-all {
+    font-family: 'Cinzel', serif;
+    font-size: 12px;
+    letter-spacing: 2px;
+    color: var(--bc-blue-light);
+    border-bottom: 1px solid rgba(111, 160, 255, 0.5);
+    padding-bottom: 2px;
+  }
+
+  .bc-halls-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+  }
+  .bc-hall-card {
+    border-radius: 8px;
+    padding: 32px 30px;
+    position: relative;
+    overflow: hidden;
+  }
+  .bc-hall-card--blue {
+    border: 1px solid var(--bc-blue);
+    background: linear-gradient(160deg, rgba(59, 126, 240, 0.16), rgba(14, 10, 48, 0.4));
+  }
+  .bc-hall-card--violet {
+    border: 1px solid var(--bc-violet-brighter);
+    background: linear-gradient(160deg, rgba(123, 69, 224, 0.2), rgba(14, 10, 48, 0.4));
+  }
+  .bc-hall-eyebrow {
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    letter-spacing: 3px;
+  }
+  .bc-hall-eyebrow--blue {
+    color: var(--bc-blue-light);
+  }
+  .bc-hall-eyebrow--violet {
+    color: var(--bc-violet-light);
+  }
+  .bc-hall-title {
+    margin: 6px 0 12px;
+    font-family: 'Cinzel Decorative', serif;
+    font-weight: 700;
+    font-size: 30px;
+  }
+  .bc-hall-title--blue {
+    color: #e6f0ff;
+  }
+  .bc-hall-title--violet {
+    color: var(--bc-text);
+  }
+  .bc-hall-text {
+    font-family: 'IM Fell English', serif;
+    font-style: italic;
+    font-size: 18px;
+    line-height: 1.55;
+    margin: 0;
+  }
+  .bc-hall-text--blue {
+    color: var(--bc-text-muted);
+  }
+  .bc-hall-text--violet {
+    color: #c3b2ef;
+  }
+
+  .bc-featured-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 18px;
+  }
+
+  .bc-company {
+    text-align: center;
+    padding-bottom: 24px;
+  }
+  .bc-avatar-row {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  .bc-avatar {
+    width: 66px;
+    height: 66px;
+    border-radius: 50%;
+    border: 2px solid var(--bc-gold);
+    background: linear-gradient(135deg, #3a2a7a, #241452);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Cinzel', serif;
+    font-weight: 600;
+    font-size: 18px;
+    color: var(--bc-gold-light);
+    margin: 0 6px 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  }
+  .bc-company-link {
+    margin-top: 14px;
+  }
+  .bc-company-link a {
+    font-family: 'Cinzel', serif;
+    font-size: 12px;
+    letter-spacing: 2px;
+    color: var(--bc-blue-light);
+    border-bottom: 1px solid rgba(111, 160, 255, 0.5);
+    padding-bottom: 2px;
+  }
+
+  .bc-cta-section {
+    max-width: var(--bc-max-width);
+    margin: 56px auto 0;
+    padding: 0 28px;
+  }
+  .bc-cta-band {
+    border: 1px solid var(--bc-gold);
+    border-radius: 10px;
+    background: linear-gradient(135deg, rgba(123, 69, 224, 0.3), rgba(59, 126, 240, 0.22));
+    padding: 40px 36px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 20px;
+  }
+  .bc-cta-title {
+    margin: 0 0 6px;
+    font-family: 'Cinzel Decorative', serif;
+    font-weight: 900;
+    font-size: 34px;
+    color: var(--bc-gold);
+  }
+  .bc-cta-text {
+    margin: 0;
+    font-family: 'IM Fell English', serif;
+    font-style: italic;
+    font-size: 18px;
+    color: #e6ddff;
+  }
+  .bc-cta-buttons {
+    display: flex;
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+
+  @media (max-width: 900px) {
+    .bc-hero-grid {
+      grid-template-columns: 1fr;
+      text-align: center;
+      justify-items: center;
+    }
+    .bc-hero-title {
+      white-space: normal;
+      font-size: 72px;
+    }
+    .bc-halls-grid {
+      grid-template-columns: 1fr;
+    }
+    .bc-featured-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+</style>

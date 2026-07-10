@@ -1,0 +1,311 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageBanner from '../components/PageBanner.astro';
+---
+
+<BaseLayout title="The Anonymous Wall — BaileyCon" active="wall">
+  <PageBanner
+    eyebrow="NO NAMES, NO SHAME"
+    title="The Anonymous Wall"
+    subtitle="Confessions, hot takes, unsolicited prophecies. Nail thy secret to the tavern board &mdash; no one shall know it was thee."
+  />
+
+  <!-- POST FORM -->
+  <section class="bc-wall-form-section">
+    <div class="bc-wall-form">
+      <textarea class="bc-wallfield" id="wall-text" placeholder="Speak freely, stranger&hellip;" rows="3" style="margin-bottom:14px;"></textarea>
+      <div class="bc-wall-form-row">
+        <span class="bc-wall-note">Posted anonymously &mdash; a random alias is assigned for thee.</span>
+        <button id="wall-submit" class="bc-submit-btn" disabled>NAIL IT TO THE BOARD</button>
+      </div>
+      <p id="wall-status" class="bc-status" hidden></p>
+    </div>
+  </section>
+
+  <!-- THE BOARD -->
+  <section class="bc-board-section">
+    <div id="wall-board" class="bc-board">
+      <p class="bc-loading">Fetching the board&hellip;</p>
+    </div>
+    <p class="bc-board-count"><span id="wall-count">&hellip;</span> PINNED TO THE BOARD</p>
+  </section>
+</BaseLayout>
+
+<template id="wall-note-template">
+  <div class="bc-note-wrap">
+    <div class="bc-note">
+      <div class="bc-note-seal"></div>
+      <p class="bc-note-text"></p>
+      <div class="bc-note-alias"></div>
+    </div>
+  </div>
+</template>
+
+<style>
+  .bc-wallfield {
+    width: 100%;
+    box-sizing: border-box;
+    background: rgba(14, 10, 48, 0.6);
+    border: 1px solid rgba(139, 107, 255, 0.5);
+    border-radius: 5px;
+    color: var(--bc-text);
+    font-family: 'EB Garamond', serif;
+    font-size: 16px;
+    padding: 12px 14px;
+    outline: none;
+    resize: vertical;
+  }
+  .bc-wallfield:focus {
+    border-color: var(--bc-gold);
+  }
+  .bc-wallfield::placeholder {
+    color: #6a629c;
+  }
+
+  .bc-wall-form-section {
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 0 28px 34px;
+  }
+  .bc-wall-form {
+    border: 1px solid var(--bc-gold);
+    border-radius: 10px;
+    background: var(--bc-card-gradient-strong);
+    padding: 22px 24px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+  }
+  .bc-wall-form-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .bc-wall-note {
+    font-family: 'IM Fell English', serif;
+    font-style: italic;
+    font-size: 14px;
+    color: var(--bc-text-faint);
+  }
+  .bc-submit-btn {
+    border: 1px solid var(--bc-gold);
+    border-radius: 5px;
+    padding: 12px 22px;
+    font-family: 'Cinzel', serif;
+    font-weight: 600;
+    font-size: 12px;
+    letter-spacing: 2px;
+    cursor: not-allowed;
+    color: var(--bc-text-faint);
+    background: rgba(139, 107, 255, 0.15);
+    white-space: nowrap;
+    opacity: 0.7;
+  }
+  .bc-submit-btn:not(:disabled) {
+    cursor: pointer;
+    color: #fff;
+    background: linear-gradient(180deg, #5a8bff, #3455d8);
+    opacity: 1;
+  }
+  .bc-status {
+    margin: 10px 0 0;
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    letter-spacing: 1px;
+    color: var(--bc-text-faint);
+    text-align: center;
+  }
+  .bc-status.is-error {
+    color: #ff8a8a;
+  }
+
+  .bc-board-section {
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: 0 28px 20px;
+  }
+  .bc-board {
+    column-count: 3;
+    column-gap: 22px;
+  }
+  .bc-loading {
+    font-family: 'IM Fell English', serif;
+    font-style: italic;
+    color: var(--bc-text-faint);
+  }
+  .bc-note-wrap {
+    break-inside: avoid;
+    -webkit-column-break-inside: avoid;
+    display: inline-block;
+    width: 100%;
+    margin-bottom: 24px;
+  }
+  .bc-note {
+    position: relative;
+    border-radius: 3px;
+    padding: 26px 22px 18px;
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.45);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+  }
+  .bc-note-seal {
+    position: absolute;
+    top: -11px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 40% 35%, #8b5be0, #4a1f9e);
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.5), inset 0 1px 2px rgba(255, 255, 255, 0.35);
+    border: 2px solid var(--bc-gold);
+  }
+  .bc-note-text {
+    font-family: 'EB Garamond', serif;
+    font-size: 18px;
+    line-height: 1.5;
+    color: #2a1a0e;
+    margin: 14px 0 16px;
+  }
+  .bc-note-alias {
+    font-family: 'IM Fell English', serif;
+    font-style: italic;
+    font-size: 14px;
+    color: #7a5a2b;
+    text-align: right;
+  }
+  .bc-board-count {
+    text-align: center;
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    letter-spacing: 2px;
+    color: var(--bc-text-faint);
+    margin-top: 24px;
+  }
+
+  @media (max-width: 900px) {
+    .bc-board {
+      column-count: 2;
+    }
+  }
+  @media (max-width: 560px) {
+    .bc-board {
+      column-count: 1;
+    }
+  }
+</style>
+
+<script>
+  import { supabase, supabaseConfigured } from '../lib/supabase';
+
+  interface WallRow {
+    id: number;
+    body: string;
+    alias: string;
+    tint: string;
+    rotation: number;
+    created_at: string;
+  }
+
+  const ALIASES = [
+    'A Hooded Stranger',
+    'Anonymous Squire',
+    'A Tavern Ghost',
+    'The Masked Meeple',
+    'A Wandering Bard',
+    'Someone Who Rolled a 1',
+    'A Concerned Peasant',
+    'A Salty Loser',
+    'An Unnamed Knight',
+    'The Court Jester',
+    'A Retired Dragon',
+    'Nobody In Particular',
+  ];
+  const TINTS = ['#f0e6cc', '#ece0f2', '#e2ecf5', '#f2e8de'];
+
+  function rand<T>(arr: T[]): T {
+    return arr[Math.floor(Math.random() * arr.length)];
+  }
+
+  const textInput = document.getElementById('wall-text') as HTMLTextAreaElement;
+  const submitBtn = document.getElementById('wall-submit') as HTMLButtonElement;
+  const statusEl = document.getElementById('wall-status') as HTMLParagraphElement;
+  const boardEl = document.getElementById('wall-board') as HTMLDivElement;
+  const countEl = document.getElementById('wall-count') as HTMLSpanElement;
+  const template = document.getElementById('wall-note-template') as HTMLTemplateElement;
+
+  function renderBoard(rows: WallRow[]) {
+    boardEl.innerHTML = '';
+    countEl.textContent = String(rows.length);
+    if (!rows.length) {
+      const p = document.createElement('p');
+      p.className = 'bc-loading';
+      p.textContent = 'The board is bare. Speak first, stranger.';
+      boardEl.appendChild(p);
+      return;
+    }
+    for (const n of rows) {
+      const node = template.content.cloneNode(true) as DocumentFragment;
+      const noteEl = node.querySelector('.bc-note') as HTMLElement;
+      noteEl.style.background = n.tint;
+      noteEl.style.transform = `rotate(${n.rotation}deg)`;
+      (node.querySelector('.bc-note-text') as HTMLElement).textContent = n.body;
+      (node.querySelector('.bc-note-alias') as HTMLElement).textContent = `— ${n.alias}`;
+      boardEl.appendChild(node);
+    }
+  }
+
+  function updateSubmitState() {
+    submitBtn.disabled = !textInput.value.trim();
+  }
+  textInput.addEventListener('input', updateSubmitState);
+
+  async function loadBoard() {
+    if (!supabaseConfigured) {
+      boardEl.innerHTML = '<p class="bc-loading">Wall backend is not configured yet — ask the host to finish Supabase setup.</p>';
+      countEl.textContent = '0';
+      return;
+    }
+    const { data, error } = await supabase
+      .from('wall_posts')
+      .select('*')
+      .order('created_at', { ascending: false });
+    if (error) {
+      boardEl.innerHTML = `<p class="bc-loading">Could not load the board (${error.message}).</p>`;
+      return;
+    }
+    renderBoard((data as WallRow[]) || []);
+  }
+
+  async function submitPost() {
+    const body = textInput.value.trim();
+    if (!body) return;
+
+    submitBtn.disabled = true;
+    statusEl.hidden = true;
+    statusEl.classList.remove('is-error');
+
+    const alias = rand(ALIASES);
+    const tint = rand(TINTS);
+    const rotation = Math.random() * 6 - 3;
+
+    const { error } = await supabase.from('wall_posts').insert({ body, alias, tint, rotation });
+    if (error) {
+      statusEl.textContent = `Could not post (${error.message}).`;
+      statusEl.classList.add('is-error');
+      statusEl.hidden = false;
+      updateSubmitState();
+      return;
+    }
+
+    textInput.value = '';
+    statusEl.textContent = `Nailed to the board as "${alias}".`;
+    statusEl.hidden = false;
+    updateSubmitState();
+    await loadBoard();
+  }
+
+  submitBtn.addEventListener('click', submitPost);
+
+  updateSubmitState();
+  loadBoard();
+</script>

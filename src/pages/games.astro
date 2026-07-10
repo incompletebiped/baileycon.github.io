@@ -1,0 +1,80 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageBanner from '../components/PageBanner.astro';
+import GameCard from '../components/GameCard.astro';
+import { games, withDisplay } from '../data/games';
+
+const displayGames = games.map(withDisplay);
+---
+
+<BaseLayout title="The Games — BaileyCon" active="games">
+  <PageBanner
+    eyebrow="THE ARMORY"
+    title="The Games"
+    subtitle="A growing muster of the finest board & card games the tavern can hold. More shall be added as the day draws near."
+  />
+
+  <section class="bc-legend">
+    <span>COMPLEXITY:</span>
+    <span><span class="bc-legend-gold">&#9670;</span>&#9671;&#9671; LIGHT</span>
+    <span><span class="bc-legend-gold">&#9670;&#9670;</span>&#9671; MEDIUM</span>
+    <span><span class="bc-legend-gold">&#9670;&#9670;&#9670;</span> HEAVY</span>
+  </section>
+
+  <section class="bc-games-section">
+    <div class="bc-games-grid">
+      {displayGames.map((g) => (
+        <GameCard game={g} />
+      ))}
+    </div>
+    <p class="bc-games-note">&hellip;and many more to be added. Got one to bring? Tell the host!</p>
+  </section>
+</BaseLayout>
+
+<style>
+  .bc-legend {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 0 28px 24px;
+    display: flex;
+    justify-content: center;
+    gap: 22px;
+    flex-wrap: wrap;
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    color: var(--bc-text-faint);
+  }
+  .bc-legend-gold {
+    color: var(--bc-gold);
+  }
+  .bc-games-section {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 0 28px 40px;
+  }
+  .bc-games-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 22px;
+  }
+  .bc-games-note {
+    text-align: center;
+    font-family: 'IM Fell English', serif;
+    font-style: italic;
+    font-size: 17px;
+    color: var(--bc-text-faint);
+    margin-top: 40px;
+  }
+
+  @media (max-width: 980px) {
+    .bc-games-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  @media (max-width: 620px) {
+    .bc-games-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

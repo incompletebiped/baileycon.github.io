@@ -1,0 +1,58 @@
+---
+interface Props {
+  size?: number;
+  strokeWidth?: number;
+}
+
+const { size = 40, strokeWidth } = Astro.props;
+const bFontSize = size * 0.375;
+const stroke = strokeWidth ?? Math.max(0.6, size * 0.015) * 2;
+const inset = Math.max(2, Math.round(size * 0.05));
+---
+
+<div class="bc-crest" style={`width:${size}px;height:${size}px;`}>
+  <div class="bc-crest-layer bc-crest-rim"></div>
+  <div class="bc-crest-layer bc-crest-body" style={`inset:${inset}px;`}></div>
+  <div class="bc-crest-layer bc-crest-facet" style={`inset:${inset}px;`}></div>
+  <div class="bc-crest-layer bc-crest-face" style={`inset:${inset}px;`}></div>
+  <span class="bc-crest-b" style={`font-size:${bFontSize}px;-webkit-text-stroke:${stroke}px var(--bc-ink);`}>B</span>
+</div>
+
+<style>
+  .bc-crest {
+    position: relative;
+    flex: none;
+  }
+  .bc-crest-layer {
+    position: absolute;
+    inset: 0;
+  }
+  .bc-crest-rim {
+    clip-path: polygon(50% 1%, 99% 26%, 99% 74%, 50% 99%, 1% 74%, 1% 26%);
+    background: var(--bc-gold);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.45);
+  }
+  .bc-crest-body {
+    clip-path: polygon(50% 1%, 99% 26%, 99% 74%, 50% 99%, 1% 74%, 1% 26%);
+    background: linear-gradient(165deg, var(--bc-violet), var(--bc-violet-deep));
+  }
+  .bc-crest-facet {
+    clip-path: polygon(50% 2%, 98% 73%, 2% 73%);
+    background: var(--bc-gold);
+  }
+  .bc-crest-face {
+    clip-path: polygon(50% 9%, 92% 70%, 8% 70%);
+    background: linear-gradient(165deg, #6a45c8, #3a2478);
+  }
+  .bc-crest-b {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 51%;
+    transform: translate(-1.5%, -50%);
+    text-align: center;
+    font-family: 'Bangers', cursive;
+    line-height: 1;
+    color: var(--bc-gold);
+  }
+</style>
