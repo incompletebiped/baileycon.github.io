@@ -32,9 +32,10 @@
   --bc-text: #f2ecff;
   --bc-text-muted: #bcc4f0;
   --bc-text-faint: #8a80c8;
-  /* brighter variants for card bios/accents, where the dark tones read too muddy */
-  --bc-text-bright: #ece8ff;
-  --bc-text-faint-bright: #b7bce0;
+  /* brighter variants for card bios/accents — true white/near-white, since
+     purple-tinted "light" text still blends into the purple backgrounds */
+  --bc-text-bright: #ffffff;
+  --bc-text-faint-bright: #e2e4f5;
 
   /* parchment */
   --bc-parchment-1: #eeeafb;
