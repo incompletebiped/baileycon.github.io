@@ -13,20 +13,24 @@ const links = [
 
 <footer class="bc-footer">
   <div class="bc-footer-inner">
-    <Crest size={38} />
-    <div class="bc-tagline">&ldquo;Long may thy dice roll true, and thy tankard ne&rsquo;er run dry.&rdquo;</div>
-    <div class="bc-meta">
-      <span>BaileyCon &middot; Third Annual</span>
-      <span class="bc-dot">&#9670;</span>
-      <span>Knight Watch Games, San Antonio TX</span>
-      <span class="bc-dot">&#9670;</span>
-      <span>Noon &ndash; Midnight</span>
+    <div class="bc-footer-crest">
+      <Crest size={92} />
     </div>
-    <nav class="bc-footer-nav">
-      {links.map((l) => (
-        <a href={l.href}>{l.label}</a>
-      ))}
-    </nav>
+    <div class="bc-footer-content">
+      <div class="bc-tagline">&ldquo;Long may thy dice roll true, and thy tankard ne&rsquo;er run dry.&rdquo;</div>
+      <div class="bc-meta">
+        <span>BaileyCon &middot; Third Annual</span>
+        <span class="bc-dot">&#9670;</span>
+        <span>Knight Watch Games, San Antonio TX</span>
+        <span class="bc-dot">&#9670;</span>
+        <span>Noon &ndash; Midnight</span>
+      </div>
+      <nav class="bc-footer-nav">
+        {links.map((l) => (
+          <a href={l.href}>{l.label}</a>
+        ))}
+      </nav>
+    </div>
   </div>
 </footer>
 
@@ -39,12 +43,20 @@ const links = [
   .bc-footer-inner {
     max-width: var(--bc-max-width);
     margin: 0 auto;
-    padding: 40px 28px 48px;
+    padding: 36px 28px 48px;
+    display: flex;
+    align-items: center;
+    gap: 36px;
+  }
+  .bc-footer-crest {
+    flex: none;
+  }
+  .bc-footer-content {
     display: flex;
     flex-direction: column;
-    align-items: center;
+    align-items: flex-start;
     gap: 14px;
-    text-align: center;
+    text-align: left;
   }
   .bc-tagline {
     font-family: 'Raleway', sans-serif;
@@ -57,7 +69,7 @@ const links = [
     align-items: center;
     gap: 10px;
     flex-wrap: wrap;
-    justify-content: center;
+    justify-content: flex-start;
     font-family: 'Cinzel', serif;
     font-size: 11px;
     letter-spacing: 1.5px;
@@ -71,7 +83,7 @@ const links = [
     display: flex;
     gap: 18px;
     flex-wrap: wrap;
-    justify-content: center;
+    justify-content: flex-start;
     margin-top: 4px;
   }
   .bc-footer-nav a {
@@ -84,5 +96,22 @@ const links = [
   }
   .bc-footer-nav a:hover {
     color: var(--bc-blue-lighter);
+  }
+
+  @media (max-width: 640px) {
+    .bc-footer-inner {
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+      padding: 36px 24px 44px;
+    }
+    .bc-footer-content {
+      align-items: center;
+      text-align: center;
+    }
+    .bc-meta,
+    .bc-footer-nav {
+      justify-content: center;
+    }
   }
 </style>

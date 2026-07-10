@@ -2,9 +2,11 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import PageBanner from '../components/PageBanner.astro';
 import GameCard from '../components/GameCard.astro';
+import Crest from '../components/Crest.astro';
 import { games, withDisplay } from '../data/games';
 
 const displayGames = games.map(withDisplay);
+const rollerData = JSON.stringify(games.map((g) => ({ slug: g.slug, name: g.name })));
 ---
 
 <BaseLayout title="The Games — BaileyCon" active="games">
@@ -29,7 +31,74 @@ const displayGames = games.map(withDisplay);
     </div>
     <p class="bc-games-note">&hellip;and many more to be added. Got one to bring? Tell the host!</p>
   </section>
+
+  <!-- ===== DICE ROLLER ===== -->
+  <section class="bc-roller-section">
+    <div class="bc-roller-card">
+      <div class="bc-eyebrow-roller">CAN&rsquo;T DECIDE?</div>
+      <h2 class="bc-roller-title">Let the Dice Choose</h2>
+      <button type="button" id="dice-roll-btn" class="bc-dice-btn" aria-label="Roll the dice to pick a random game">
+        <div class="bc-dice-visual" id="dice-visual"><Crest size={78} /></div>
+      </button>
+      <p class="bc-roller-hint">Tap the die to summon tonight&rsquo;s game.</p>
+      <p id="dice-result" class="bc-dice-result" aria-live="polite">&nbsp;</p>
+    </div>
+  </section>
 </BaseLayout>
+
+<script type="application/json" id="roller-games-data" set:html={rollerData}></script>
+<script>
+  interface RollerGame {
+    slug: string;
+    name: string;
+  }
+
+  const dataEl = document.getElementById('roller-games-data');
+  const rollerGames: RollerGame[] = dataEl ? JSON.parse(dataEl.textContent || '[]') : [];
+
+  const btn = document.getElementById('dice-roll-btn') as HTMLButtonElement | null;
+  const visual = document.getElementById('dice-visual') as HTMLDivElement | null;
+  const resultEl = document.getElementById('dice-result') as HTMLParagraphElement | null;
+
+  let rolling = false;
+
+  function rollDice() {
+    if (!btn || !visual || !resultEl || rolling || !rollerGames.length) return;
+    rolling = true;
+    btn.disabled = true;
+
+    visual.classList.remove('is-rolling');
+    // Force reflow so the animation restarts on repeated clicks.
+    void visual.offsetWidth;
+    visual.classList.add('is-rolling');
+
+    setTimeout(() => {
+      const pick = rollerGames[Math.floor(Math.random() * rollerGames.length)];
+
+      resultEl.textContent = '';
+      resultEl.append("Tonight's fate: ");
+      const link = document.createElement('a');
+      link.href = `#${pick.slug}`;
+      link.textContent = pick.name;
+      resultEl.append(link);
+
+      const target = document.getElementById(pick.slug);
+      if (target) {
+        target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        target.classList.remove('bc-highlight');
+        void (target as HTMLElement).offsetWidth;
+        target.classList.add('bc-highlight');
+        setTimeout(() => target.classList.remove('bc-highlight'), 1700);
+      }
+
+      visual.classList.remove('is-rolling');
+      rolling = false;
+      btn.disabled = false;
+    }, 700);
+  }
+
+  btn?.addEventListener('click', rollDice);
+</script>
 
 <style>
   .bc-legend {
@@ -75,5 +144,83 @@ const displayGames = games.map(withDisplay);
     .bc-games-grid {
       grid-template-columns: 1fr;
     }
+  }
+
+  .bc-roller-section {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 0 28px 72px;
+    text-align: center;
+  }
+  .bc-roller-card {
+    border: 1px solid var(--bc-gold);
+    border-radius: 12px;
+    background: linear-gradient(165deg, rgba(123, 69, 224, 0.22), rgba(14, 10, 48, 0.6));
+    padding: 34px 28px 30px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+  }
+  .bc-eyebrow-roller {
+    font-family: 'Cinzel', serif;
+    font-size: 12px;
+    letter-spacing: 5px;
+    color: var(--bc-blue-light);
+    margin-bottom: 10px;
+  }
+  .bc-roller-title {
+    margin: 0 0 20px;
+    font-family: 'Cinzel Decorative', serif;
+    font-weight: 900;
+    font-size: 30px;
+    color: var(--bc-gold);
+  }
+  .bc-dice-btn {
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+  }
+  .bc-dice-visual {
+    display: inline-flex;
+    transition: transform 0.18s ease;
+  }
+  .bc-dice-btn:hover .bc-dice-visual:not(.is-rolling) {
+    transform: scale(1.1);
+  }
+  .bc-dice-visual.is-rolling {
+    animation: bc-dice-spin 0.7s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  @keyframes bc-dice-spin {
+    0% {
+      transform: rotate(0deg) scale(1);
+    }
+    35% {
+      transform: rotate(230deg) scale(1.18);
+    }
+    65% {
+      transform: rotate(500deg) scale(0.92);
+    }
+    100% {
+      transform: rotate(720deg) scale(1);
+    }
+  }
+  .bc-roller-hint {
+    margin: 14px 0 0;
+    font-family: 'Raleway', sans-serif;
+    font-size: 14px;
+    color: var(--bc-text-faint);
+  }
+  .bc-dice-result {
+    margin: 14px 0 0;
+    min-height: 24px;
+    font-family: 'Cinzel', serif;
+    font-weight: 600;
+    font-size: 16px;
+    letter-spacing: 0.5px;
+    color: var(--bc-text);
+  }
+  .bc-dice-result a {
+    color: var(--bc-gold);
+    text-decoration: underline;
+    text-underline-offset: 3px;
   }
 </style>

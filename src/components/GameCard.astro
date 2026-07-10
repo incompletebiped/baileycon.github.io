@@ -30,7 +30,7 @@ const { game, compact = false } = Astro.props;
     </div>
   </div>
 ) : (
-  <div class="bc-game-card">
+  <div class="bc-game-card" id={game.slug}>
     <div class="bc-art-wrap">
       <div class="bc-art-placeholder">
         <span>box art &mdash; drop image</span>
@@ -78,6 +78,24 @@ const { game, compact = false } = Astro.props;
     flex-direction: column;
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
     height: 100%;
+    scroll-margin-top: 90px;
+    transition: transform 0.22s ease, box-shadow 0.22s ease;
+  }
+  .bc-game-card:hover {
+    transform: scale(1.035);
+    box-shadow: 0 14px 32px rgba(0, 0, 0, 0.45);
+  }
+  .bc-game-card.bc-highlight {
+    animation: bc-highlight-pulse 1.7s ease;
+  }
+  @keyframes bc-highlight-pulse {
+    0%,
+    100% {
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+    }
+    25% {
+      box-shadow: 0 0 0 4px rgba(255, 207, 92, 0.85), 0 8px 24px rgba(0, 0, 0, 0.35);
+    }
   }
   .bc-game-card--compact {
     border-radius: 8px;

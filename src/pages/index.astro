@@ -6,8 +6,7 @@ import { games } from '../data/games';
 import { guests } from '../data/guests';
 import { withBase } from '../lib/url';
 
-const featured = games.slice(0, 4);
-const initials = guests.map((g) => g.name[0]);
+const company = guests.map((g) => ({ initial: g.name[0], slug: g.slug }));
 ---
 
 <BaseLayout title="BaileyCon — Third Annual" active="home">
@@ -101,8 +100,10 @@ const initials = guests.map((g) => g.name[0]);
       <a href={withBase('/games/')} class="bc-see-all">SEE ALL GAMES &rarr;</a>
     </div>
     <div class="bc-featured-grid">
-      {featured.map((g) => (
-        <GameCard game={g} compact />
+      {games.map((g) => (
+        <a href={withBase(`/games/#${g.slug}`)} class="bc-featured-link" data-featured-item style="display:none;">
+          <GameCard game={g} compact />
+        </a>
       ))}
     </div>
   </section>
@@ -112,8 +113,10 @@ const initials = guests.map((g) => g.name[0]);
     <div class="bc-eyebrow">TEN GUESTS OF HONOUR</div>
     <h2 class="bc-h2 bc-h2--tight">Assemble the Party</h2>
     <div class="bc-avatar-row">
-      {initials.map((initial) => (
-        <div class="bc-avatar">{initial}</div>
+      {company.map((c) => (
+        <a href={withBase(`/guests/#${c.slug}`)} class="bc-avatar-link">
+          <div class="bc-avatar">{c.initial}</div>
+        </a>
       ))}
     </div>
     <div class="bc-company-link">
@@ -464,6 +467,11 @@ const initials = guests.map((g) => g.name[0]);
     grid-template-columns: repeat(4, 1fr);
     gap: 18px;
   }
+  .bc-featured-link {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+  }
 
   .bc-company {
     text-align: center;
@@ -473,6 +481,10 @@ const initials = guests.map((g) => g.name[0]);
     display: flex;
     justify-content: center;
     flex-wrap: wrap;
+  }
+  .bc-avatar-link {
+    display: inline-block;
+    text-decoration: none;
   }
   .bc-avatar {
     width: 66px;
@@ -489,6 +501,11 @@ const initials = guests.map((g) => g.name[0]);
     color: var(--bc-gold-light);
     margin: 0 6px 12px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    transition: transform 0.22s ease, box-shadow 0.22s ease;
+  }
+  .bc-avatar-link:hover .bc-avatar {
+    transform: scale(1.15);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.5);
   }
   .bc-company-link {
     margin-top: 14px;
@@ -588,3 +605,20 @@ const initials = guests.map((g) => g.name[0]);
     }
   }
 </style>
+
+<script>
+  const items = Array.from(document.querySelectorAll<HTMLElement>('[data-featured-item]'));
+  const FEATURED_COUNT = 4;
+  const indices = items.map((_, i) => i);
+
+  // Partial Fisher-Yates: only shuffle enough to isolate FEATURED_COUNT random picks.
+  for (let i = indices.length - 1; i > 0 && i > indices.length - 1 - FEATURED_COUNT; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [indices[i], indices[j]] = [indices[j], indices[i]];
+  }
+  const chosen = new Set(indices.slice(-FEATURED_COUNT));
+
+  items.forEach((el, i) => {
+    if (chosen.has(i)) el.style.display = '';
+  });
+</script>

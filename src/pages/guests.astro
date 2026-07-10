@@ -48,3 +48,14 @@ const displayGuests = guests.map((g, i) => ({
     }
   }
 </style>
+
+<script>
+  const slug = window.location.hash.slice(1);
+  if (slug) {
+    const target = document.getElementById(slug);
+    if (target && target.classList.contains('bc-guest-card')) {
+      target.classList.add('bc-highlight');
+      setTimeout(() => target.classList.remove('bc-highlight'), 1700);
+    }
+  }
+</script>
