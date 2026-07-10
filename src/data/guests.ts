@@ -47,7 +47,7 @@ export const guests: Guest[] = [
     rarity: 'Epic',
     main: 'Catan',
     align: 'Lawful Cunning',
-    bio: "Jeanette's sister, and a menace disguised as forgetful. Swears she can't remember how Boss Monster works, then quietly demolishes the table before anyone catches on.",
+    bio: "Jeanette's sister. Swears she forgot how Boss Monster works, then quietly demolishes the table before anyone catches on.",
     stats: [3, 4, 3, 3],
   },
   {
@@ -57,7 +57,7 @@ export const guests: Guest[] = [
     rarity: 'Epic',
     main: 'Magic: The Gathering',
     align: 'Lawful Calculating',
-    bio: "Bailey's little brother, and the best player at the table who couldn't care less. Usually knows the winning move by turn two — and just as often lets it go, because winning was never really the point.",
+    bio: "Bailey's little brother. Spots the winning move by turn two, then lets it go anyway — winning was never really the point.",
     stats: [5, 2, 2, 3],
   },
   {
@@ -67,7 +67,7 @@ export const guests: Guest[] = [
     rarity: 'Epic',
     main: 'The Oregon Trail',
     align: 'Chaotic Sneaky',
-    bio: "Bailey's best friend, a strategist who — unlike Roy — very much wants to win. Optimizes the wagon, rations the oxen, and will let your family die of dysentery if it improves his odds.",
+    bio: "Bailey's best friend. Unlike Roy, he actually wants to win — and will happily let your family die of dysentery to get there.",
     stats: [3, 4, 5, 4],
   },
   {
