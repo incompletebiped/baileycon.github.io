@@ -1,5 +1,6 @@
 ---
 import Crest from './Crest.astro';
+import { withBase } from '../lib/url';
 
 interface Props {
   active: 'home' | 'games' | 'reviews' | 'wall' | 'guests';
@@ -8,17 +9,17 @@ interface Props {
 const { active } = Astro.props;
 
 const items = [
-  { key: 'home', label: 'Home', href: '/' },
-  { key: 'games', label: 'Games', href: '/games/' },
-  { key: 'reviews', label: 'Reviews', href: '/reviews/' },
-  { key: 'wall', label: 'Wall', href: '/wall/' },
-  { key: 'guests', label: 'Guests', href: '/guests/' },
+  { key: 'home', label: 'Home', href: withBase('/') },
+  { key: 'games', label: 'Games', href: withBase('/games/') },
+  { key: 'reviews', label: 'Reviews', href: withBase('/reviews/') },
+  { key: 'wall', label: 'Wall', href: withBase('/wall/') },
+  { key: 'guests', label: 'Guests', href: withBase('/guests/') },
 ];
 ---
 
 <header class="bc-header">
   <div class="bc-header-inner">
-    <a href="/" class="bc-brand">
+    <a href={withBase('/')} class="bc-brand">
       <Crest size={40} />
       <span class="bc-wordmark">BaileyCon</span>
       <span class="bc-badge">III</span>

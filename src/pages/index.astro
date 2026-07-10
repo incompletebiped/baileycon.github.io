@@ -4,6 +4,7 @@ import Crest from '../components/Crest.astro';
 import GameCard from '../components/GameCard.astro';
 import { games } from '../data/games';
 import { guests } from '../data/guests';
+import { withBase } from '../lib/url';
 
 const featured = games.slice(0, 4);
 const initials = guests.map((g) => g.name[0]);
@@ -52,8 +53,8 @@ const initials = guests.map((g) => g.name[0]);
         </div>
 
         <div class="bc-hero-ctas">
-          <a href="/guests/" class="bc-btn bc-btn--solid">MEET THE COMPANY</a>
-          <a href="/games/" class="bc-btn bc-btn--outline">BROWSE THE GAMES</a>
+          <a href={withBase('/guests/')} class="bc-btn bc-btn--solid">MEET THE COMPANY</a>
+          <a href={withBase('/games/')} class="bc-btn bc-btn--outline">BROWSE THE GAMES</a>
         </div>
       </div>
     </div>
@@ -97,7 +98,7 @@ const initials = guests.map((g) => g.name[0]);
         <div class="bc-eyebrow">ON THE TABLES</div>
         <h2 class="bc-h2">Featured Quests</h2>
       </div>
-      <a href="/games/" class="bc-see-all">SEE ALL GAMES &rarr;</a>
+      <a href={withBase('/games/')} class="bc-see-all">SEE ALL GAMES &rarr;</a>
     </div>
     <div class="bc-featured-grid">
       {featured.map((g) => (
@@ -116,7 +117,7 @@ const initials = guests.map((g) => g.name[0]);
       ))}
     </div>
     <div class="bc-company-link">
-      <a href="/guests/">MEET THE COMPANY &rarr;</a>
+      <a href={withBase('/guests/')}>MEET THE COMPANY &rarr;</a>
     </div>
   </section>
 
@@ -128,8 +129,8 @@ const initials = guests.map((g) => g.name[0]);
         <p class="bc-cta-text">Leave a review, or scrawl a secret upon the anonymous wall.</p>
       </div>
       <div class="bc-cta-buttons">
-        <a href="/reviews/" class="bc-btn bc-btn--solid">LEAVE A REVIEW</a>
-        <a href="/wall/" class="bc-btn bc-btn--outline">THE WALL</a>
+        <a href={withBase('/reviews/')} class="bc-btn bc-btn--solid">LEAVE A REVIEW</a>
+        <a href={withBase('/wall/')} class="bc-btn bc-btn--outline">THE WALL</a>
       </div>
     </div>
   </section>

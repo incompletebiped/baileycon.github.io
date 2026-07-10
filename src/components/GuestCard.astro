@@ -1,4 +1,6 @@
 ---
+import { withBase } from '../lib/url';
+
 interface Stat {
   label: string;
   value: number;
@@ -48,7 +50,7 @@ function pips(n: number) {
       <span>Drop {guest.name}&rsquo;s photo</span>
     </div>
     <img
-      src={`/images/guests/${guest.slug}.jpg`}
+      src={withBase(`/images/guests/${guest.slug}.jpg`)}
       alt={guest.name}
       class="bc-portrait-image"
       loading="lazy"

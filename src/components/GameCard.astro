@@ -1,4 +1,6 @@
 ---
+import { withBase } from '../lib/url';
+
 interface Game {
   slug: string;
   name: string;
@@ -34,7 +36,7 @@ const { game, compact = false } = Astro.props;
         <span>box art &mdash; drop image</span>
       </div>
       <img
-        src={`/images/games/${game.slug}.jpg`}
+        src={withBase(`/images/games/${game.slug}.jpg`)}
         alt={game.name}
         class="bc-art-image"
         loading="lazy"

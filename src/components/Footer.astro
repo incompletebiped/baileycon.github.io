@@ -1,12 +1,13 @@
 ---
 import Crest from './Crest.astro';
+import { withBase } from '../lib/url';
 
 const links = [
-  { label: 'Home', href: '/' },
-  { label: 'Games', href: '/games/' },
-  { label: 'Reviews', href: '/reviews/' },
-  { label: 'Wall', href: '/wall/' },
-  { label: 'Guests', href: '/guests/' },
+  { label: 'Home', href: withBase('/') },
+  { label: 'Games', href: withBase('/games/') },
+  { label: 'Reviews', href: withBase('/reviews/') },
+  { label: 'Wall', href: withBase('/wall/') },
+  { label: 'Guests', href: withBase('/guests/') },
 ];
 ---
 
