@@ -53,7 +53,7 @@ const initials = guests.map((g) => g.name[0]);
         </div>
 
         <div class="bc-hero-ctas">
-          <a href={withBase('/guests/')} class="bc-btn bc-btn--solid">MEET THE COMPANY</a>
+          <a href={withBase('/guests/')} class="bc-btn bc-btn--solid">MEET THE PARTY</a>
           <a href={withBase('/games/')} class="bc-btn bc-btn--outline">BROWSE THE GAMES</a>
         </div>
       </div>
@@ -107,17 +107,17 @@ const initials = guests.map((g) => g.name[0]);
     </div>
   </section>
 
-  <!-- ===== THE COMPANY ===== -->
+  <!-- ===== THE PARTY ===== -->
   <section class="bc-section bc-company">
     <div class="bc-eyebrow">TEN GUESTS OF HONOUR</div>
-    <h2 class="bc-h2 bc-h2--tight">The Fellowship of the Board</h2>
+    <h2 class="bc-h2 bc-h2--tight">Assemble the Party</h2>
     <div class="bc-avatar-row">
       {initials.map((initial) => (
         <div class="bc-avatar">{initial}</div>
       ))}
     </div>
     <div class="bc-company-link">
-      <a href={withBase('/guests/')}>MEET THE COMPANY &rarr;</a>
+      <a href={withBase('/guests/')}>MEET THE PARTY &rarr;</a>
     </div>
   </section>
 
