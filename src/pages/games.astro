@@ -23,12 +23,40 @@ const rollerData = JSON.stringify(games.map((g) => ({ slug: g.slug, name: g.name
     <span><span class="bc-legend-gold">&#9670;&#9670;&#9670;</span> HEAVY</span>
   </section>
 
+  <section class="bc-controls">
+    <label class="bc-control">
+      <span class="bc-control-label">SORT BY</span>
+      <select id="games-sort" class="bc-control-select">
+        <option value="default">Collection Order</option>
+        <option value="name">Name (A&ndash;Z)</option>
+        <option value="time">Time (Quickest First)</option>
+        <option value="players">Players (Fewest First)</option>
+        <option value="weight">Complexity (Lightest First)</option>
+      </select>
+    </label>
+    <label class="bc-control">
+      <span class="bc-control-label">PARTY SIZE</span>
+      <select id="games-players-filter" class="bc-control-select">
+        <option value="any">Any</option>
+        <option value="1">1 player</option>
+        <option value="2">2 players</option>
+        <option value="3">3 players</option>
+        <option value="4">4 players</option>
+        <option value="5">5 players</option>
+        <option value="6">6 players</option>
+        <option value="7">7 players</option>
+        <option value="8">8+ players</option>
+      </select>
+    </label>
+  </section>
+
   <section class="bc-games-section">
-    <div class="bc-games-grid">
+    <div class="bc-games-grid" id="games-grid">
       {displayGames.map((g) => (
         <GameCard game={g} />
       ))}
     </div>
+    <p class="bc-games-empty" id="games-empty" hidden>No games fit that party size &mdash; try a different number.</p>
     <p class="bc-games-note">&hellip;and many more to be added. Got one to bring? Tell the host!</p>
   </section>
 
@@ -45,6 +73,61 @@ const rollerData = JSON.stringify(games.map((g) => ({ slug: g.slug, name: g.name
     </div>
   </section>
 </BaseLayout>
+
+<script>
+  interface CardData {
+    el: HTMLElement;
+    name: string;
+    playersMin: number;
+    playersMax: number;
+    timeMin: number;
+    weight: number;
+  }
+
+  const grid = document.getElementById('games-grid');
+  const emptyMsg = document.getElementById('games-empty');
+  const sortSelect = document.getElementById('games-sort') as HTMLSelectElement | null;
+  const playersSelect = document.getElementById('games-players-filter') as HTMLSelectElement | null;
+
+  if (grid && sortSelect && playersSelect) {
+    const cards: CardData[] = Array.from(grid.querySelectorAll<HTMLElement>('.bc-game-card')).map((el) => ({
+      el,
+      name: el.dataset.name || '',
+      playersMin: Number(el.dataset.playersMin) || 0,
+      playersMax: Number(el.dataset.playersMax) || 99,
+      timeMin: Number(el.dataset.timeMin) || 0,
+      weight: Number(el.dataset.weight) || 1,
+    }));
+
+    function applyControls() {
+      const playerFilter = playersSelect!.value;
+      const sortBy = sortSelect!.value;
+
+      const visible =
+        playerFilter === 'any'
+          ? cards
+          : cards.filter((c) => Number(playerFilter) >= c.playersMin && Number(playerFilter) <= c.playersMax);
+      const visibleSet = new Set(visible);
+
+      cards.forEach((c) => {
+        c.el.style.display = visibleSet.has(c) ? '' : 'none';
+      });
+
+      const ordered = cards.slice();
+      if (sortBy === 'name') ordered.sort((a, b) => a.name.localeCompare(b.name));
+      else if (sortBy === 'time') ordered.sort((a, b) => a.timeMin - b.timeMin);
+      else if (sortBy === 'players') ordered.sort((a, b) => a.playersMin - b.playersMin);
+      else if (sortBy === 'weight') ordered.sort((a, b) => a.weight - b.weight);
+
+      ordered.forEach((c) => grid!.appendChild(c.el));
+
+      if (emptyMsg) emptyMsg.hidden = visible.length > 0;
+    }
+
+    sortSelect.addEventListener('change', applyControls);
+    playersSelect.addEventListener('change', applyControls);
+  }
+</script>
 
 <script type="application/json" id="roller-games-data" set:html={rollerData}></script>
 <script>
@@ -117,10 +200,52 @@ const rollerData = JSON.stringify(games.map((g) => ({ slug: g.slug, name: g.name
   .bc-legend-gold {
     color: var(--bc-gold);
   }
+  .bc-controls {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 0 28px 30px;
+    display: flex;
+    justify-content: center;
+    gap: 26px;
+    flex-wrap: wrap;
+  }
+  .bc-control {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .bc-control-label {
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    color: var(--bc-text-faint);
+    white-space: nowrap;
+  }
+  .bc-control-select {
+    background: rgba(14, 10, 48, 0.6);
+    border: 1px solid rgba(139, 107, 255, 0.5);
+    border-radius: 5px;
+    color: var(--bc-text);
+    font-family: 'Cinzel', serif;
+    font-size: 13px;
+    padding: 8px 12px;
+    outline: none;
+    cursor: pointer;
+  }
+  .bc-control-select:focus {
+    border-color: var(--bc-gold);
+  }
   .bc-games-section {
     max-width: 1180px;
     margin: 0 auto;
     padding: 0 28px 40px;
+  }
+  .bc-games-empty {
+    text-align: center;
+    font-family: 'Raleway', sans-serif;
+    font-size: 15px;
+    color: var(--bc-text-faint);
+    padding: 30px 0;
   }
   .bc-games-grid {
     display: grid;

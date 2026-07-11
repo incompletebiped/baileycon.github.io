@@ -11,6 +11,9 @@ interface Game {
   pips?: string;
   hall?: string;
   hallColor?: string;
+  playersMin?: number;
+  playersMax?: number;
+  timeMin?: number;
 }
 
 interface Props {
@@ -30,8 +33,24 @@ const { game, compact = false } = Astro.props;
     </div>
   </div>
 ) : (
-  <div class="bc-game-card" id={game.slug}>
-    <div class="bc-art-wrap">
+  <div
+    class="bc-game-card"
+    id={game.slug}
+    data-name={game.name}
+    data-players-min={game.playersMin ?? 0}
+    data-players-max={game.playersMax ?? 99}
+    data-time-min={game.timeMin ?? 0}
+    data-weight={game.weight ?? 1}
+  >
+    <div
+      class="bc-art-wrap"
+      data-lightbox-trigger
+      data-lightbox-img={withBase(`/images/games/${game.slug}.jpg`)}
+      data-lightbox-name={game.name}
+      role="button"
+      tabindex="0"
+      aria-label={`View full box art for ${game.name}`}
+    >
       <div class="bc-art-placeholder">
         <span>box art &mdash; drop image</span>
       </div>
@@ -42,6 +61,7 @@ const { game, compact = false } = Astro.props;
         loading="lazy"
         onerror="this.style.display='none'"
       />
+      <span class="bc-art-zoom-hint" aria-hidden="true">&#10021;</span>
       <span class="bc-hall-pill" style={`color:${game.hallColor};border-color:${game.hallColor};`}>{game.hall}</span>
     </div>
     <div class="bc-game-body">
@@ -106,6 +126,34 @@ const { game, compact = false } = Astro.props;
     height: 120px;
     border-bottom: 1px solid rgba(139, 107, 255, 0.35);
     overflow: hidden;
+    cursor: pointer;
+  }
+  .bc-art-wrap:focus-visible {
+    outline: 2px solid var(--bc-gold);
+    outline-offset: -2px;
+  }
+  .bc-art-zoom-hint {
+    position: absolute;
+    bottom: 8px;
+    right: 8px;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: rgba(14, 10, 48, 0.7);
+    border: 1px solid var(--bc-gold);
+    color: var(--bc-gold);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    opacity: 0;
+    transition: opacity 0.18s ease;
+    pointer-events: none;
+    z-index: 1;
+  }
+  .bc-art-wrap:hover .bc-art-zoom-hint,
+  .bc-art-wrap:focus-visible .bc-art-zoom-hint {
+    opacity: 1;
   }
   .bc-art-placeholder {
     position: absolute;
@@ -224,3 +272,121 @@ const { game, compact = false } = Astro.props;
     margin-top: 4px;
   }
 </style>
+
+<style is:global>
+  .bc-lightbox {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 40px;
+    background: rgba(8, 6, 26, 0.88);
+    backdrop-filter: blur(3px);
+  }
+  .bc-lightbox.is-open {
+    display: flex;
+  }
+  .bc-lightbox-img {
+    max-width: 90vw;
+    max-height: 80vh;
+    border: 2px solid var(--bc-gold);
+    border-radius: 8px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+    object-fit: contain;
+  }
+  .bc-lightbox-caption {
+    position: absolute;
+    bottom: 26px;
+    left: 0;
+    right: 0;
+    text-align: center;
+    font-family: 'Cinzel', serif;
+    letter-spacing: 1px;
+    font-size: 15px;
+    color: var(--bc-gold);
+  }
+  .bc-lightbox-close {
+    position: absolute;
+    top: 22px;
+    right: 30px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(14, 10, 48, 0.7);
+    border: 1px solid var(--bc-gold);
+    color: var(--bc-gold);
+    font-size: 22px;
+    line-height: 1;
+    cursor: pointer;
+  }
+  body.bc-lightbox-lock {
+    overflow: hidden;
+  }
+</style>
+
+<script>
+  function ensureLightbox(): HTMLElement {
+    let modal = document.getElementById('bc-lightbox') as HTMLElement | null;
+    if (modal) return modal;
+
+    modal = document.createElement('div');
+    modal.id = 'bc-lightbox';
+    modal.className = 'bc-lightbox';
+    modal.innerHTML = `
+      <button type="button" class="bc-lightbox-close" aria-label="Close">&times;</button>
+      <img class="bc-lightbox-img" alt="" />
+      <div class="bc-lightbox-caption"></div>
+    `;
+    document.body.appendChild(modal);
+
+    const close = () => {
+      modal!.classList.remove('is-open');
+      document.body.classList.remove('bc-lightbox-lock');
+    };
+
+    modal.addEventListener('click', (e) => {
+      const target = e.target as HTMLElement;
+      if (target === modal || target.closest('.bc-lightbox-close')) close();
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') close();
+    });
+
+    return modal;
+  }
+
+  function openLightbox(src: string, name: string) {
+    const modal = ensureLightbox();
+    const img = modal.querySelector('.bc-lightbox-img') as HTMLImageElement;
+    const caption = modal.querySelector('.bc-lightbox-caption') as HTMLElement;
+    img.src = src;
+    img.alt = name;
+    caption.textContent = name;
+    modal.classList.add('is-open');
+    document.body.classList.add('bc-lightbox-lock');
+  }
+
+  function triggerFrom(target: EventTarget | null): HTMLElement | null {
+    return target instanceof HTMLElement ? target.closest('[data-lightbox-trigger]') : null;
+  }
+
+  document.addEventListener('click', (e) => {
+    const trigger = triggerFrom(e.target);
+    if (!trigger) return;
+    const src = trigger.getAttribute('data-lightbox-img');
+    const name = trigger.getAttribute('data-lightbox-name') || '';
+    if (src) openLightbox(src, name);
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key !== 'Enter' && e.key !== ' ') return;
+    const trigger = triggerFrom(e.target);
+    if (!trigger) return;
+    e.preventDefault();
+    const src = trigger.getAttribute('data-lightbox-img');
+    const name = trigger.getAttribute('data-lightbox-name') || '';
+    if (src) openLightbox(src, name);
+  });
+</script>

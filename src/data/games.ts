@@ -316,11 +316,42 @@ export function hallColor(hall: Hall): string {
   return hall === 'Renaissance' ? 'var(--bc-blue-light)' : 'var(--bc-violet-light)';
 }
 
+/** Parses "3–6" / "2+" / "5" into a numeric range for sorting & filtering. NO_MAX stands in for "+". */
+const NO_MAX = 99;
+
+export function parsePlayers(players: string): { min: number; max: number } {
+  const plus = players.match(/^(\d+)\+$/);
+  if (plus) return { min: Number(plus[1]), max: NO_MAX };
+  const range = players.match(/^(\d+)\D+(\d+)$/);
+  if (range) return { min: Number(range[1]), max: Number(range[2]) };
+  const single = players.match(/^(\d+)$/);
+  if (single) return { min: Number(single[1]), max: Number(single[1]) };
+  return { min: 1, max: NO_MAX };
+}
+
+/** Parses "60–120 min" / "20+ min" / "15 min" into a numeric minute range. */
+export function parseTime(time: string): { min: number; max: number } {
+  const cleaned = time.replace(/\s*min$/i, '').trim();
+  const plus = cleaned.match(/^(\d+)\+$/);
+  if (plus) return { min: Number(plus[1]), max: NO_MAX * 10 };
+  const range = cleaned.match(/^(\d+)\D+(\d+)$/);
+  if (range) return { min: Number(range[1]), max: Number(range[2]) };
+  const single = cleaned.match(/^(\d+)$/);
+  if (single) return { min: Number(single[1]), max: Number(single[1]) };
+  return { min: 0, max: NO_MAX * 10 };
+}
+
 export function withDisplay(game: Game) {
+  const playerRange = parsePlayers(game.players);
+  const timeRange = parseTime(game.time);
   return {
     ...game,
     pips: pips(game.weight),
     weightLabel: weightLabel(game.weight),
     hallColor: hallColor(game.hall),
+    playersMin: playerRange.min,
+    playersMax: playerRange.max,
+    timeMin: timeRange.min,
+    timeMax: timeRange.max,
   };
 }
