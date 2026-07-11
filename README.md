@@ -101,21 +101,22 @@ a list.
 
 ## Deploying to GitHub Pages
 
-This repo is named `baileycon.github.io`, so once pushed to `main` it deploys
-via `.github/workflows/deploy.yml` to `https://baileycon.github.io/`.
+Once pushed to `main` it deploys via `.github/workflows/deploy.yml` to the
+custom domain `https://baileycon.com` (see `public/CNAME`).
 
-One-time manual step (can't be done from the CLI): in the GitHub repo →
-**Settings → Pages → Source**, select **"GitHub Actions"**. After that, every
-push to `main` builds and deploys automatically.
+One-time manual steps (can't be done from the CLI):
+- In the GitHub repo → **Settings → Pages → Source**, select **"GitHub Actions"**.
+- In **Settings → Pages → Custom domain**, confirm it shows `baileycon.com`
+  and that DNS is pointed at GitHub Pages per
+  [their docs](https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site).
+
+After that, every push to `main` builds and deploys automatically. The
+`public/CNAME` file must keep shipping with every build — GitHub Pages
+Actions deployments serve exactly what's in the `dist` artifact, so without
+it the custom domain setting gets dropped on the next deploy.
 
 ## Switching to Vercel later
 
 No code changes needed — import the repo in Vercel (it auto-detects Astro),
 add the same `PUBLIC_SUPABASE_URL` / `PUBLIC_SUPABASE_ANON_KEY` environment
 variables in the Vercel project settings, and deploy.
-
-## Adding a custom domain later
-
-For GitHub Pages: add a `public/CNAME` file containing the domain, update
-`site` in `astro.config.mjs` to match, and point your DNS at GitHub Pages
-per [their docs](https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site).
