@@ -33,7 +33,7 @@ const company = guests.map((g) => ({ initial: g.name[0], slug: g.slug }));
 
       <!-- content -->
       <div>
-        <div class="bc-hero-eyebrow">THIRD ANNUAL &middot; SAN&nbsp;ANTONIO, TX</div>
+        <div class="bc-hero-eyebrow">THIRD ANNUAL &middot; <span class="bc-nowrap">SAN ANTONIO, TX</span></div>
         <h1 class="bc-hero-title">
           <span class="bc-hero-bailey">Bailey</span><span class="bc-hero-con">Con</span>
         </h1>
@@ -241,6 +241,9 @@ const company = guests.map((g) => ({ initial: g.name[0], slug: g.slug }));
     letter-spacing: 5px;
     color: var(--bc-blue-light);
     margin-bottom: 12px;
+  }
+  .bc-nowrap {
+    white-space: nowrap;
   }
   .bc-hero-title {
     margin: 0;
