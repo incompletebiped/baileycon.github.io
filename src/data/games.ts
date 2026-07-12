@@ -11,6 +11,10 @@ export interface Game {
   hall: Hall;
   /** True if the party has never actually played this one yet. */
   neverPlayed?: boolean;
+  /** Manual override for the computed win-value points, for games whose real
+   *  runtime (e.g. scales heavily with player count) isn't captured well by
+   *  weight × time-bucket off the listed (minimum) time. */
+  winPointsOverride?: number;
 }
 
 // To add a game later: add another object here. Everything else (pips, weight
@@ -48,18 +52,20 @@ export const games: Game[] = [
     name: 'Boss Monster',
     tag: 'Build an 8-bit dungeon, lure in heroes, and feast upon their souls. Now fits six.',
     players: '2–6',
-    time: '20–30 min',
+    time: '20–60 min',
     weight: 1,
     hall: 'Dark Ages',
+    winPointsOverride: 6,
   },
   {
     slug: 'super-boss-monster',
     name: 'Super Boss Monster',
     tag: 'Same dungeon-building chaos, now with a town worth squabbling over first.',
     players: '1–4',
-    time: '30 min',
+    time: '30–60 min',
     weight: 2,
     hall: 'Dark Ages',
+    winPointsOverride: 6,
   },
   {
     slug: 'coup',
@@ -83,10 +89,11 @@ export const games: Game[] = [
     slug: 'magic-the-gathering',
     name: 'Magic: The Gathering',
     tag: 'Tap lands, cast spells, ruin friendships — thirty years of rules-lawyering and counting.',
-    players: '2+',
+    players: '2–4',
     time: '20+ min',
     weight: 3,
     hall: 'Renaissance',
+    winPointsOverride: 6,
   },
   {
     slug: 'thats-not-a-hat',
@@ -166,7 +173,7 @@ export const games: Game[] = [
     name: 'Comic Hunters',
     tag: 'Hit the shops, chase first appearances, out-collect the whole table.',
     players: '1–4',
-    time: '60 min',
+    time: '45–60 min',
     weight: 2,
     hall: 'Renaissance',
     neverPlayed: true,
@@ -199,6 +206,7 @@ export const games: Game[] = [
     time: '40–120 min',
     weight: 1,
     hall: 'Renaissance',
+    winPointsOverride: 6,
   },
   {
     slug: 'marrying-mr-darcy',
@@ -218,6 +226,7 @@ export const games: Game[] = [
     time: '15–45 min',
     weight: 1,
     hall: 'Dark Ages',
+    winPointsOverride: 2,
   },
   {
     slug: 'tiny-tinas-robot-tea-party',
@@ -367,7 +376,8 @@ export function timeBucket(minutes: number): 1 | 2 | 3 | 4 {
 
 /** Win-value formula: weight × timeBucket(min time). Single source of truth for the
  *  GameCard "WIN VALUE" stat, the Wins leaderboard, and guest score totals. */
-export function winPoints(game: Pick<Game, 'weight' | 'time'>): number {
+export function winPoints(game: Pick<Game, 'weight' | 'time' | 'winPointsOverride'>): number {
+  if (game.winPointsOverride !== undefined) return game.winPointsOverride;
   const { min } = parseTime(game.time);
   return game.weight * timeBucket(min);
 }
