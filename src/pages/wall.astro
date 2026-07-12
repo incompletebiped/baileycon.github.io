@@ -52,7 +52,7 @@ import PageBanner from '../components/PageBanner.astro';
     width: 100%;
     box-sizing: border-box;
     background: rgba(14, 10, 48, 0.6);
-    border: 1px solid rgba(139, 107, 255, 0.5);
+    border: 1px solid rgba(125, 134, 255, 0.5);
     border-radius: 5px;
     color: var(--bc-text);
     font-family: 'EB Garamond', serif;
@@ -102,7 +102,7 @@ import PageBanner from '../components/PageBanner.astro';
     letter-spacing: 2px;
     cursor: not-allowed;
     color: var(--bc-text-faint);
-    background: rgba(139, 107, 255, 0.15);
+    background: rgba(125, 134, 255, 0.15);
     white-space: nowrap;
     opacity: 0.7;
   }
@@ -263,6 +263,12 @@ import PageBanner from '../components/PageBanner.astro';
     'Nobody In Particular',
   ];
   const TINTS = ['#f0e6cc', '#ece0f2', '#e2ecf5', '#f2e8de'];
+  const SEAL_BY_TINT: Record<string, string> = {
+    '#f0e6cc': 'radial-gradient(circle at 40% 35%, #8b5be0, #4a1f9e)',
+    '#ece0f2': 'radial-gradient(circle at 40% 35%, #8b5be0, #4a1f9e)',
+    '#e2ecf5': 'radial-gradient(circle at 40% 35%, #5a8bff, #1f4fc4)',
+    '#f2e8de': 'radial-gradient(circle at 40% 35%, #5a8bff, #1f4fc4)',
+  };
   const REACTED_STORAGE_KEY = 'bc-wall-reacted';
 
   interface ReactionRow {
@@ -331,6 +337,8 @@ import PageBanner from '../components/PageBanner.astro';
       noteEl.style.background = n.tint;
       noteEl.style.transform = `rotate(${n.rotation}deg)`;
       noteEl.dataset.postId = String(n.id);
+      const sealEl = node.querySelector('.bc-note-seal') as HTMLElement;
+      sealEl.style.background = SEAL_BY_TINT[n.tint] || SEAL_BY_TINT['#f0e6cc'];
       (node.querySelector('.bc-note-text') as HTMLElement).textContent = n.body;
       (node.querySelector('.bc-note-alias') as HTMLElement).textContent = `— ${n.alias}`;
 
