@@ -71,6 +71,7 @@ const { game, compact = false } = Astro.props;
         <div class="bc-game-name">{game.name}</div>
         <div class="bc-game-pips">{game.pips}</div>
       </div>
+      <div class="bc-game-rating" data-rating-slot hidden></div>
       <p class="bc-game-tag bc-game-tag--full">{game.tag}</p>
       <div class="bc-game-stats">
         <div class="bc-stat">
@@ -237,6 +238,13 @@ const { game, compact = false } = Astro.props;
     letter-spacing: 1px;
     white-space: nowrap;
     color: var(--bc-gold);
+  }
+  .bc-game-rating {
+    font-family: 'Cinzel', serif;
+    font-size: 12px;
+    letter-spacing: 0.5px;
+    color: var(--bc-gold);
+    margin-top: 6px;
   }
   .bc-game-tag {
     font-family: 'Lato', sans-serif;

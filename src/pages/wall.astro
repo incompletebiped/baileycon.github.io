@@ -37,6 +37,12 @@ import PageBanner from '../components/PageBanner.astro';
       <div class="bc-note-seal"></div>
       <p class="bc-note-text"></p>
       <div class="bc-note-alias"></div>
+      <div class="bc-note-reactions">
+        <button type="button" class="bc-reaction-btn" data-emoji="&#10084;&#65039;">&#10084;&#65039; <span class="bc-reaction-count">0</span></button>
+        <button type="button" class="bc-reaction-btn" data-emoji="&#128514;">&#128514; <span class="bc-reaction-count">0</span></button>
+        <button type="button" class="bc-reaction-btn" data-emoji="&#128558;">&#128558; <span class="bc-reaction-count">0</span></button>
+        <button type="button" class="bc-reaction-btn" data-emoji="&#127922;">&#127922; <span class="bc-reaction-count">0</span></button>
+      </div>
     </div>
   </div>
 </template>
@@ -171,6 +177,44 @@ import PageBanner from '../components/PageBanner.astro';
     color: #7a5a2b;
     text-align: right;
   }
+  .bc-note-reactions {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-top: 12px;
+    padding-top: 10px;
+    border-top: 1px solid rgba(42, 26, 14, 0.15);
+  }
+  .bc-reaction-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    border: 1px solid rgba(42, 26, 14, 0.2);
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.35);
+    color: #4a341c;
+    font-family: 'Raleway', sans-serif;
+    font-size: 12px;
+    padding: 3px 9px;
+    cursor: pointer;
+    transition: background 0.15s ease, transform 0.1s ease;
+  }
+  .bc-reaction-btn:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.65);
+    transform: scale(1.05);
+  }
+  .bc-reaction-btn:disabled {
+    cursor: default;
+    opacity: 0.75;
+  }
+  .bc-reaction-btn.is-reacted {
+    background: rgba(255, 255, 255, 0.75);
+    border-color: rgba(42, 26, 14, 0.35);
+    font-weight: 700;
+  }
+  .bc-reaction-count {
+    font-variant-numeric: tabular-nums;
+  }
   .bc-board-count {
     text-align: center;
     font-family: 'Cinzel', serif;
@@ -219,9 +263,29 @@ import PageBanner from '../components/PageBanner.astro';
     'Nobody In Particular',
   ];
   const TINTS = ['#f0e6cc', '#ece0f2', '#e2ecf5', '#f2e8de'];
+  const REACTED_STORAGE_KEY = 'bc-wall-reacted';
+
+  interface ReactionRow {
+    post_id: number;
+    emoji: string;
+  }
 
   function rand<T>(arr: T[]): T {
     return arr[Math.floor(Math.random() * arr.length)];
+  }
+
+  function getReactedSet(): Set<string> {
+    try {
+      return new Set(JSON.parse(localStorage.getItem(REACTED_STORAGE_KEY) || '[]'));
+    } catch {
+      return new Set();
+    }
+  }
+
+  function markReacted(key: string) {
+    const set = getReactedSet();
+    set.add(key);
+    localStorage.setItem(REACTED_STORAGE_KEY, JSON.stringify(Array.from(set)));
   }
 
   const textInput = document.getElementById('wall-text') as HTMLTextAreaElement;
@@ -230,6 +294,24 @@ import PageBanner from '../components/PageBanner.astro';
   const boardEl = document.getElementById('wall-board') as HTMLDivElement;
   const countEl = document.getElementById('wall-count') as HTMLSpanElement;
   const template = document.getElementById('wall-note-template') as HTMLTemplateElement;
+
+  let reactionCounts = new Map<string, number>();
+
+  function reactionKey(postId: number, emoji: string) {
+    return `${postId}:${emoji}`;
+  }
+
+  async function loadReactionCounts() {
+    if (!supabaseConfigured) return;
+    const { data, error } = await supabase.from('wall_reactions').select('post_id, emoji');
+    if (error || !data) return;
+    const counts = new Map<string, number>();
+    for (const r of data as ReactionRow[]) {
+      const key = reactionKey(r.post_id, r.emoji);
+      counts.set(key, (counts.get(key) || 0) + 1);
+    }
+    reactionCounts = counts;
+  }
 
   function renderBoard(rows: WallRow[]) {
     boardEl.innerHTML = '';
@@ -241,16 +323,60 @@ import PageBanner from '../components/PageBanner.astro';
       boardEl.appendChild(p);
       return;
     }
+    const reacted = getReactedSet();
     for (const n of rows) {
       const node = template.content.cloneNode(true) as DocumentFragment;
       const noteEl = node.querySelector('.bc-note') as HTMLElement;
       noteEl.style.background = n.tint;
       noteEl.style.transform = `rotate(${n.rotation}deg)`;
+      noteEl.dataset.postId = String(n.id);
       (node.querySelector('.bc-note-text') as HTMLElement).textContent = n.body;
       (node.querySelector('.bc-note-alias') as HTMLElement).textContent = `— ${n.alias}`;
+
+      node.querySelectorAll<HTMLButtonElement>('.bc-reaction-btn').forEach((btn) => {
+        const emoji = btn.dataset.emoji || '';
+        const key = reactionKey(n.id, emoji);
+        const count = reactionCounts.get(key) || 0;
+        (btn.querySelector('.bc-reaction-count') as HTMLElement).textContent = String(count);
+        if (reacted.has(key)) {
+          btn.disabled = true;
+          btn.classList.add('is-reacted');
+        }
+      });
+
       boardEl.appendChild(node);
     }
   }
+
+  async function handleReactionClick(btn: HTMLButtonElement) {
+    const noteEl = btn.closest<HTMLElement>('.bc-note');
+    const postId = Number(noteEl?.dataset.postId);
+    const emoji = btn.dataset.emoji || '';
+    if (!postId || !emoji || btn.disabled) return;
+
+    const key = reactionKey(postId, emoji);
+    btn.disabled = true;
+    btn.classList.add('is-reacted');
+    const countEl2 = btn.querySelector('.bc-reaction-count') as HTMLElement;
+    const optimisticCount = (reactionCounts.get(key) || 0) + 1;
+    countEl2.textContent = String(optimisticCount);
+
+    const { error } = await supabase.from('wall_reactions').insert({ post_id: postId, emoji });
+    if (error) {
+      btn.disabled = false;
+      btn.classList.remove('is-reacted');
+      countEl2.textContent = String(reactionCounts.get(key) || 0);
+      return;
+    }
+
+    reactionCounts.set(key, optimisticCount);
+    markReacted(key);
+  }
+
+  boardEl.addEventListener('click', (e) => {
+    const btn = (e.target as HTMLElement).closest<HTMLButtonElement>('.bc-reaction-btn');
+    if (btn) handleReactionClick(btn);
+  });
 
   function updateSubmitState() {
     submitBtn.disabled = !textInput.value.trim();
@@ -271,6 +397,7 @@ import PageBanner from '../components/PageBanner.astro';
       boardEl.innerHTML = `<p class="bc-loading">Could not load the board (${error.message}).</p>`;
       return;
     }
+    await loadReactionCounts();
     renderBoard((data as WallRow[]) || []);
   }
 

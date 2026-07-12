@@ -72,6 +72,16 @@ to every visitor, not just the person who wrote them. This project uses
    alter table wall_posts enable row level security;
    create policy "public read" on wall_posts for select using (true);
    create policy "public insert" on wall_posts for insert with check (true);
+
+   create table wall_reactions (
+     id bigint generated always as identity primary key,
+     post_id bigint not null references wall_posts(id) on delete cascade,
+     emoji text not null check (emoji in ('❤️','😂','😮','🎲')),
+     created_at timestamptz not null default now()
+   );
+   alter table wall_reactions enable row level security;
+   create policy "public read" on wall_reactions for select using (true);
+   create policy "public insert" on wall_reactions for insert with check (true);
    ```
 
 3. **Get your API credentials**: Project Settings (gear icon) → API. Copy:

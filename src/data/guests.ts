@@ -15,6 +15,8 @@ export interface Guest {
   bio: string;
   /** STRATEGY, CHAOS, BLUFF, STAMINA — 1-5 each */
   stats: [number, number, number, number];
+  /** Shown in the footer instead of "No. XX / 10" — for guests who can't make it this year. */
+  statusLine?: string;
 }
 
 // Edit names, titles, bios, stats, or rarity here any time. Add a `slug` +
@@ -33,7 +35,7 @@ export const guests: Guest[] = [
   {
     slug: 'jeanette',
     name: 'Jeanette',
-    title: "Keeper of the Realm (and Bailey's Patience)",
+    title: 'Keeper of the Realm',
     rarity: 'Mythic',
     main: 'Boss Monster',
     align: 'Lawful Supportive (Chaotic When Provoked)',
@@ -43,7 +45,7 @@ export const guests: Guest[] = [
   {
     slug: 'jennifer',
     name: 'Jennifer',
-    title: 'The Wildcard In-Law',
+    title: 'The Sandbagger',
     rarity: 'Epic',
     main: 'Catan',
     align: 'Lawful Cunning',
@@ -53,7 +55,7 @@ export const guests: Guest[] = [
   {
     slug: 'roy',
     name: 'Roy',
-    title: 'The Little Brother, Quietly Unbeatable',
+    title: 'The Unbothered Champion',
     rarity: 'Epic',
     main: 'Magic: The Gathering',
     align: 'Lawful Calculating',
@@ -63,21 +65,21 @@ export const guests: Guest[] = [
   {
     slug: 'artie',
     name: 'Artie',
-    title: 'The Trailblazer',
+    title: 'The Collector',
     rarity: 'Epic',
     main: 'The Oregon Trail',
     align: 'Chaotic Sneaky',
-    bio: "Bailey's best friend. Unlike Roy, he actually wants to win — and will happily let your family die of dysentery to get there.",
+    bio: "Bailey's best friend. Introduced Bailey to Magic and never looked back — or sold a single card. If it can be collected, he's got three of it.",
     stats: [3, 4, 5, 4],
   },
   {
     slug: 'esther',
     name: 'Esther',
-    title: 'The Kingmaker',
+    title: 'Friend of the Table',
     rarity: 'Epic',
     main: 'Secret Hitler',
     align: 'Chaotic Good',
-    bio: "Bailey's best friend. Rarely wins outright, but decides who does. Fear her quiet nods.",
+    bio: "Bailey's Best Friend. Doesn't care who wins, just that everyone's still at the table.",
     stats: [4, 3, 5, 4],
   },
   {
@@ -93,7 +95,7 @@ export const guests: Guest[] = [
   {
     slug: 'tommy',
     name: 'Tommy',
-    title: 'The Strategist',
+    title: 'Rod. Just Rod.',
     rarity: 'Epic',
     main: 'Stripper Werewolves',
     align: 'Chaotic Good',
@@ -103,7 +105,7 @@ export const guests: Guest[] = [
   {
     slug: 'em',
     name: 'Em',
-    title: 'The Rookie',
+    title: 'Freshly Summoned',
     rarity: 'Rare',
     main: 'Unknown',
     align: 'Neutral Curious',
@@ -119,6 +121,28 @@ export const guests: Guest[] = [
     align: 'Neutral',
     bio: "Em's girlfriend, also new to the tavern. Arrived with zero expectations and a suspiciously good trade instinct.",
     stats: [3, 3, 4, 3],
+  },
+  {
+    slug: 'bryan',
+    name: 'Bryan',
+    title: 'The Rabbi',
+    rarity: 'Rare',
+    main: 'Secret Hitler',
+    align: 'Chaotic Good',
+    bio: "Currently occupied becoming a father, which even he'll admit outranks the campaign.",
+    stats: [3, 3, 3, 3],
+    statusLine: 'ABSENT — ON DAD DUTY',
+  },
+  {
+    slug: 'theresa',
+    name: 'Theresa',
+    title: 'The Dungeon Mother',
+    rarity: 'Rare',
+    main: 'Plunder',
+    align: 'Lawful Good',
+    bio: "Runs the DnD table with a firm and fair hand, and never met a pirate she didn't love. Currently indisposed delivering the actual main quest.",
+    stats: [3, 3, 3, 3],
+    statusLine: 'ABSENT — DELIVERING THE FINAL BOSS',
   },
 ];
 
