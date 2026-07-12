@@ -4,7 +4,7 @@ import PageBanner from '../components/PageBanner.astro';
 import StarRating from '../components/StarRating.astro';
 import { games } from '../data/games';
 
-const gameOptions = [...games.map((g) => g.name), 'Something else entirely'];
+const gameOptions = [...games.map((g) => g.name).sort((a, b) => a.localeCompare(b)), 'Something else entirely'];
 ---
 
 <BaseLayout title="Reviews — BaileyCon" active="reviews">

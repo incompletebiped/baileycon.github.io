@@ -4,7 +4,7 @@ import PageBanner from '../components/PageBanner.astro';
 import { games, winPoints } from '../data/games';
 import { guests } from '../data/guests';
 
-const gameOptions = games.map((g) => g.name);
+const gameOptions = games.map((g) => g.name).sort((a, b) => a.localeCompare(b));
 const playerOptions = guests.filter((g) => !g.statusLine).map((g) => g.name);
 
 const gamePointsData = JSON.stringify(
