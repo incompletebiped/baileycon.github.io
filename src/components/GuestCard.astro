@@ -37,7 +37,7 @@ function pips(n: number) {
 }
 ---
 
-<div class="bc-guest-card" id={guest.slug} style={`border-top-color:${rc};`}>
+<div class="bc-guest-card" id={guest.slug} data-name={guest.name} style={`border-top-color:${rc};`}>
   <div class="bc-guest-namebar">
     <div class="bc-guest-name">{guest.name}</div>
     <div class="bc-guest-rarity">
@@ -57,6 +57,7 @@ function pips(n: number) {
       loading="lazy"
       onerror="this.style.display='none'"
     />
+    <span class="bc-score-pill" data-score-slot hidden></span>
   </div>
 
   <div class="bc-guest-body">
@@ -181,6 +182,22 @@ function pips(n: number) {
     width: 100%;
     height: 100%;
     object-fit: cover;
+  }
+  .bc-score-pill {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 1;
+    font-family: 'Cinzel', serif;
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    color: var(--bc-gold);
+    border: 1px solid var(--bc-gold);
+    border-radius: 20px;
+    padding: 3px 10px;
+    text-transform: uppercase;
+    background: rgba(14, 10, 48, 0.55);
+    backdrop-filter: blur(2px);
   }
   .bc-guest-body {
     padding: 15px 18px 8px;

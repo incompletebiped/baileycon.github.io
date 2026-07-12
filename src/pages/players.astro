@@ -1,0 +1,109 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageBanner from '../components/PageBanner.astro';
+import GuestCard from '../components/GuestCard.astro';
+import { guests, guestStats, guestNum } from '../data/guests';
+import { games, winPoints } from '../data/games';
+
+const displayGuests = guests.map((g, i) => ({
+  ...g,
+  stats: guestStats(g),
+  num: guestNum(i),
+}));
+
+const gamePointsData = JSON.stringify(
+  Object.fromEntries(games.map((g) => [g.name, winPoints(g)]))
+);
+---
+
+<BaseLayout title="The Party — BaileyCon" active="players">
+  <PageBanner
+    eyebrow="TEN PLAYERS OF HONOUR"
+    title="The Party"
+    subtitle="The party assembled for the third annual. Collect all ten."
+  />
+
+  <section class="bc-guests-section">
+    <div class="bc-guests-grid">
+      {displayGuests.map((g) => (
+        <GuestCard guest={g} />
+      ))}
+    </div>
+  </section>
+</BaseLayout>
+
+<script type="application/json" id="wins-game-points-data" set:html={gamePointsData}></script>
+
+<style>
+  .bc-guests-section {
+    max-width: 1140px;
+    margin: 0 auto;
+    padding: 0 28px 30px;
+  }
+  .bc-guests-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(310px, 100%), 1fr));
+    gap: 24px;
+  }
+
+  @media (max-width: 480px) {
+    .bc-guests-section {
+      padding: 0 18px 30px;
+    }
+    .bc-guests-grid {
+      gap: 18px;
+    }
+  }
+</style>
+
+<script>
+  const slug = window.location.hash.slice(1);
+  if (slug) {
+    const target = document.getElementById(slug);
+    if (target && target.classList.contains('bc-guest-card')) {
+      target.classList.add('bc-highlight');
+      setTimeout(() => target.classList.remove('bc-highlight'), 1700);
+    }
+  }
+</script>
+
+<script>
+  import { supabase, supabaseConfigured } from '../lib/supabase';
+
+  interface WinRow {
+    game: string;
+    player: string;
+  }
+
+  async function loadScores() {
+    if (!supabaseConfigured) return;
+
+    const pointsDataEl = document.getElementById('wins-game-points-data');
+    const gamePoints: Record<string, number> = pointsDataEl
+      ? JSON.parse(pointsDataEl.textContent || '{}')
+      : {};
+
+    const { data, error } = await supabase.from('wins').select('game, player');
+    if (error || !data) return;
+
+    const totals = new Map<string, number>();
+    for (const row of data as WinRow[]) {
+      const pts = gamePoints[row.game] ?? 0;
+      totals.set(row.player, (totals.get(row.player) || 0) + pts);
+    }
+
+    document.querySelectorAll<HTMLElement>('.bc-guest-card').forEach((card) => {
+      const name = card.dataset.name || '';
+      const total = totals.get(name);
+      if (!total) return;
+
+      const slot = card.querySelector<HTMLElement>('[data-score-slot]');
+      if (!slot) return;
+
+      slot.textContent = `${total} PTS`;
+      slot.hidden = false;
+    });
+  }
+
+  loadScores();
+</script>

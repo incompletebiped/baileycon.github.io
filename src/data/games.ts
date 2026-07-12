@@ -357,6 +357,21 @@ export function parseTime(time: string): { min: number; max: number } {
   return { min: 0, max: NO_MAX * 10 };
 }
 
+/** Maps a minimum-minutes figure to a scoring bucket: <30→1, 30-60→2, 60-120→3, 120+→4. */
+export function timeBucket(minutes: number): 1 | 2 | 3 | 4 {
+  if (minutes < 30) return 1;
+  if (minutes < 60) return 2;
+  if (minutes < 120) return 3;
+  return 4;
+}
+
+/** Win-value formula: weight × timeBucket(min time). Single source of truth for the
+ *  GameCard "WIN VALUE" stat, the Wins leaderboard, and guest score totals. */
+export function winPoints(game: Pick<Game, 'weight' | 'time'>): number {
+  const { min } = parseTime(game.time);
+  return game.weight * timeBucket(min);
+}
+
 export function withDisplay(game: Game) {
   const playerRange = parsePlayers(game.players);
   const timeRange = parseTime(game.time);
@@ -369,5 +384,6 @@ export function withDisplay(game: Game) {
     playersMax: playerRange.max,
     timeMin: timeRange.min,
     timeMax: timeRange.max,
+    winPoints: winPoints(game),
   };
 }

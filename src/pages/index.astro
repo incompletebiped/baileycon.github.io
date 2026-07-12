@@ -38,7 +38,7 @@ const company = guests.map((g) => ({ initial: g.name[0], slug: g.slug }));
           <span class="bc-hero-bailey">Bailey</span><span class="bc-hero-con">Con</span>
         </h1>
         <p class="bc-hero-subtitle">
-          Twelve hours. Two taverns&rsquo; worth of halls. Ten guests of honour. One knight turning <span class="bc-hero-forty">forty</span>.
+          Twelve hours. Two taverns&rsquo; worth of halls. Ten players of honour. One knight turning <span class="bc-hero-forty">forty</span>.
         </p>
 
         <div class="bc-badge-card">
@@ -52,7 +52,7 @@ const company = guests.map((g) => ({ initial: g.name[0], slug: g.slug }));
         </div>
 
         <div class="bc-hero-ctas">
-          <a href={withBase('/guests/')} class="bc-btn bc-btn--solid">MEET THE PARTY</a>
+          <a href={withBase('/players/')} class="bc-btn bc-btn--solid">MEET THE PARTY</a>
           <a href={withBase('/games/')} class="bc-btn bc-btn--outline">BROWSE THE GAMES</a>
         </div>
       </div>
@@ -110,17 +110,17 @@ const company = guests.map((g) => ({ initial: g.name[0], slug: g.slug }));
 
   <!-- ===== THE PARTY ===== -->
   <section class="bc-section bc-company">
-    <div class="bc-eyebrow">TEN GUESTS OF HONOUR</div>
+    <div class="bc-eyebrow">TEN PLAYERS OF HONOUR</div>
     <h2 class="bc-h2 bc-h2--tight">Assemble the Party</h2>
     <div class="bc-avatar-row">
       {company.map((c) => (
-        <a href={withBase(`/guests/#${c.slug}`)} class="bc-avatar-link">
+        <a href={withBase(`/players/#${c.slug}`)} class="bc-avatar-link">
           <div class="bc-avatar">{c.initial}</div>
         </a>
       ))}
     </div>
     <div class="bc-company-link">
-      <a href={withBase('/guests/')}>MEET THE PARTY &rarr;</a>
+      <a href={withBase('/players/')}>MEET THE PARTY &rarr;</a>
     </div>
   </section>
 

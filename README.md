@@ -17,12 +17,13 @@ Visit `http://localhost:4321`.
 ## Project structure
 
 - `src/data/games.ts` — the games list (Games page + Home's Featured Quests).
-  Add a game by adding an object to the array.
-- `src/data/guests.ts` — the 10 guest trading cards (Guests page + Home's avatar row).
+  Add a game by adding an object to the array. Also defines the win-scoring
+  formula (`winPoints`/`timeBucket`) shared by the Games and Wins pages.
+- `src/data/guests.ts` — the 10 player trading cards (Players page + Home's avatar row).
 - `src/components/` — shared UI: `Header`, `Footer`, `Crest` (the d20 "B" logo),
   `GameCard`, `GuestCard`, `PageBanner`, `StarRating`.
-- `src/pages/` — the 5 site pages (`index`, `games`, `guests`, `reviews`, `wall`).
-- `src/lib/supabase.ts` — Supabase client used by the Reviews and Wall pages.
+- `src/pages/` — the 6 site pages (`index`, `games`, `players`, `reviews`, `wall`, `wins`).
+- `src/lib/supabase.ts` — Supabase client used by the Reviews, Wall, and Wins pages.
 
 ## Images
 
@@ -30,15 +31,15 @@ Drop image files into `public/images/` and they'll show automatically —
 no code changes needed:
 
 - Game box art: `public/images/games/<slug>.jpg` (slug is in `games.ts`, e.g. `catan.jpg`)
-- Guest portraits: `public/images/guests/<slug>.jpg` (slug is in `guests.ts`, e.g. `bailey.jpg`)
+- Player portraits: `public/images/guests/<slug>.jpg` (slug is in `guests.ts`, e.g. `bailey.jpg`)
 
 Until an image exists, the card shows a styled placeholder — nothing breaks.
 
-## Supabase setup (Reviews + Wall — shared across all visitors)
+## Supabase setup (Reviews + Wall + Wins — shared across all visitors)
 
-The Reviews and Wall pages need a small hosted database so posts are visible
-to every visitor, not just the person who wrote them. This project uses
-[Supabase](https://supabase.com) (free tier is plenty for this use case).
+The Reviews, Wall, and Wins pages need a small hosted database so posts are
+visible to every visitor, not just the person who wrote them. This project
+uses [Supabase](https://supabase.com) (free tier is plenty for this use case).
 
 1. **Create a project**: go to https://supabase.com, sign up/log in, click
    "New Project". Pick any name/region/password (you won't need the DB
@@ -82,6 +83,16 @@ to every visitor, not just the person who wrote them. This project uses
    alter table wall_reactions enable row level security;
    create policy "public read" on wall_reactions for select using (true);
    create policy "public insert" on wall_reactions for insert with check (true);
+
+   create table wins (
+     id bigint generated always as identity primary key,
+     game text not null check (char_length(game) <= 120),
+     player text not null check (char_length(player) <= 80),
+     created_at timestamptz not null default now()
+   );
+   alter table wins enable row level security;
+   create policy "public read" on wins for select using (true);
+   create policy "public insert" on wins for insert with check (true);
    ```
 
    Note: `emoji` stores a plain ASCII key (`heart`/`laugh`/`shock`/`dice`), not
@@ -112,9 +123,9 @@ to every visitor, not just the person who wrote them. This project uses
    variables → Actions → "New repository secret" for each of
    `PUBLIC_SUPABASE_URL` and `PUBLIC_SUPABASE_ANON_KEY`.
 
-Until these are configured, the Reviews and Wall pages will build and render
-fine — they'll just show a "backend is not configured yet" message instead of
-a list.
+Until these are configured, the Reviews, Wall, and Wins pages will build and
+render fine — they'll just show a "backend is not configured yet" message
+instead of a list.
 
 ## Deploying to GitHub Pages
 

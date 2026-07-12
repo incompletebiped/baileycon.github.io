@@ -1,0 +1,456 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageBanner from '../components/PageBanner.astro';
+import { games, winPoints } from '../data/games';
+import { guests } from '../data/guests';
+
+const gameOptions = games.map((g) => g.name);
+const playerOptions = guests.filter((g) => !g.statusLine).map((g) => g.name);
+
+const gamePointsData = JSON.stringify(
+  Object.fromEntries(games.map((g) => [g.name, winPoints(g)]))
+);
+---
+
+<BaseLayout title="Wins — BaileyCon" active="wins">
+  <PageBanner
+    eyebrow="THE VICTORY LEDGER"
+    title="Wins"
+    subtitle="Every triumph, tallied. Record the fallen, crown the victors."
+  />
+
+  <!-- ===== TOP-3 PODIUM ===== -->
+  <section class="bc-podium-section">
+    <h2 class="bc-podium-title">Champions of the Table</h2>
+    <div class="bc-podium-grid" id="podium-grid">
+      <p class="bc-loading">Fetching the standings&hellip;</p>
+    </div>
+  </section>
+
+  <section class="bc-wins-section">
+    <!-- FORM -->
+    <div class="bc-win-form">
+      <h2 class="bc-form-title">Record a Win</h2>
+
+      <label class="bc-label" for="win-game">THE GAME</label>
+      <div class="bc-game-row">
+        <select class="bc-field" id="win-game">
+          <option value="">&mdash; choose a game &mdash;</option>
+          {gameOptions.map((g) => (
+            <option value={g}>{g}</option>
+          ))}
+        </select>
+        <span id="win-preview" class="bc-win-preview"></span>
+      </div>
+
+      <label class="bc-label" for="win-player" style="margin-top:16px;">THE VICTOR</label>
+      <select class="bc-field" id="win-player" style="margin-bottom:20px;">
+        <option value="">&mdash; choose a player &mdash;</option>
+        {playerOptions.map((p) => (
+          <option value={p}>{p}</option>
+        ))}
+      </select>
+
+      <button id="win-submit" class="bc-submit-btn" disabled>RECORD THE WIN</button>
+      <p id="win-status" class="bc-status" hidden></p>
+    </div>
+
+    <!-- LIST -->
+    <div>
+      <div class="bc-list-head">
+        <h2 class="bc-list-title">Recent Victories</h2>
+        <span id="win-count" class="bc-count">&hellip;</span>
+      </div>
+      <div id="win-list" class="bc-list">
+        <p class="bc-loading">Fetching the ledger&hellip;</p>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<script type="application/json" id="wins-game-points-data" set:html={gamePointsData}></script>
+
+<template id="win-card-template">
+  <div class="bc-win-card">
+    <span class="bc-win-game"></span>
+    <span class="bc-win-player"></span>
+    <span class="bc-win-points"></span>
+    <span class="bc-win-date"></span>
+  </div>
+</template>
+
+<template id="podium-card-template">
+  <div class="bc-podium-card">
+    <div class="bc-podium-rank"></div>
+    <div class="bc-podium-name"></div>
+    <div class="bc-podium-points"></div>
+  </div>
+</template>
+
+<style>
+  .bc-podium-section {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 28px 48px;
+    text-align: center;
+  }
+  .bc-podium-title {
+    margin: 0 0 26px;
+    font-family: 'Cinzel Decorative', serif;
+    font-weight: 900;
+    font-size: 30px;
+    color: var(--bc-gold);
+  }
+  .bc-podium-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    align-items: end;
+  }
+  .bc-podium-card {
+    border: 1px solid rgba(139, 107, 255, 0.45);
+    border-radius: 12px;
+    background: linear-gradient(165deg, rgba(123, 69, 224, 0.22), rgba(14, 10, 48, 0.7));
+    padding: 22px 16px 20px;
+  }
+  .bc-podium-card[data-rank='1'] {
+    border-color: var(--bc-gold);
+    background: var(--bc-card-gradient-strong);
+    transform: translateY(-14px);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
+  }
+  .bc-podium-rank {
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    letter-spacing: 3px;
+    color: var(--bc-violet-light);
+    margin-bottom: 8px;
+  }
+  .bc-podium-card[data-rank='1'] .bc-podium-rank {
+    color: var(--bc-gold);
+  }
+  .bc-podium-name {
+    font-family: 'Cinzel Decorative', serif;
+    font-weight: 700;
+    font-size: 22px;
+    color: var(--bc-text-bright);
+    margin-bottom: 6px;
+  }
+  .bc-podium-points {
+    font-family: 'Cinzel', serif;
+    font-size: 15px;
+    letter-spacing: 1px;
+    color: var(--bc-gold);
+  }
+
+  .bc-wins-section {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 28px 40px;
+    display: grid;
+    grid-template-columns: 400px 1fr;
+    gap: 38px;
+    align-items: start;
+  }
+  .bc-win-form {
+    position: sticky;
+    top: 88px;
+    border: 1px solid var(--bc-gold);
+    border-radius: 10px;
+    background: var(--bc-card-gradient-strong);
+    padding: 26px 26px 28px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+  }
+  .bc-form-title {
+    margin: 0 0 18px;
+    font-family: 'Cinzel Decorative', serif;
+    font-weight: 700;
+    font-size: 24px;
+    color: var(--bc-gold);
+  }
+  .bc-label {
+    display: block;
+    font-family: 'Cinzel', serif;
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--bc-violet-light);
+    margin-bottom: 6px;
+  }
+  .bc-game-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+  .bc-win-preview {
+    font-family: 'Cinzel', serif;
+    font-size: 12px;
+    color: var(--bc-gold);
+    white-space: nowrap;
+  }
+  .bc-submit-btn {
+    width: 100%;
+    border: 1px solid var(--bc-gold);
+    border-radius: 5px;
+    padding: 13px;
+    font-family: 'Cinzel', serif;
+    font-weight: 600;
+    font-size: 13px;
+    letter-spacing: 2px;
+    cursor: not-allowed;
+    color: var(--bc-text-faint);
+    background: rgba(139, 107, 255, 0.15);
+    opacity: 0.7;
+    transition: opacity 0.12s;
+  }
+  .bc-submit-btn:not(:disabled) {
+    cursor: pointer;
+    color: #fff;
+    background: linear-gradient(180deg, #5a8bff, #3455d8);
+    opacity: 1;
+  }
+  .bc-status {
+    margin: 10px 0 0;
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    letter-spacing: 1px;
+    color: var(--bc-text-faint);
+    text-align: center;
+  }
+  .bc-status.is-error {
+    color: #ff8a8a;
+  }
+
+  .bc-list-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 18px;
+  }
+  .bc-list-title {
+    margin: 0;
+    font-family: 'Cinzel Decorative', serif;
+    font-weight: 700;
+    font-size: 24px;
+    color: #e6f0ff;
+  }
+  .bc-count {
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    letter-spacing: 2px;
+    color: var(--bc-text-faint);
+  }
+  .bc-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .bc-loading {
+    font-family: 'Raleway', sans-serif;
+    color: var(--bc-text-faint);
+  }
+  .bc-win-card {
+    border: 1px solid rgba(139, 107, 255, 0.4);
+    border-radius: 10px;
+    background: var(--bc-card-gradient);
+    padding: 14px 18px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    font-family: 'Cinzel', serif;
+    font-size: 13px;
+  }
+  .bc-win-game {
+    color: #141048;
+    background: var(--bc-gold);
+    border-radius: 20px;
+    padding: 4px 11px;
+    font-size: 11px;
+    letter-spacing: 1px;
+  }
+  .bc-win-player {
+    color: var(--bc-blue-muted);
+    flex: 1;
+  }
+  .bc-win-points {
+    color: var(--bc-gold);
+  }
+  .bc-win-date {
+    color: var(--bc-text-faint);
+    font-size: 11px;
+  }
+
+  @media (max-width: 860px) {
+    .bc-wins-section {
+      grid-template-columns: 1fr;
+    }
+    .bc-win-form {
+      position: static;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .bc-podium-grid {
+      grid-template-columns: 1fr;
+    }
+    .bc-podium-card[data-rank='1'] {
+      transform: none;
+      order: -1;
+    }
+  }
+</style>
+
+<script>
+  import { supabase, supabaseConfigured } from '../lib/supabase';
+
+  interface WinRow {
+    id: number;
+    game: string;
+    player: string;
+    created_at: string;
+  }
+
+  const pointsDataEl = document.getElementById('wins-game-points-data');
+  const gamePoints: Record<string, number> = pointsDataEl
+    ? JSON.parse(pointsDataEl.textContent || '{}')
+    : {};
+
+  const gameSelect = document.getElementById('win-game') as HTMLSelectElement;
+  const playerSelect = document.getElementById('win-player') as HTMLSelectElement;
+  const previewEl = document.getElementById('win-preview') as HTMLSpanElement;
+  const submitBtn = document.getElementById('win-submit') as HTMLButtonElement;
+  const statusEl = document.getElementById('win-status') as HTMLParagraphElement;
+  const listEl = document.getElementById('win-list') as HTMLDivElement;
+  const countEl = document.getElementById('win-count') as HTMLSpanElement;
+  const template = document.getElementById('win-card-template') as HTMLTemplateElement;
+  const podiumGrid = document.getElementById('podium-grid') as HTMLDivElement;
+  const podiumTemplate = document.getElementById('podium-card-template') as HTMLTemplateElement;
+
+  function formatDate(iso: string) {
+    const d = new Date(iso);
+    return d.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
+  }
+
+  function updatePreview() {
+    const pts = gamePoints[gameSelect.value];
+    previewEl.textContent = gameSelect.value && pts !== undefined ? `= ${pts} PTS` : '';
+  }
+
+  function updateSubmitState() {
+    submitBtn.disabled = !(gameSelect.value && playerSelect.value);
+  }
+
+  gameSelect.addEventListener('change', () => {
+    updatePreview();
+    updateSubmitState();
+  });
+  playerSelect.addEventListener('change', updateSubmitState);
+
+  function renderLedger(rows: WinRow[]) {
+    listEl.innerHTML = '';
+    countEl.textContent = `${rows.length} ${rows.length === 1 ? 'WIN' : 'WINS'}`;
+    if (!rows.length) {
+      const p = document.createElement('p');
+      p.className = 'bc-loading';
+      p.textContent = 'No wins recorded yet — be the first to claim victory.';
+      listEl.appendChild(p);
+      return;
+    }
+    for (const r of rows) {
+      const node = template.content.cloneNode(true) as DocumentFragment;
+      (node.querySelector('.bc-win-game') as HTMLElement).textContent = r.game;
+      (node.querySelector('.bc-win-player') as HTMLElement).textContent = r.player;
+      const pts = gamePoints[r.game] ?? 0;
+      (node.querySelector('.bc-win-points') as HTMLElement).textContent = `${pts} PTS`;
+      (node.querySelector('.bc-win-date') as HTMLElement).textContent = formatDate(r.created_at);
+      listEl.appendChild(node);
+    }
+  }
+
+  function renderPodium(rows: WinRow[]) {
+    const totals = new Map<string, number>();
+    for (const r of rows) {
+      const pts = gamePoints[r.game] ?? 0;
+      totals.set(r.player, (totals.get(r.player) || 0) + pts);
+    }
+    const ranked = Array.from(totals.entries())
+      .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+      .slice(0, 3);
+
+    podiumGrid.innerHTML = '';
+    if (!ranked.length) {
+      const p = document.createElement('p');
+      p.className = 'bc-loading';
+      p.textContent = 'No victors crowned yet — record the first win below.';
+      podiumGrid.appendChild(p);
+      return;
+    }
+    // Visual podium order: 2nd, 1st, 3rd (classic center-elevated layout).
+    const order = [1, 0, 2].filter((i) => i < ranked.length);
+    for (const i of order) {
+      const [name, pts] = ranked[i];
+      const node = podiumTemplate.content.cloneNode(true) as DocumentFragment;
+      const card = node.querySelector('.bc-podium-card') as HTMLElement;
+      card.dataset.rank = String(i + 1);
+      (node.querySelector('.bc-podium-rank') as HTMLElement).textContent =
+        i === 0 ? '1ST' : i === 1 ? '2ND' : '3RD';
+      (node.querySelector('.bc-podium-name') as HTMLElement).textContent = name;
+      (node.querySelector('.bc-podium-points') as HTMLElement).textContent = `${pts} PTS`;
+      podiumGrid.appendChild(node);
+    }
+  }
+
+  async function loadWins() {
+    if (!supabaseConfigured) {
+      listEl.innerHTML = '<p class="bc-loading">Wins backend is not configured yet — ask the host to finish Supabase setup.</p>';
+      countEl.textContent = '0 WINS';
+      podiumGrid.innerHTML = '<p class="bc-loading">Leaderboard needs the Supabase backend configured.</p>';
+      return;
+    }
+    const { data, error } = await supabase
+      .from('wins')
+      .select('*')
+      .order('created_at', { ascending: false });
+    if (error) {
+      listEl.innerHTML = `<p class="bc-loading">Could not load wins (${error.message}).</p>`;
+      podiumGrid.innerHTML = '<p class="bc-loading">Standings unavailable right now.</p>';
+      return;
+    }
+    const rows = (data as WinRow[]) || [];
+    renderLedger(rows);
+    renderPodium(rows);
+  }
+
+  async function submitWin() {
+    const game = gameSelect.value;
+    const player = playerSelect.value;
+    if (!game || !player) return;
+
+    submitBtn.disabled = true;
+    statusEl.hidden = true;
+    statusEl.classList.remove('is-error');
+
+    const { error } = await supabase.from('wins').insert({ game, player });
+    if (error) {
+      statusEl.textContent = `Could not record win (${error.message}).`;
+      statusEl.classList.add('is-error');
+      statusEl.hidden = false;
+      updateSubmitState();
+      return;
+    }
+
+    gameSelect.value = '';
+    playerSelect.value = '';
+    updatePreview();
+    statusEl.textContent = 'Recorded! The ledger has been updated.';
+    statusEl.hidden = false;
+    updateSubmitState();
+    await loadWins();
+  }
+
+  submitBtn.addEventListener('click', submitWin);
+
+  updateSubmitState();
+  loadWins();
+</script>
