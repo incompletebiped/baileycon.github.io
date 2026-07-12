@@ -9,6 +9,8 @@ export interface Game {
   /** 1 = Light, 2 = Medium, 3 = Heavy */
   weight: 1 | 2 | 3;
   hall: Hall;
+  /** True if the party has never actually played this one yet. */
+  neverPlayed?: boolean;
 }
 
 // To add a game later: add another object here. Everything else (pips, weight
@@ -112,6 +114,7 @@ export const games: Game[] = [
     time: '30–60 min',
     weight: 1,
     hall: 'Dark Ages',
+    neverPlayed: true,
   },
   {
     slug: 'king-of-tokyo',
@@ -166,6 +169,7 @@ export const games: Game[] = [
     time: '60 min',
     weight: 2,
     hall: 'Renaissance',
+    neverPlayed: true,
   },
   {
     slug: 'gnome-hollow',
@@ -175,6 +179,7 @@ export const games: Game[] = [
     time: '45–60 min',
     weight: 2,
     hall: 'Renaissance',
+    neverPlayed: true,
   },
   {
     slug: 'chemical-overload',
@@ -184,6 +189,7 @@ export const games: Game[] = [
     time: '45–75 min',
     weight: 2,
     hall: 'Renaissance',
+    neverPlayed: true,
   },
   {
     slug: 'plunder',
@@ -202,6 +208,7 @@ export const games: Game[] = [
     time: '30–60 min',
     weight: 1,
     hall: 'Renaissance',
+    neverPlayed: true,
   },
   {
     slug: 'heroes-and-wizards',
@@ -220,6 +227,7 @@ export const games: Game[] = [
     time: '15 min',
     weight: 1,
     hall: 'Dark Ages',
+    neverPlayed: true,
   },
   {
     slug: 'the-yawning-portal',
@@ -229,6 +237,7 @@ export const games: Game[] = [
     time: '30–60 min',
     weight: 2,
     hall: 'Renaissance',
+    neverPlayed: true,
   },
   {
     slug: 'tavern-masters',
@@ -238,6 +247,7 @@ export const games: Game[] = [
     time: '30–45 min',
     weight: 1,
     hall: 'Renaissance',
+    neverPlayed: true,
   },
   {
     slug: 'dont-get-stabbed',
@@ -247,6 +257,7 @@ export const games: Game[] = [
     time: '15–30 min',
     weight: 1,
     hall: 'Dark Ages',
+    neverPlayed: true,
   },
   {
     slug: 'overboss',
@@ -256,6 +267,7 @@ export const games: Game[] = [
     time: '20–45 min',
     weight: 1,
     hall: 'Dark Ages',
+    neverPlayed: true,
   },
   {
     slug: 'endearment',
@@ -265,6 +277,7 @@ export const games: Game[] = [
     time: '60–90 min',
     weight: 2,
     hall: 'Renaissance',
+    neverPlayed: true,
   },
   {
     slug: 'stalk-exchange',
@@ -274,6 +287,7 @@ export const games: Game[] = [
     time: '30–45 min',
     weight: 1,
     hall: 'Dark Ages',
+    neverPlayed: true,
   },
   {
     slug: 'night-of-the-ninja',
@@ -283,6 +297,7 @@ export const games: Game[] = [
     time: '15–30 min',
     weight: 1,
     hall: 'Dark Ages',
+    neverPlayed: true,
   },
   {
     slug: 'the-office-paper-paranoia',
@@ -292,6 +307,7 @@ export const games: Game[] = [
     time: '30–45 min',
     weight: 2,
     hall: 'Dark Ages',
+    neverPlayed: true,
   },
   {
     slug: 'everdell',
