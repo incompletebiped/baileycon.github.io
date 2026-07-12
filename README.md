@@ -76,13 +76,20 @@ to every visitor, not just the person who wrote them. This project uses
    create table wall_reactions (
      id bigint generated always as identity primary key,
      post_id bigint not null references wall_posts(id) on delete cascade,
-     emoji text not null check (emoji in ('❤️','😂','😮','🎲')),
+     emoji text not null check (emoji in ('heart','laugh','shock','dice')),
      created_at timestamptz not null default now()
    );
    alter table wall_reactions enable row level security;
    create policy "public read" on wall_reactions for select using (true);
    create policy "public insert" on wall_reactions for insert with check (true);
    ```
+
+   Note: `emoji` stores a plain ASCII key (`heart`/`laugh`/`shock`/`dice`), not
+   the emoji glyph itself — pasting literal emoji into a `check` constraint is
+   fragile (different tools can save different Unicode code points for what
+   looks like the same character, e.g. with or without a variation selector),
+   which silently breaks every insert with a constraint-violation error. The
+   actual emoji only lives in the button's display text in `wall.astro`.
 
 3. **Get your API credentials**: Project Settings (gear icon) → API. Copy:
    - **Project URL** → `PUBLIC_SUPABASE_URL`

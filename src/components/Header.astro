@@ -15,6 +15,10 @@ const items = [
   { key: 'wall', label: 'Wall', href: withBase('/wall/') },
   { key: 'guests', label: 'Guests', href: withBase('/guests/') },
 ];
+
+const resourceLinks = [
+  { label: 'The Scullery Kitchen Menu', href: 'https://www.knightwatchgames.com/the-scullery-kitchen' },
+];
 ---
 
 <header class="bc-header">
@@ -44,6 +48,27 @@ const items = [
           {it.label}
         </a>
       ))}
+
+      <div class="bc-nav-dropdown">
+        <button
+          type="button"
+          class="bc-nav-link bc-nav-dropdown-trigger"
+          id="bc-resources-toggle"
+          aria-haspopup="true"
+          aria-expanded="false"
+          aria-controls="bc-resources-menu"
+        >
+          Resources
+          <span class="bc-nav-caret" aria-hidden="true">&#9662;</span>
+        </button>
+        <div class="bc-nav-dropdown-menu" id="bc-resources-menu">
+          {resourceLinks.map((link) => (
+            <a href={link.href} target="_blank" rel="noopener noreferrer" class="bc-nav-dropdown-link">
+              {link.label}
+            </a>
+          ))}
+        </div>
+      </div>
     </nav>
   </div>
 </header>
@@ -123,6 +148,63 @@ const items = [
     border-bottom-color: var(--bc-gold);
   }
 
+  .bc-nav-dropdown {
+    position: relative;
+  }
+  .bc-nav-dropdown-trigger {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    cursor: pointer;
+  }
+  .bc-nav-dropdown-trigger[aria-expanded='true'] {
+    color: var(--bc-gold-light);
+  }
+  .bc-nav-caret {
+    font-size: 9px;
+    transition: transform 0.15s ease;
+  }
+  .bc-nav-dropdown-trigger[aria-expanded='true'] .bc-nav-caret {
+    transform: rotate(180deg);
+  }
+  .bc-nav-dropdown-menu {
+    display: none;
+    position: absolute;
+    top: calc(100% + 12px);
+    right: 0;
+    min-width: 220px;
+    background: rgba(14, 10, 48, 0.97);
+    border: 1px solid rgba(255, 207, 92, 0.4);
+    border-radius: 8px;
+    padding: 8px;
+    box-shadow: 0 14px 28px rgba(0, 0, 0, 0.45);
+    backdrop-filter: blur(10px);
+    z-index: 60;
+  }
+  .bc-nav-dropdown-menu.is-open {
+    display: block;
+  }
+  .bc-nav-dropdown-link {
+    display: block;
+    padding: 10px 12px;
+    border-radius: 5px;
+    font-family: 'Cinzel', serif;
+    font-size: 12px;
+    letter-spacing: 1px;
+    text-transform: none;
+    color: var(--bc-text);
+    text-decoration: none;
+    white-space: nowrap;
+    transition: background 0.12s ease, color 0.12s ease;
+  }
+  .bc-nav-dropdown-link:hover {
+    background: rgba(139, 107, 255, 0.18);
+    color: var(--bc-gold-light);
+  }
+
   .bc-nav-toggle {
     display: none;
     flex-direction: column;
@@ -193,16 +275,49 @@ const items = [
     .bc-nav-link:last-child {
       border-bottom: none;
     }
+    .bc-nav-dropdown {
+      width: 100%;
+    }
+    .bc-nav-dropdown-trigger {
+      width: 100%;
+      justify-content: center;
+    }
+    .bc-nav > *:last-child .bc-nav-link,
+    .bc-nav > *:last-child.bc-nav-link {
+      border-bottom: none;
+    }
+    .bc-nav-dropdown-menu {
+      position: static;
+      min-width: 0;
+      background: rgba(139, 107, 255, 0.07);
+      border: none;
+      border-radius: 0;
+      box-shadow: none;
+      backdrop-filter: none;
+      padding: 4px 0;
+    }
+    .bc-nav-dropdown-link {
+      text-align: center;
+      padding: 12px 4px;
+    }
   }
 </style>
 
 <script>
   const toggle = document.getElementById('bc-nav-toggle');
   const nav = document.getElementById('bc-nav');
+  const resourcesToggle = document.getElementById('bc-resources-toggle');
+  const resourcesMenu = document.getElementById('bc-resources-menu');
+
+  function closeResourcesMenu() {
+    resourcesMenu?.classList.remove('is-open');
+    resourcesToggle?.setAttribute('aria-expanded', 'false');
+  }
 
   function closeMenu() {
     nav?.classList.remove('is-open');
     toggle?.setAttribute('aria-expanded', 'false');
+    closeResourcesMenu();
   }
 
   toggle?.addEventListener('click', () => {
@@ -219,6 +334,18 @@ const items = [
     const target = e.target as Node;
     if (nav.contains(target) || toggle?.contains(target)) return;
     closeMenu();
+  });
+
+  resourcesToggle?.addEventListener('click', () => {
+    const isOpen = resourcesMenu?.classList.toggle('is-open');
+    resourcesToggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+  });
+
+  document.addEventListener('click', (e) => {
+    if (!resourcesMenu?.classList.contains('is-open')) return;
+    const target = e.target as Node;
+    if (resourcesMenu.contains(target) || resourcesToggle?.contains(target)) return;
+    closeResourcesMenu();
   });
 
   document.addEventListener('keydown', (e) => {

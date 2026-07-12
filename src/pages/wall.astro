@@ -38,10 +38,10 @@ import PageBanner from '../components/PageBanner.astro';
       <p class="bc-note-text"></p>
       <div class="bc-note-alias"></div>
       <div class="bc-note-reactions">
-        <button type="button" class="bc-reaction-btn" data-emoji="&#10084;&#65039;">&#10084;&#65039; <span class="bc-reaction-count">0</span></button>
-        <button type="button" class="bc-reaction-btn" data-emoji="&#128514;">&#128514; <span class="bc-reaction-count">0</span></button>
-        <button type="button" class="bc-reaction-btn" data-emoji="&#128558;">&#128558; <span class="bc-reaction-count">0</span></button>
-        <button type="button" class="bc-reaction-btn" data-emoji="&#127922;">&#127922; <span class="bc-reaction-count">0</span></button>
+        <button type="button" class="bc-reaction-btn" data-emoji="heart">&#10084;&#65039; <span class="bc-reaction-count">0</span></button>
+        <button type="button" class="bc-reaction-btn" data-emoji="laugh">&#128514; <span class="bc-reaction-count">0</span></button>
+        <button type="button" class="bc-reaction-btn" data-emoji="shock">&#128558; <span class="bc-reaction-count">0</span></button>
+        <button type="button" class="bc-reaction-btn" data-emoji="dice">&#127922; <span class="bc-reaction-count">0</span></button>
       </div>
     </div>
   </div>
@@ -304,6 +304,7 @@ import PageBanner from '../components/PageBanner.astro';
   async function loadReactionCounts() {
     if (!supabaseConfigured) return;
     const { data, error } = await supabase.from('wall_reactions').select('post_id, emoji');
+    if (error) console.error('Could not load wall reactions:', error);
     if (error || !data) return;
     const counts = new Map<string, number>();
     for (const r of data as ReactionRow[]) {
@@ -363,6 +364,7 @@ import PageBanner from '../components/PageBanner.astro';
 
     const { error } = await supabase.from('wall_reactions').insert({ post_id: postId, emoji });
     if (error) {
+      console.error('Could not save reaction:', error);
       btn.disabled = false;
       btn.classList.remove('is-reacted');
       countEl2.textContent = String(reactionCounts.get(key) || 0);
