@@ -39,7 +39,7 @@ export const guests: Guest[] = [
     rarity: 'Mythic',
     main: 'Boss Monster',
     align: 'Chaotic Neutral',
-    bio: 'Married the birthday knight and somehow still shows up every year. A saint with a mean poker face.',
+    bio: 'Married the birthday knight and somehow still shows up every year.',
     stats: [4, 3, 4, 5],
   },
   {
@@ -49,7 +49,7 @@ export const guests: Guest[] = [
     rarity: 'Epic',
     main: 'Catan',
     align: 'Lawful Neutral',
-    bio: "Jeanette's sister. Swears she forgot how Boss Monster works, then quietly demolishes the table before anyone catches on.",
+    bio: "Jeanette's sister. Says she forgets the rules, then quietly demolishes the table.",
     stats: [3, 4, 3, 3],
   },
   {
@@ -59,7 +59,7 @@ export const guests: Guest[] = [
     rarity: 'Epic',
     main: 'Magic: The Gathering',
     align: 'True Neutral',
-    bio: "Bailey's little brother. Spots the winning move by turn two, then lets it go anyway — winning was never really the point.",
+    bio: "Bailey's little brother. Spots the winning moves, but keeps the game going.",
     stats: [5, 2, 2, 3],
   },
   {
@@ -69,7 +69,7 @@ export const guests: Guest[] = [
     rarity: 'Epic',
     main: 'The Oregon Trail',
     align: 'Chaotic Good',
-    bio: "Bailey's best friend. Introduced Bailey to Magic and never looked back — or sold a single card. If it can be collected, he's got three of it.",
+    bio: "Bailey's Best Friend. If it can be collected, he's got three of it.",
     stats: [3, 4, 5, 4],
   },
   {
@@ -119,7 +119,7 @@ export const guests: Guest[] = [
     rarity: 'Rare',
     main: 'Unknown',
     align: 'Neutral',
-    bio: "Em's girlfriend, also new to the tavern. Arrived with zero expectations and a suspiciously good trade instinct.",
+    bio: "Em's girlfriend. Arrives with zero expectations, and is wholly unprepared.",
     stats: [3, 3, 4, 3],
   },
   {
@@ -129,7 +129,7 @@ export const guests: Guest[] = [
     rarity: 'Rare',
     main: 'Secret Hitler',
     align: 'Chaotic Good',
-    bio: 'Currently occupied becoming a father, which everyone agrees outranks the campaign.',
+    bio: 'Occupied becoming a father, which everyone agrees outranks the campaign.',
     stats: [3, 3, 3, 3],
     statusLine: 'ABSENT — ON DAD DUTY',
   },
@@ -140,7 +140,7 @@ export const guests: Guest[] = [
     rarity: 'Rare',
     main: 'Plunder',
     align: 'Lawful Good',
-    bio: "Runs the DnD table with a firm and fair hand, and never met a pirate she didn't love. Currently indisposed delivering the actual main quest.",
+    bio: 'Runs the DnD table with a firm and fair hand. Indisposed delivering the actual main quest.',
     stats: [3, 3, 3, 3],
     statusLine: 'ABSENT — DELIVERING THE FINAL BOSS',
   },
