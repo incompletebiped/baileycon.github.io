@@ -26,9 +26,9 @@ interface Props {
 const { guest } = Astro.props;
 
 const rarityColors: Record<string, string> = {
-  Mythic: 'var(--bc-mythic)',
-  Epic: 'var(--bc-epic)',
-  Rare: 'var(--bc-rare)',
+  Mythic: '#ffcf5c',
+  Epic: '#a78bf0',
+  Rare: '#6fa0ff',
 };
 const rc = rarityColors[guest.rarity];
 
@@ -102,7 +102,7 @@ function pips(n: number) {
     border-top: 3px solid;
     border-radius: 12px;
     overflow: hidden;
-    background: var(--bc-trading-gradient);
+    background: linear-gradient(180deg, #241a52, #130c34);
     box-shadow: 0 10px 28px rgba(0, 0, 0, 0.4);
     display: flex;
     flex-direction: column;
@@ -132,7 +132,7 @@ function pips(n: number) {
     font-family: 'Cinzel Decorative', serif;
     font-weight: 700;
     font-size: 22px;
-    color: var(--bc-gold);
+    color: #ffcf5c;
     line-height: 1;
   }
   .bc-guest-rarity {
@@ -155,8 +155,8 @@ function pips(n: number) {
   .bc-portrait {
     position: relative;
     aspect-ratio: 1 / 1;
-    border-top: 2px solid var(--bc-gold);
-    border-bottom: 2px solid var(--bc-gold);
+    border-top: 2px solid #ffcf5c;
+    border-bottom: 2px solid #ffcf5c;
     overflow: hidden;
   }
   .bc-portrait-placeholder {
@@ -191,8 +191,8 @@ function pips(n: number) {
     font-family: 'Cinzel', serif;
     font-size: 10px;
     letter-spacing: 1.5px;
-    color: var(--bc-gold);
-    border: 1px solid var(--bc-gold);
+    color: #ffcf5c;
+    border: 1px solid #ffcf5c;
     border-radius: 20px;
     padding: 3px 10px;
     text-transform: uppercase;
@@ -226,12 +226,12 @@ function pips(n: number) {
     font-family: 'Cinzel', serif;
     font-size: 11px;
     letter-spacing: 1px;
-    color: var(--bc-text-faint-bright);
+    color: #e2e4f5;
   }
   .bc-stat-pips {
     font-size: 13px;
     letter-spacing: 1px;
-    color: var(--bc-gold);
+    color: #ffcf5c;
   }
   .bc-guest-facts {
     border-top: 1px solid rgba(125, 134, 255, 0.28);
@@ -251,7 +251,7 @@ function pips(n: number) {
     font-family: 'Cinzel', serif;
     font-size: 11px;
     letter-spacing: 1px;
-    color: var(--bc-text-faint-bright);
+    color: #e2e4f5;
   }
   .bc-fact-value {
     font-family: 'Cinzel', serif;
@@ -262,7 +262,7 @@ function pips(n: number) {
     font-family: 'Lato', sans-serif;
     font-size: 17px;
     line-height: 1.55;
-    color: var(--bc-text-bright);
+    color: #ffffff;
     margin: 0;
   }
   .bc-guest-footer {
@@ -274,7 +274,7 @@ function pips(n: number) {
     font-family: 'Cinzel', serif;
     font-size: 10px;
     letter-spacing: 1.5px;
-    color: var(--bc-text-faint-bright);
+    color: #e2e4f5;
   }
   .bc-guest-status {
     flex: 1 1 auto;

@@ -82,94 +82,100 @@ const gameOptions = [...games.map((g) => g.name).sort((a, b) => a.localeCompare(
   }
   .bc-review-form {
     position: sticky;
-    top: 88px;
-    border: 1px solid var(--bc-gold);
-    border-radius: 10px;
-    background: linear-gradient(165deg, rgba(40, 60, 130, 0.5), rgba(30, 26, 82, 0.85) 55%, rgba(14, 10, 48, 0.85));
-    padding: 26px 26px 28px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    top: 96px;
+    border: 2px solid var(--bc-gold);
+    border-radius: 14px;
+    background: var(--bc-card-blueviolet);
+    padding: 30px 28px;
+    box-shadow: 6px 6px 0 var(--bc-deep-twilight);
   }
   .bc-form-title {
-    margin: 0 0 18px;
-    font-family: 'Cinzel Decorative', serif;
-    font-weight: 700;
-    font-size: 24px;
+    margin: 0 0 24px;
+    font-family: 'Lato', sans-serif;
+    font-weight: 900;
+    font-size: 28px;
     color: var(--bc-gold);
   }
   .bc-label {
     display: block;
-    font-family: 'Cinzel', serif;
-    font-size: 10px;
-    letter-spacing: 2px;
-    color: var(--bc-violet-light);
-    margin-bottom: 6px;
+    font-family: 'Raleway', sans-serif;
+    font-weight: 800;
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    color: var(--bc-card-form-label);
+    margin-bottom: 8px;
+    text-transform: uppercase;
   }
   .bc-submit-btn {
     width: 100%;
-    border: 1px solid var(--bc-gold);
-    border-radius: 5px;
-    padding: 13px;
-    font-family: 'Cinzel', serif;
-    font-weight: 600;
-    font-size: 13px;
-    letter-spacing: 2px;
+    border: 2px solid transparent;
+    border-radius: 9px;
+    padding: 15px;
+    font-family: 'Lato', sans-serif;
+    font-weight: 900;
+    font-size: 15px;
+    letter-spacing: 1px;
     cursor: not-allowed;
-    color: var(--bc-text-faint);
-    background: rgba(125, 134, 255, 0.15);
-    opacity: 0.7;
-    transition: opacity 0.12s;
+    color: rgba(20, 19, 43, 0.45);
+    background: rgba(255, 207, 92, 0.45);
   }
   .bc-submit-btn:not(:disabled) {
     cursor: pointer;
-    color: #fff;
-    background: linear-gradient(180deg, #5a8bff, #3455d8);
-    opacity: 1;
+    color: #14132b;
+    background: var(--bc-gold);
+    border-color: #14132b;
+    box-shadow: 4px 4px 0 #14132b;
   }
   .bc-status {
-    margin: 10px 0 0;
-    font-family: 'Cinzel', serif;
+    margin: 12px 0 0;
+    font-family: 'Raleway', sans-serif;
+    font-weight: 700;
     font-size: 11px;
     letter-spacing: 1px;
-    color: var(--bc-text-faint);
+    color: #e2d6ff;
     text-align: center;
   }
   .bc-status.is-error {
-    color: #ff8a8a;
+    color: #ffc2c2;
   }
 
   .bc-list-head {
     display: flex;
     align-items: baseline;
     justify-content: space-between;
-    margin-bottom: 18px;
+    border-bottom: 2px solid #e2e8f7;
+    padding-bottom: 14px;
+    margin-bottom: 24px;
   }
   .bc-list-title {
     margin: 0;
-    font-family: 'Cinzel Decorative', serif;
-    font-weight: 700;
-    font-size: 24px;
-    color: #e6f0ff;
+    font-family: 'Lato', sans-serif;
+    font-weight: 900;
+    font-size: 30px;
+    color: var(--bc-ink-strong);
   }
   .bc-count {
-    font-family: 'Cinzel', serif;
-    font-size: 11px;
+    font-family: 'Raleway', sans-serif;
+    font-weight: 800;
+    font-size: 12px;
     letter-spacing: 2px;
-    color: var(--bc-text-faint);
+    color: var(--bc-faint);
   }
   .bc-list {
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 20px;
   }
   .bc-loading {
-    font-family: 'Raleway', sans-serif;
-    color: var(--bc-text-faint);
+    font-family: 'Lato', sans-serif;
+    color: var(--bc-muted);
   }
   .bc-review-card {
-    border: 1px solid rgba(125, 134, 255, 0.4);
-    border-radius: 10px;
-    background: linear-gradient(165deg, rgba(40, 60, 130, 0.35), rgba(30, 26, 82, 0.7) 55%, rgba(14, 10, 48, 0.7));
-    padding: 20px 22px;
+    border: 2px solid #6a4fb0;
+    border-radius: 14px;
+    background: var(--bc-card-purple);
+    box-shadow: 6px 6px 0 var(--bc-blue);
+    padding: 24px 26px;
   }
   .bc-review-head {
     display: flex;
@@ -177,42 +183,42 @@ const gameOptions = [...games.map((g) => g.name).sort((a, b) => a.localeCompare(
     justify-content: space-between;
     gap: 12px;
     flex-wrap: wrap;
+    margin-bottom: 14px;
   }
   .bc-review-game {
-    font-family: 'Cinzel', serif;
-    font-size: 10px;
-    letter-spacing: 1.5px;
-    color: #141048;
+    font-family: 'Lato', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    color: #14132b;
     background: var(--bc-gold);
-    padding: 4px 11px;
+    padding: 5px 14px;
     border-radius: 20px;
   }
   .bc-review-stars {
-    font-size: 16px;
+    font-size: 18px;
     letter-spacing: 2px;
     color: var(--bc-gold);
   }
   .bc-review-quote {
     font-family: 'Lato', sans-serif;
-    font-size: 16px;
-    line-height: 1.55;
-    color: #e6ddff;
-    margin: 14px 0 12px;
+    font-size: 20px;
+    line-height: 1.5;
+    color: #eae5fb;
+    margin: 0 0 16px;
   }
   .bc-review-meta {
     display: flex;
     align-items: center;
     gap: 10px;
-    font-family: 'Cinzel', serif;
-    font-size: 11px;
-    letter-spacing: 1px;
-    color: var(--bc-text-faint);
+    font-family: 'Lato', sans-serif;
+    font-size: 14px;
+    color: var(--bc-card-label);
   }
   .bc-review-name {
-    color: var(--bc-blue-muted);
+    color: var(--bc-card-label);
   }
   .bc-review-dot {
-    color: #4a4a8a;
+    color: var(--bc-gold);
   }
 
   @media (max-width: 860px) {

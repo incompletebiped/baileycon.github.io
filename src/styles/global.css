@@ -1,50 +1,40 @@
 :root {
-  /* backgrounds */
-  --bc-bg: #0e0a30;
-  --bc-bg-gradient: linear-gradient(165deg, #1b1f5c 0%, #141048 42%, #0e0a30 100%);
-  --bc-card-gradient: linear-gradient(165deg, rgba(30, 26, 82, 0.7), rgba(14, 10, 48, 0.7));
-  --bc-card-gradient-strong: linear-gradient(165deg, rgba(30, 26, 82, 0.85), rgba(14, 10, 48, 0.85));
-  --bc-trading-gradient: linear-gradient(180deg, #241a52, #130c34);
-
-  /* violet */
-  --bc-violet: #5a37b0;
-  --bc-violet-deep: #2a1560;
-  --bc-violet-bright: #7b45e0;
-  --bc-violet-brighter: #8b6bff;
-  --bc-violet-light: #a78bf0;
-
-  /* blue */
-  --bc-blue: #3b7ef0;
-  --bc-blue-hero: #4da3ff;
-  --bc-blue-light: #6fa0ff;
-  --bc-blue-lighter: #a9e0ff;
-  --bc-blue-muted: #a9b6f0;
-
-  /* gold */
+  /* ============ brand palette ============ */
+  --bc-deep-twilight: #1f1e5f;
+  --bc-indigo-velvet: #45288e;
+  --bc-blue-violet: #7742dc;
   --bc-gold: #ffcf5c;
-  --bc-gold-light: #ffe08a;
-  --bc-gold-lighter: #fff0c0;
-  --bc-gold-deep: #e0a53a;
-  --bc-gold-deeper: #d99a2c;
+  --bc-blue: #4da3ff;
 
-  /* ink / text */
-  --bc-ink: #160e38;
-  --bc-text: #f2ecff;
-  --bc-text-muted: #bcc4f0;
-  --bc-text-faint: #8a80c8;
-  /* brighter variants for card bios/accents — true white/near-white, since
-     purple-tinted "light" text still blends into the purple backgrounds */
-  --bc-text-bright: #ffffff;
-  --bc-text-faint-bright: #e2e4f5;
+  /* ============ surfaces ============ */
+  --bc-chrome: #14132b; /* header / footer bg */
+  --bc-page: #fafbff; /* light page bg */
+  --bc-band: #eef3ff; /* tinted section band */
+  --bc-hero-gradient: linear-gradient(158deg, #1f1e5f 0%, #2a1f63 46%, #3a2570 100%);
 
-  /* parchment */
-  --bc-parchment-1: #eeeafb;
-  --bc-parchment-2: #dcd6f4;
+  /* ============ text on light ============ */
+  --bc-ink: #33344f; /* primary ink */
+  --bc-ink-strong: #1f1e5f; /* page-title ink */
+  --bc-muted: #5a5c7d;
+  --bc-faint: #8085a8;
+  --bc-eyebrow: #4da3ff;
 
-  /* rarity */
+  /* ============ dark-card gradients ============ */
+  --bc-card-purple: linear-gradient(160deg, #33256b, #211849);
+  --bc-card-blueviolet: linear-gradient(160deg, #7742dc, #4a2a9e);
+  --bc-card-blue: linear-gradient(160deg, #2c5fa8, #1c3f78);
+
+  /* ============ text inside dark cards ============ */
+  --bc-card-title: #ffffff;
+  --bc-card-desc: #cfc7ea;
+  --bc-card-label: #a99fd0;
+  --bc-card-stat-label: #c9bff0;
+  --bc-card-form-label: #cbb8ff;
+  --bc-card-divider: rgba(255, 255, 255, 0.14);
+
+  /* ============ rarity ============ */
   --bc-mythic: #ffcf5c;
-  --bc-epic: #a78bf0;
-  --bc-rare: #6fa0ff;
+  --bc-epic: #b79bff;
 
   --bc-max-width: 1160px;
 }
@@ -59,50 +49,53 @@ html {
 
 body {
   margin: 0;
-  background: var(--bc-bg);
-  font-family: 'EB Garamond', Georgia, serif;
-  color: var(--bc-text);
+  background: var(--bc-page);
+  font-family: 'Raleway', sans-serif;
+  color: var(--bc-ink);
+  -webkit-font-smoothing: antialiased;
 }
 
 a {
-  color: var(--bc-blue-light);
+  color: var(--bc-blue);
   text-decoration: none;
 }
 
 a:hover {
-  color: var(--bc-blue-lighter);
+  color: var(--bc-blue-violet);
 }
 
 main {
-  background: var(--bc-bg-gradient);
+  background: var(--bc-page);
   min-height: 100vh;
 }
 
+/* ============ white inputs (kept white on all cards) ============ */
 .bc-field {
   width: 100%;
   box-sizing: border-box;
-  background: rgba(14, 10, 48, 0.6);
-  border: 1px solid rgba(139, 107, 255, 0.5);
-  border-radius: 5px;
-  color: var(--bc-text);
-  font-family: 'EB Garamond', serif;
-  font-size: 16px;
-  padding: 11px 13px;
+  background: #ffffff;
+  border: 1.5px solid #cdd6ee;
+  border-radius: 9px;
+  color: var(--bc-ink-strong);
+  font-family: 'Lato', sans-serif;
+  font-size: 15px;
+  padding: 12px 14px;
   outline: none;
-  transition: border-color 0.12s;
+  transition: outline-color 0.12s;
 }
 
 .bc-field:focus {
-  border-color: var(--bc-gold);
+  outline: 2px solid var(--bc-blue);
+  outline-offset: 1px;
 }
 
 .bc-field::placeholder {
-  color: #6a629c;
+  color: #9aa3c4;
 }
 
 select.bc-field option {
-  background: #1b1440;
-  color: var(--bc-text);
+  background: #ffffff;
+  color: var(--bc-ink-strong);
 }
 
 textarea.bc-field {

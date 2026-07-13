@@ -37,14 +37,14 @@ const links = [
 
 <style>
   .bc-footer {
-    border-top: 1px solid rgba(255, 207, 92, 0.28);
-    background: linear-gradient(180deg, rgba(20, 16, 72, 0), rgba(20, 16, 72, 0.6));
-    margin-top: 64px;
+    border-top: 3px solid var(--bc-gold);
+    background: var(--bc-chrome);
+    margin-top: 40px;
   }
   .bc-footer-inner {
     max-width: var(--bc-max-width);
     margin: 0 auto;
-    padding: 36px 28px 48px;
+    padding: 40px 28px;
     display: flex;
     align-items: center;
     gap: 36px;
@@ -60,10 +60,10 @@ const links = [
     text-align: left;
   }
   .bc-tagline {
-    font-family: 'Raleway', sans-serif;
-    font-size: 15px;
+    font-family: 'Lato', sans-serif;
+    font-size: 17px;
     font-style: italic;
-    color: #c3b2ef;
+    color: #c9cdec;
   }
   .bc-meta {
     display: flex;
@@ -71,32 +71,34 @@ const links = [
     gap: 10px;
     flex-wrap: wrap;
     justify-content: flex-start;
-    font-family: 'Cinzel', serif;
+    font-family: 'Raleway', sans-serif;
+    font-weight: 700;
     font-size: 11px;
     letter-spacing: 1.5px;
-    color: var(--bc-text-faint);
+    color: #8f93bd;
     text-transform: uppercase;
   }
   .bc-dot {
-    color: #4a4a8a;
+    color: var(--bc-gold);
   }
   .bc-footer-nav {
     display: flex;
-    gap: 18px;
+    gap: 22px;
     flex-wrap: wrap;
     justify-content: flex-start;
     margin-top: 4px;
   }
   .bc-footer-nav a {
-    font-family: 'Cinzel', serif;
+    font-family: 'Raleway', sans-serif;
+    font-weight: 700;
     font-size: 11px;
-    letter-spacing: 1.5px;
-    color: var(--bc-blue-light);
+    letter-spacing: 2px;
+    color: #7fb4ff;
     text-transform: uppercase;
     text-decoration: none;
   }
   .bc-footer-nav a:hover {
-    color: var(--bc-blue-lighter);
+    color: var(--bc-gold);
   }
 
   @media (max-width: 640px) {

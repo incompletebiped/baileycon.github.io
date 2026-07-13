@@ -157,7 +157,7 @@ export function guestNum(index: number): string {
 }
 
 export const rarityColorVar: Record<Rarity, string> = {
-  Mythic: 'var(--bc-mythic)',
-  Epic: 'var(--bc-epic)',
-  Rare: 'var(--bc-rare)',
+  Mythic: '#ffcf5c',
+  Epic: '#a78bf0',
+  Rare: '#6fa0ff',
 };

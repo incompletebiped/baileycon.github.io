@@ -338,7 +338,8 @@ export function weightLabel(weight: number): string {
 }
 
 export function hallColor(hall: Hall): string {
-  return hall === 'Renaissance' ? 'var(--bc-blue-light)' : 'var(--bc-violet-light)';
+  // Era-badge accent: Renaissance = deep gold outline, Dark Ages = blue-violet outline.
+  return hall === 'Renaissance' ? '#c79a1f' : '#7742dc';
 }
 
 /** Parses "3–6" / "2+" / "5" into a numeric range for sorting & filtering. NO_MAX stands in for "+". */

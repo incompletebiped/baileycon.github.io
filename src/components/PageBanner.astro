@@ -9,11 +9,11 @@ const { eyebrow, title, subtitle } = Astro.props;
 ---
 
 <section class="bc-banner">
-  <div class="bc-banner-glow"></div>
   <div class="bc-banner-content">
-    <div class="bc-fleuron">&#10087;</div>
+    <div class="bc-fleuron">&#9670;</div>
     <div class="bc-eyebrow">{eyebrow}</div>
     <h1 class="bc-title">{title}</h1>
+    <div class="bc-swash"></div>
     <p class="bc-subtitle">{subtitle}</p>
   </div>
 </section>
@@ -23,57 +23,57 @@ const { eyebrow, title, subtitle } = Astro.props;
     position: relative;
     overflow: hidden;
     text-align: center;
-    padding: 56px 28px 34px;
-  }
-  .bc-banner-glow {
-    position: absolute;
-    left: 50%;
-    top: -100px;
-    transform: translateX(-50%);
-    width: 520px;
-    height: 360px;
-    background: radial-gradient(ellipse, rgba(59, 126, 240, 0.18), rgba(123, 69, 224, 0.16) 45%, transparent 70%);
-    pointer-events: none;
+    padding: 64px 28px 44px;
   }
   .bc-banner-content {
     position: relative;
     z-index: 2;
   }
   .bc-fleuron {
-    color: var(--bc-text-faint);
-    font-size: 16px;
-    letter-spacing: 6px;
-    margin-bottom: 10px;
+    color: var(--bc-blue-violet);
+    font-size: 20px;
+    margin-bottom: 6px;
   }
   .bc-eyebrow {
-    font-family: 'Cinzel', serif;
-    font-size: 12px;
-    letter-spacing: 5px;
-    color: var(--bc-blue-light);
-    margin-bottom: 12px;
+    font-family: 'Raleway', sans-serif;
+    font-weight: 800;
+    font-size: 14px;
+    letter-spacing: 6px;
+    color: var(--bc-eyebrow);
+    margin-bottom: 6px;
+    text-transform: uppercase;
   }
   .bc-title {
-    margin: 0;
+    margin: 6px 0 0;
     font-family: 'Cinzel Decorative', serif;
     font-weight: 900;
     font-size: 64px;
-    color: var(--bc-gold);
+    color: var(--bc-ink-strong);
     line-height: 1;
+    text-transform: uppercase;
+  }
+  .bc-swash {
+    width: 86px;
+    height: 4px;
+    background: var(--bc-gold);
+    border-radius: 3px;
+    margin: 20px auto 0;
   }
   .bc-subtitle {
-    font-family: 'Raleway', sans-serif;
-    font-size: 18px;
-    color: var(--bc-text-muted);
+    font-family: 'Lato', sans-serif;
+    font-size: 19px;
+    color: var(--bc-muted);
     max-width: 640px;
-    margin: 16px auto 0;
+    margin: 22px auto 0;
+    line-height: 1.5;
   }
 
   @media (max-width: 480px) {
     .bc-banner {
-      padding: 40px 18px 28px;
+      padding: 44px 18px 32px;
     }
     .bc-title {
-      font-size: 42px;
+      font-size: 40px;
     }
     .bc-subtitle {
       font-size: 18px;

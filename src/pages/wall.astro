@@ -51,34 +51,36 @@ import PageBanner from '../components/PageBanner.astro';
   .bc-wallfield {
     width: 100%;
     box-sizing: border-box;
-    background: rgba(14, 10, 48, 0.6);
-    border: 1px solid rgba(125, 134, 255, 0.5);
-    border-radius: 5px;
-    color: var(--bc-text);
-    font-family: 'EB Garamond', serif;
-    font-size: 16px;
-    padding: 12px 14px;
+    background: #ffffff;
+    border: 1.5px solid #cdd6ee;
+    border-radius: 10px;
+    color: var(--bc-ink-strong);
+    font-family: 'Lato', sans-serif;
+    font-size: 17px;
+    padding: 16px;
     outline: none;
     resize: vertical;
+    transition: outline-color 0.12s;
   }
   .bc-wallfield:focus {
-    border-color: var(--bc-gold);
+    outline: 2px solid var(--bc-blue);
+    outline-offset: 1px;
   }
   .bc-wallfield::placeholder {
-    color: #6a629c;
+    color: #9aa3c4;
   }
 
   .bc-wall-form-section {
-    max-width: 680px;
+    max-width: 900px;
     margin: 0 auto;
-    padding: 0 28px 34px;
+    padding: 0 28px 44px;
   }
   .bc-wall-form {
-    border: 1px solid var(--bc-gold);
-    border-radius: 10px;
-    background: linear-gradient(165deg, rgba(40, 60, 130, 0.5), rgba(30, 26, 82, 0.85) 55%, rgba(14, 10, 48, 0.85));
-    padding: 22px 24px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    border: 2px solid var(--bc-gold);
+    border-radius: 14px;
+    background: var(--bc-card-blueviolet);
+    padding: 28px;
+    box-shadow: 6px 6px 0 var(--bc-deep-twilight);
   }
   .bc-wall-form-row {
     display: flex;
@@ -86,42 +88,44 @@ import PageBanner from '../components/PageBanner.astro';
     justify-content: space-between;
     gap: 12px;
     flex-wrap: wrap;
+    margin-top: 14px;
   }
   .bc-wall-note {
-    font-family: 'Raleway', sans-serif;
-    font-size: 13px;
-    color: var(--bc-text-faint);
+    font-family: 'Lato', sans-serif;
+    font-size: 14px;
+    color: #e2d6ff;
   }
   .bc-submit-btn {
-    border: 1px solid var(--bc-gold);
-    border-radius: 5px;
-    padding: 12px 22px;
-    font-family: 'Cinzel', serif;
-    font-weight: 600;
-    font-size: 12px;
-    letter-spacing: 2px;
+    border: 2px solid transparent;
+    border-radius: 9px;
+    padding: 13px 26px;
+    font-family: 'Lato', sans-serif;
+    font-weight: 900;
+    font-size: 14px;
+    letter-spacing: 1px;
     cursor: not-allowed;
-    color: var(--bc-text-faint);
-    background: rgba(125, 134, 255, 0.15);
+    color: rgba(20, 19, 43, 0.45);
+    background: rgba(255, 207, 92, 0.45);
     white-space: nowrap;
-    opacity: 0.7;
   }
   .bc-submit-btn:not(:disabled) {
     cursor: pointer;
-    color: #fff;
-    background: linear-gradient(180deg, #5a8bff, #3455d8);
-    opacity: 1;
+    color: #14132b;
+    background: var(--bc-gold);
+    border-color: #14132b;
+    box-shadow: 4px 4px 0 #14132b;
   }
   .bc-status {
-    margin: 10px 0 0;
-    font-family: 'Cinzel', serif;
+    margin: 12px 0 0;
+    font-family: 'Raleway', sans-serif;
+    font-weight: 700;
     font-size: 11px;
     letter-spacing: 1px;
-    color: var(--bc-text-faint);
+    color: #e2d6ff;
     text-align: center;
   }
   .bc-status.is-error {
-    color: #ff8a8a;
+    color: #ffc2c2;
   }
 
   .bc-board-section {
@@ -134,8 +138,8 @@ import PageBanner from '../components/PageBanner.astro';
     column-gap: 22px;
   }
   .bc-loading {
-    font-family: 'Raleway', sans-serif;
-    color: var(--bc-text-faint);
+    font-family: 'Lato', sans-serif;
+    color: var(--bc-muted);
   }
   .bc-note-wrap {
     break-inside: avoid;
@@ -164,17 +168,17 @@ import PageBanner from '../components/PageBanner.astro';
     border: 2px solid var(--bc-gold);
   }
   .bc-note-text {
-    font-family: 'EB Garamond', serif;
-    font-size: 18px;
+    font-family: 'Lato', sans-serif;
+    font-size: 19px;
     line-height: 1.5;
-    color: #2a1a0e;
+    color: #2a2740;
     margin: 14px 0 16px;
   }
   .bc-note-alias {
-    font-family: 'Raleway', sans-serif;
+    font-family: 'Lato', sans-serif;
     font-style: italic;
-    font-size: 13px;
-    color: #7a5a2b;
+    font-size: 14px;
+    color: #b7861f;
     text-align: right;
   }
   .bc-note-reactions {
@@ -217,11 +221,12 @@ import PageBanner from '../components/PageBanner.astro';
   }
   .bc-board-count {
     text-align: center;
-    font-family: 'Cinzel', serif;
-    font-size: 11px;
-    letter-spacing: 2px;
-    color: var(--bc-text-faint);
-    margin-top: 24px;
+    font-family: 'Raleway', sans-serif;
+    font-weight: 800;
+    font-size: 12px;
+    letter-spacing: 3px;
+    color: var(--bc-faint);
+    margin-top: 44px;
   }
 
   @media (max-width: 900px) {
