@@ -69,11 +69,7 @@ const gamePointsData = JSON.stringify(
 
 <script>
   import { supabase, supabaseConfigured } from '../lib/supabase';
-
-  interface WinRow {
-    game: string;
-    player: string;
-  }
+  import { pointsForWin, type WinRow } from '../lib/wins';
 
   async function loadScores() {
     if (!supabaseConfigured) return;
@@ -83,13 +79,14 @@ const gamePointsData = JSON.stringify(
       ? JSON.parse(pointsDataEl.textContent || '{}')
       : {};
 
-    const { data, error } = await supabase.from('wins').select('game, player');
+    // select('*') rather than naming columns: safe whether or not the
+    // `points` column (used only by custom "Game not listed" wins) exists yet.
+    const { data, error } = await supabase.from('wins').select('*');
     if (error || !data) return;
 
     const totals = new Map<string, number>();
     for (const row of data as WinRow[]) {
-      const pts = gamePoints[row.game] ?? 0;
-      totals.set(row.player, (totals.get(row.player) || 0) + pts);
+      totals.set(row.player, (totals.get(row.player) || 0) + pointsForWin(row, gamePoints));
     }
 
     document.querySelectorAll<HTMLElement>('.bc-guest-card').forEach((card) => {

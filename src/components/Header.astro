@@ -3,7 +3,7 @@ import Crest from './Crest.astro';
 import { withBase } from '../lib/url';
 
 interface Props {
-  active: 'home' | 'games' | 'reviews' | 'wall' | 'players' | 'wins';
+  active: 'home' | 'games' | 'reviews' | 'wall' | 'players' | 'wins' | 'rules';
 }
 
 const { active } = Astro.props;
@@ -18,7 +18,8 @@ const items = [
 ];
 
 const resourceLinks = [
-  { label: 'The Scullery Kitchen Menu', href: 'https://www.knightwatchgames.com/the-scullery-kitchen' },
+  { label: 'Rules', href: withBase('/rules/'), external: false },
+  { label: 'The Scullery Kitchen Menu', href: 'https://www.knightwatchgames.com/the-scullery-kitchen', external: true },
 ];
 ---
 
@@ -53,7 +54,7 @@ const resourceLinks = [
       <div class="bc-nav-dropdown">
         <button
           type="button"
-          class="bc-nav-link bc-nav-dropdown-trigger"
+          class:list={['bc-nav-link', 'bc-nav-dropdown-trigger', { 'is-active': active === 'rules' }]}
           id="bc-resources-toggle"
           aria-haspopup="true"
           aria-expanded="false"
@@ -64,7 +65,11 @@ const resourceLinks = [
         </button>
         <div class="bc-nav-dropdown-menu" id="bc-resources-menu">
           {resourceLinks.map((link) => (
-            <a href={link.href} target="_blank" rel="noopener noreferrer" class="bc-nav-dropdown-link">
+            <a
+              href={link.href}
+              class="bc-nav-dropdown-link"
+              {...(link.external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+            >
               {link.label}
             </a>
           ))}

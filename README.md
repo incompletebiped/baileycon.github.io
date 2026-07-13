@@ -22,8 +22,11 @@ Visit `http://localhost:4321`.
 - `src/data/guests.ts` — the 10 player trading cards (Players page + Home's avatar row).
 - `src/components/` — shared UI: `Header`, `Footer`, `Crest` (the d20 "B" logo),
   `GameCard`, `GuestCard`, `PageBanner`, `StarRating`.
-- `src/pages/` — the 6 site pages (`index`, `games`, `players`, `reviews`, `wall`, `wins`).
+- `src/pages/` — the 7 site pages (`index`, `games`, `players`, `reviews`, `wall`, `wins`, `rules`).
 - `src/lib/supabase.ts` — Supabase client used by the Reviews, Wall, and Wins pages.
+- `src/lib/wins.ts` — shared `pointsForWin` helper (Wins ledger/podium + Players
+  page scores) that resolves a recorded win's point value: a stored `points`
+  override if present, otherwise the live `winPoints()` formula.
 
 ## Images
 
@@ -88,12 +91,30 @@ uses [Supabase](https://supabase.com) (free tier is plenty for this use case).
      id bigint generated always as identity primary key,
      game text not null check (char_length(game) <= 120),
      player text not null check (char_length(player) <= 80),
+     points integer check (points is null or points >= 1),
      created_at timestamptz not null default now()
    );
    alter table wins enable row level security;
    create policy "public read" on wins for select using (true);
    create policy "public insert" on wins for insert with check (true);
    ```
+
+   `points` is only ever set by the Wins page's "Game not listed" option (a
+   manual win-value override for a game not in `src/data/games.ts`); normal
+   wins leave it `null` and get their point value from the live `winPoints()`
+   formula instead (see `pointsForWin` in `src/lib/wins.ts`).
+
+   **If you already created the `wins` table before this column existed**,
+   run this migration once instead of the `create table` above:
+
+   ```sql
+   alter table wins add column if not exists points integer
+     check (points is null or points >= 1);
+   ```
+
+   Recording a normal (listed) win never touches this column, so it's safe to
+   deploy the site before running the migration — only the "Game not listed"
+   option will fail (with a visible error message) until it's applied.
 
    Note: `emoji` stores a plain ASCII key (`heart`/`laugh`/`shock`/`dice`), not
    the emoji glyph itself — pasting literal emoji into a `check` constraint is

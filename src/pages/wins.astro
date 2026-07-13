@@ -39,8 +39,17 @@ const gamePointsData = JSON.stringify(
           {gameOptions.map((g) => (
             <option value={g}>{g}</option>
           ))}
+          <option value="__other__">Game not listed</option>
         </select>
         <span id="win-preview" class="bc-win-preview"></span>
+      </div>
+
+      <div id="win-custom-fields" class="bc-custom-fields" hidden>
+        <label class="bc-label" for="win-custom-name">GAME NAME</label>
+        <input class="bc-field" type="text" id="win-custom-name" placeholder="What did you play?" style="margin-bottom:16px;" />
+
+        <label class="bc-label" for="win-custom-points">WIN VALUE (PTS)</label>
+        <input class="bc-field" type="number" id="win-custom-points" min="1" step="1" placeholder="e.g. 3" style="margin-bottom:16px;" />
       </div>
 
       <label class="bc-label" for="win-player" style="margin-top:16px;">THE VICTOR</label>
@@ -84,6 +93,7 @@ const gamePointsData = JSON.stringify(
     <div class="bc-podium-rank"></div>
     <div class="bc-podium-name"></div>
     <div class="bc-podium-points"></div>
+    <div class="bc-podium-wins"></div>
   </div>
 </template>
 
@@ -143,6 +153,14 @@ const gamePointsData = JSON.stringify(
     letter-spacing: 1px;
     color: var(--bc-gold);
   }
+  .bc-podium-wins {
+    font-family: 'Raleway', sans-serif;
+    font-weight: 700;
+    font-size: 11px;
+    letter-spacing: 1px;
+    color: var(--bc-card-label);
+    margin-top: 4px;
+  }
 
   .bc-wins-section {
     max-width: 1100px;
@@ -191,6 +209,12 @@ const gamePointsData = JSON.stringify(
     font-size: 13px;
     color: var(--bc-gold);
     white-space: nowrap;
+  }
+  .bc-custom-fields {
+    border-top: 1px solid rgba(255, 255, 255, 0.14);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.14);
+    padding: 16px 0 0;
+    margin-bottom: 4px;
   }
   .bc-submit-btn {
     width: 100%;
@@ -314,13 +338,14 @@ const gamePointsData = JSON.stringify(
 
 <script>
   import { supabase, supabaseConfigured } from '../lib/supabase';
+  import { pointsForWin, type WinRow as WinRowBase } from '../lib/wins';
 
-  interface WinRow {
+  interface WinRow extends WinRowBase {
     id: number;
-    game: string;
-    player: string;
     created_at: string;
   }
+
+  const CUSTOM_VALUE = '__other__';
 
   const pointsDataEl = document.getElementById('wins-game-points-data');
   const gamePoints: Record<string, number> = pointsDataEl
@@ -330,6 +355,9 @@ const gamePointsData = JSON.stringify(
   const gameSelect = document.getElementById('win-game') as HTMLSelectElement;
   const playerSelect = document.getElementById('win-player') as HTMLSelectElement;
   const previewEl = document.getElementById('win-preview') as HTMLSpanElement;
+  const customFields = document.getElementById('win-custom-fields') as HTMLDivElement;
+  const customNameInput = document.getElementById('win-custom-name') as HTMLInputElement;
+  const customPointsInput = document.getElementById('win-custom-points') as HTMLInputElement;
   const submitBtn = document.getElementById('win-submit') as HTMLButtonElement;
   const statusEl = document.getElementById('win-status') as HTMLParagraphElement;
   const listEl = document.getElementById('win-list') as HTMLDivElement;
@@ -343,20 +371,45 @@ const gamePointsData = JSON.stringify(
     return d.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
   }
 
+  function isCustomSelected() {
+    return gameSelect.value === CUSTOM_VALUE;
+  }
+
   function updatePreview() {
+    if (isCustomSelected()) {
+      const n = Number(customPointsInput.value);
+      previewEl.textContent = customPointsInput.value && n >= 1 ? `= ${n} PTS` : '';
+      return;
+    }
     const pts = gamePoints[gameSelect.value];
     previewEl.textContent = gameSelect.value && pts !== undefined ? `= ${pts} PTS` : '';
   }
 
   function updateSubmitState() {
+    if (isCustomSelected()) {
+      const nameOk = customNameInput.value.trim().length > 0;
+      const pointsOk = Number(customPointsInput.value) >= 1;
+      submitBtn.disabled = !(nameOk && pointsOk && playerSelect.value);
+      return;
+    }
     submitBtn.disabled = !(gameSelect.value && playerSelect.value);
   }
 
   gameSelect.addEventListener('change', () => {
+    customFields.hidden = !isCustomSelected();
+    if (!isCustomSelected()) {
+      customNameInput.value = '';
+      customPointsInput.value = '';
+    }
     updatePreview();
     updateSubmitState();
   });
   playerSelect.addEventListener('change', updateSubmitState);
+  customNameInput.addEventListener('input', updateSubmitState);
+  customPointsInput.addEventListener('input', () => {
+    updatePreview();
+    updateSubmitState();
+  });
 
   function renderLedger(rows: WinRow[]) {
     listEl.innerHTML = '';
@@ -372,21 +425,31 @@ const gamePointsData = JSON.stringify(
       const node = template.content.cloneNode(true) as DocumentFragment;
       (node.querySelector('.bc-win-game') as HTMLElement).textContent = r.game;
       (node.querySelector('.bc-win-player') as HTMLElement).textContent = r.player;
-      const pts = gamePoints[r.game] ?? 0;
+      const pts = pointsForWin(r, gamePoints);
       (node.querySelector('.bc-win-points') as HTMLElement).textContent = `${pts} PTS`;
       (node.querySelector('.bc-win-date') as HTMLElement).textContent = formatDate(r.created_at);
       listEl.appendChild(node);
     }
   }
 
+  interface PlayerTally {
+    points: number;
+    wins: number;
+  }
+
   function renderPodium(rows: WinRow[]) {
-    const totals = new Map<string, number>();
+    const totals = new Map<string, PlayerTally>();
     for (const r of rows) {
-      const pts = gamePoints[r.game] ?? 0;
-      totals.set(r.player, (totals.get(r.player) || 0) + pts);
+      const entry = totals.get(r.player) || { points: 0, wins: 0 };
+      entry.points += pointsForWin(r, gamePoints);
+      entry.wins += 1;
+      totals.set(r.player, entry);
     }
+    // Rank by total points; ties go to whoever notched more wins to get there
+    // (quantity over quality). A remaining tie is settled by a d20 roll at
+    // the table, not something the site can decide — see the Rules page.
     const ranked = Array.from(totals.entries())
-      .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+      .sort((a, b) => b[1].points - a[1].points || b[1].wins - a[1].wins || a[0].localeCompare(b[0]))
       .slice(0, 3);
 
     podiumGrid.innerHTML = '';
@@ -400,14 +463,15 @@ const gamePointsData = JSON.stringify(
     // Visual podium order: 2nd, 1st, 3rd (classic center-elevated layout).
     const order = [1, 0, 2].filter((i) => i < ranked.length);
     for (const i of order) {
-      const [name, pts] = ranked[i];
+      const [name, stats] = ranked[i];
       const node = podiumTemplate.content.cloneNode(true) as DocumentFragment;
       const card = node.querySelector('.bc-podium-card') as HTMLElement;
       card.dataset.rank = String(i + 1);
       (node.querySelector('.bc-podium-rank') as HTMLElement).textContent =
         i === 0 ? '1ST' : i === 1 ? '2ND' : '3RD';
       (node.querySelector('.bc-podium-name') as HTMLElement).textContent = name;
-      (node.querySelector('.bc-podium-points') as HTMLElement).textContent = `${pts} PTS`;
+      (node.querySelector('.bc-podium-points') as HTMLElement).textContent = `${stats.points} PTS`;
+      (node.querySelector('.bc-podium-wins') as HTMLElement).textContent = `${stats.wins} ${stats.wins === 1 ? 'WIN' : 'WINS'}`;
       podiumGrid.appendChild(node);
     }
   }
@@ -434,15 +498,24 @@ const gamePointsData = JSON.stringify(
   }
 
   async function submitWin() {
-    const game = gameSelect.value;
     const player = playerSelect.value;
+    const custom = isCustomSelected();
+    const game = custom ? customNameInput.value.trim() : gameSelect.value;
+    const customPoints = Number(customPointsInput.value);
     if (!game || !player) return;
+    if (custom && !(customPoints >= 1)) return;
 
     submitBtn.disabled = true;
     statusEl.hidden = true;
     statusEl.classList.remove('is-error');
 
-    const { error } = await supabase.from('wins').insert({ game, player });
+    // Only custom ("not listed") wins carry an explicit points override —
+    // known games keep inserting the same shape as before so recording a
+    // normal win never depends on the newer `points` column existing yet.
+    const payload: { game: string; player: string; points?: number } = { game, player };
+    if (custom) payload.points = customPoints;
+
+    const { error } = await supabase.from('wins').insert(payload);
     if (error) {
       statusEl.textContent = `Could not record win (${error.message}).`;
       statusEl.classList.add('is-error');
@@ -453,6 +526,9 @@ const gamePointsData = JSON.stringify(
 
     gameSelect.value = '';
     playerSelect.value = '';
+    customFields.hidden = true;
+    customNameInput.value = '';
+    customPointsInput.value = '';
     updatePreview();
     statusEl.textContent = 'Recorded! The ledger has been updated.';
     statusEl.hidden = false;
