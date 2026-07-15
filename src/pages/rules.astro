@@ -1,25 +1,32 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import PageBanner from '../components/PageBanner.astro';
+import { withBase } from '../lib/url';
 
 const rules = [
   {
+    numeral: 'I',
     title: 'Record Thy Own Victory',
     body: "Every player logs their own wins on the Wins page — no proxies, no dungeon master filing on your behalf. The full ledger is public for anyone to see, so there's no slipping in a phantom win. Fib about a victory and the table will absolutely call thee out.",
   },
   {
+    numeral: 'II',
     title: 'When a Game Crowns Many',
     body: "Some games send more than one player home victorious — Secret Hitler's whole winning faction, for instance. When that happens, every winning player records their own entry for that game. Each recorded win counts on its own toward the standings.",
   },
   {
+    numeral: 'III',
     title: 'Champions of the Table',
     body: 'The podium on the Wins page ranks players by total points earned across every recorded win. Each game’s Win Value (shown on its card) is what gets added to your tally each time you claim victory.',
   },
   {
+    numeral: 'IV',
     title: 'Breaking a Tie',
-    body: 'Same total points? Whoever notched more wins to get there takes the higher rank — quantity beats quality. Example: one player reaches 12 points from two 6-point victories, another reaches 12 points from six 2-point victories — the six-time victor ranks higher. Still tied after that? It comes down to a roll of the d20 at the table.',
+    body: 'Same total points? Whoever notched more wins to get there takes the higher rank — quantity beats quality. Still tied after that? It comes down to a roll of the d20 at the table.',
+    callout: 'Example: one player reaches 12 points from two 6-point victories, another reaches 12 points from six 2-point victories — the six-time victor ranks higher.',
   },
   {
+    numeral: 'V',
     title: 'Played Something We Don’t Have Listed?',
     body: 'Choose "Game not listed" from the game dropdown on Record a Win, then name the game and set its Win Value by hand. It’ll show up in the ledger and count toward the standings just like any other game.',
   },
@@ -28,62 +35,135 @@ const rules = [
 
 <BaseLayout title="Rules — BaileyCon" active="rules">
   <PageBanner
-    eyebrow="THE LAW OF THE LAND"
+    eyebrow="The Law of the Land"
     title="The Rules"
     subtitle="Everyone logs their own wins, ties break by the numbers, and the honor system keeps it fair."
   />
 
   <section class="bc-rules-section">
     <div class="bc-rules-list">
-      {rules.map((r) => (
-        <div class="bc-rule-card">
-          <h2 class="bc-rule-title">{r.title}</h2>
-          <p class="bc-rule-text">{r.body}</p>
+      {rules.map((r, i) => (
+        <div class="bc-rule-card" style={`animation-delay:${0.05 + i * 0.07}s;`}>
+          <div class="bc-rule-numeral">{r.numeral}</div>
+          <div class="bc-rule-body">
+            <h2 class="bc-rule-title">{r.title}</h2>
+            <p class="bc-rule-text">{r.body}</p>
+            {r.callout && <p class="bc-rule-callout">{r.callout}</p>}
+          </div>
         </div>
       ))}
+    </div>
+    <div class="bc-rules-cta">
+      <a href={withBase('/wins/')} class="bc-rules-btn">Record a Win &rarr;</a>
     </div>
   </section>
 </BaseLayout>
 
 <style>
   .bc-rules-section {
-    max-width: 820px;
+    max-width: 780px;
     margin: 0 auto;
-    padding: 0 28px 80px;
+    padding: 0 28px 70px;
   }
   .bc-rules-list {
     display: flex;
     flex-direction: column;
-    gap: 24px;
+    gap: 22px;
   }
   .bc-rule-card {
-    border: 2px solid #6a4fb0;
-    border-radius: 14px;
-    background: var(--bc-card-purple);
-    box-shadow: 6px 6px 0 var(--bc-blue);
-    padding: 28px 30px;
+    display: flex;
+    gap: 20px;
+    border: 1px solid var(--bc-border-gold);
+    border-radius: 12px;
+    background: var(--bc-panel);
+    padding: 26px 28px;
+    opacity: 0;
+    animation: bc-decree-in 0.5s ease both;
+    transition: border-color 0.15s, transform 0.15s;
+  }
+  .bc-rule-card:hover {
+    border-color: var(--bc-border-gold-strong);
+    transform: translateX(4px);
+  }
+  @keyframes bc-decree-in {
+    from {
+      opacity: 0;
+      transform: translateY(26px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+  .bc-rule-numeral {
+    flex: none;
+    width: 44px;
+    font-family: 'Playfair Display', serif;
+    font-weight: 900;
+    font-style: italic;
+    font-size: 34px;
+    color: var(--bc-blue);
   }
   .bc-rule-title {
     margin: 0 0 12px;
-    font-family: 'Lato', sans-serif;
+    font-family: 'Playfair Display', serif;
     font-weight: 900;
+    font-style: italic;
     font-size: 22px;
-    color: var(--bc-card-title);
+    color: var(--bc-gold);
   }
   .bc-rule-text {
     margin: 0;
-    font-family: 'Lato', sans-serif;
-    font-size: 16px;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 15px;
+    line-height: 1.7;
+    color: rgba(255, 255, 255, 0.72);
+  }
+  .bc-rule-callout {
+    margin: 14px 0 0;
+    background: rgba(77, 163, 255, 0.08);
+    border-left: 2px solid rgba(77, 163, 255, 0.5);
+    border-radius: 0 6px 6px 0;
+    padding: 12px 16px;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 13.5px;
+    font-style: italic;
+    color: rgba(255, 255, 255, 0.6);
     line-height: 1.6;
-    color: var(--bc-card-desc);
+  }
+  .bc-rules-cta {
+    text-align: center;
+    margin-top: 44px;
+  }
+  .bc-rules-btn {
+    display: inline-block;
+    border: 1.5px solid var(--bc-gold);
+    color: var(--bc-gold);
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 15px 28px;
+    border-radius: 8px;
+    transition: background 0.15s, transform 0.15s;
+  }
+  .bc-rules-btn:hover {
+    background: rgba(255, 207, 92, 0.1);
+    transform: skewX(-4deg) scale(1.05);
   }
 
   @media (max-width: 480px) {
     .bc-rule-card {
-      padding: 22px 22px;
+      padding: 22px 20px;
+      gap: 14px;
+    }
+    .bc-rule-numeral {
+      width: 32px;
+      font-size: 26px;
     }
     .bc-rule-title {
-      font-size: 20px;
+      font-size: 19px;
     }
   }
 </style>

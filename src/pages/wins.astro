@@ -2,40 +2,33 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import PageBanner from '../components/PageBanner.astro';
 import { games, winPoints } from '../data/games';
-import { guests } from '../data/guests';
+import { activeGuests } from '../data/guests';
 
 const gameOptions = games.map((g) => g.name).sort((a, b) => a.localeCompare(b));
-const playerOptions = guests.filter((g) => !g.statusLine).map((g) => g.name);
+const playerOptions = activeGuests.map((g) => g.name);
 
 const gamePointsData = JSON.stringify(
   Object.fromEntries(games.map((g) => [g.name, winPoints(g)]))
 );
+const playerOptionsData = JSON.stringify(playerOptions);
 ---
 
 <BaseLayout title="Wins — BaileyCon" active="wins">
   <PageBanner
-    eyebrow="THE VICTORY LEDGER"
+    eyebrow="BaileyCon III"
     title="Wins"
     subtitle="Every triumph, tallied. Record the fallen, crown the victors."
   />
 
-  <!-- ===== TOP-3 PODIUM ===== -->
-  <section class="bc-podium-section">
-    <h2 class="bc-podium-title">Champions of the Table</h2>
-    <div class="bc-podium-grid" id="podium-grid">
-      <p class="bc-loading">Fetching the standings&hellip;</p>
-    </div>
-  </section>
-
-  <section class="bc-wins-section">
+  <section class="bc-split-2col">
     <!-- FORM -->
-    <div class="bc-win-form">
-      <h2 class="bc-form-title">Record a Win</h2>
+    <div class="bc-form-col">
+      <h2 class="bc-form-title">Log a Win</h2>
 
-      <label class="bc-label" for="win-game">THE GAME</label>
+      <label class="bc-label" for="win-game">Game</label>
       <div class="bc-game-row">
         <select class="bc-field" id="win-game">
-          <option value="">&mdash; choose a game &mdash;</option>
+          <option value="">Choose a game…</option>
           {gameOptions.map((g) => (
             <option value={g}>{g}</option>
           ))}
@@ -45,155 +38,102 @@ const gamePointsData = JSON.stringify(
       </div>
 
       <div id="win-custom-fields" class="bc-custom-fields" hidden>
-        <label class="bc-label" for="win-custom-name">GAME NAME</label>
+        <label class="bc-label" for="win-custom-name">Game Name</label>
         <input class="bc-field" type="text" id="win-custom-name" placeholder="What did you play?" style="margin-bottom:16px;" />
 
-        <label class="bc-label" for="win-custom-points">WIN VALUE (PTS)</label>
+        <label class="bc-label" for="win-custom-points">Win Value (PTS)</label>
         <input class="bc-field" type="number" id="win-custom-points" min="1" step="1" placeholder="e.g. 3" style="margin-bottom:16px;" />
       </div>
 
-      <label class="bc-label" for="win-player" style="margin-top:16px;">THE VICTOR</label>
-      <select class="bc-field" id="win-player" style="margin-bottom:20px;">
-        <option value="">&mdash; choose a player &mdash;</option>
+      <label class="bc-label" for="win-player" style="margin-top:16px;">Winner</label>
+      <select class="bc-field" id="win-player" style="margin-bottom:16px;">
+        <option value="">Choose a player…</option>
         {playerOptions.map((p) => (
           <option value={p}>{p}</option>
         ))}
       </select>
 
-      <button id="win-submit" class="bc-submit-btn" disabled>RECORD THE WIN</button>
+      <label class="bc-label" for="win-notes">Notes (optional)</label>
+      <textarea class="bc-field" id="win-notes" rows="3" placeholder="How did it happen? Epic comeback? Devastating betrayal?" style="margin-bottom:18px;"></textarea>
+
+      <button id="win-submit" class="bc-submit-btn" disabled>Record Win</button>
       <p id="win-status" class="bc-status" hidden></p>
+
+      <div class="bc-recent" id="recent-wrap" hidden>
+        <div class="bc-recent-head">Recent</div>
+        <div id="recent-list" class="bc-recent-list"></div>
+      </div>
     </div>
 
-    <!-- LIST -->
-    <div>
+    <!-- LEADERBOARD -->
+    <div class="bc-board-col">
       <div class="bc-list-head">
-        <h2 class="bc-list-title">Recent Victories</h2>
-        <span id="win-count" class="bc-count">&hellip;</span>
+        <h2 class="bc-list-title">Leaderboard</h2>
       </div>
-      <div id="win-list" class="bc-list">
-        <p class="bc-loading">Fetching the ledger&hellip;</p>
+      <p class="bc-leader-caption" id="leader-caption">&hellip;</p>
+      <div id="leaderboard" class="bc-leaderboard">
+        <p class="bc-loading">Fetching the standings&hellip;</p>
       </div>
     </div>
   </section>
 </BaseLayout>
 
 <script type="application/json" id="wins-game-points-data" set:html={gamePointsData}></script>
+<script type="application/json" id="wins-player-options-data" set:html={playerOptionsData}></script>
 
-<template id="win-card-template">
-  <div class="bc-win-card">
-    <span class="bc-win-game"></span>
-    <span class="bc-win-player"></span>
-    <span class="bc-win-points"></span>
-    <span class="bc-win-date"></span>
+<template id="recent-item-template">
+  <div class="bc-recent-item">
+    <span class="bc-recent-player"></span>
+    <span class="bc-recent-game"></span>
+    <span class="bc-recent-date"></span>
+    <p class="bc-recent-notes" hidden></p>
   </div>
 </template>
 
-<template id="podium-card-template">
-  <div class="bc-podium-card">
-    <div class="bc-podium-rank"></div>
-    <div class="bc-podium-name"></div>
-    <div class="bc-podium-points"></div>
-    <div class="bc-podium-wins"></div>
+<template id="leaderboard-row-template">
+  <div class="bc-lb-row">
+    <span class="bc-lb-rank"></span>
+    <span class="bc-lb-name"></span>
+    <div class="bc-lb-bar-track">
+      <div class="bc-lb-bar-fill"></div>
+    </div>
+    <span class="bc-lb-wins"></span>
   </div>
 </template>
 
-<style>
-  .bc-podium-section {
-    max-width: 900px;
+<style is:global>
+  .bc-split-2col {
+    max-width: 1140px;
     margin: 0 auto;
-    padding: 0 28px 48px;
-    text-align: center;
-  }
-  .bc-podium-title {
-    margin: 0 0 26px;
-    font-family: 'Lato', sans-serif;
-    font-weight: 900;
-    font-size: 34px;
-    color: #c79a1f;
-  }
-  .bc-podium-grid {
+    padding: 0 28px 70px;
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 20px;
-    align-items: end;
+    grid-template-columns: 36% 64%;
+    gap: 0;
+    min-height: calc(100vh - 400px);
   }
-  .bc-podium-card {
-    border: 2px solid #6a4fb0;
-    border-radius: 12px;
-    background: var(--bc-card-purple);
-    box-shadow: 5px 5px 0 var(--bc-blue);
-    padding: 22px 16px 20px;
+  .bc-form-col {
+    border-right: 1px solid var(--bc-border-gold);
+    padding: 8px 36px 40px 8px;
   }
-  .bc-podium-card[data-rank='1'] {
-    border-color: var(--bc-gold);
-    transform: translateY(-14px);
-  }
-  .bc-podium-rank {
-    font-family: 'Raleway', sans-serif;
-    font-weight: 800;
-    font-size: 11px;
-    letter-spacing: 3px;
-    color: var(--bc-card-label);
-    margin-bottom: 8px;
-  }
-  .bc-podium-card[data-rank='1'] .bc-podium-rank {
-    color: var(--bc-gold);
-  }
-  .bc-podium-name {
-    font-family: 'Lato', sans-serif;
-    font-weight: 900;
-    font-size: 22px;
-    color: var(--bc-card-title);
-    margin-bottom: 6px;
-  }
-  .bc-podium-points {
-    font-family: 'Raleway', sans-serif;
-    font-weight: 800;
-    font-size: 13px;
-    letter-spacing: 1px;
-    color: var(--bc-gold);
-  }
-  .bc-podium-wins {
-    font-family: 'Raleway', sans-serif;
-    font-weight: 700;
-    font-size: 11px;
-    letter-spacing: 1px;
-    color: var(--bc-card-label);
-    margin-top: 4px;
-  }
-
-  .bc-wins-section {
-    max-width: 1100px;
-    margin: 0 auto;
-    padding: 0 28px 40px;
-    display: grid;
-    grid-template-columns: 400px 1fr;
-    gap: 38px;
-    align-items: start;
-  }
-  .bc-win-form {
-    position: sticky;
-    top: 96px;
-    border: 2px solid var(--bc-gold);
-    border-radius: 14px;
-    background: var(--bc-card-blueviolet);
-    padding: 30px 28px;
-    box-shadow: 6px 6px 0 var(--bc-deep-twilight);
+  .bc-board-col {
+    padding: 8px 8px 40px 36px;
   }
   .bc-form-title {
     margin: 0 0 24px;
-    font-family: 'Lato', sans-serif;
-    font-weight: 900;
-    font-size: 28px;
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: 24px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
     color: var(--bc-gold);
   }
   .bc-label {
     display: block;
-    font-family: 'Raleway', sans-serif;
-    font-weight: 800;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
     font-size: 11px;
     letter-spacing: 1.5px;
-    color: var(--bc-card-form-label);
+    color: rgba(255, 255, 255, 0.5);
     margin-bottom: 8px;
     text-transform: uppercase;
   }
@@ -204,134 +144,197 @@ const gamePointsData = JSON.stringify(
     margin-bottom: 16px;
   }
   .bc-win-preview {
-    font-family: 'Lato', sans-serif;
+    font-family: 'Space Grotesk', sans-serif;
     font-weight: 700;
     font-size: 13px;
     color: var(--bc-gold);
     white-space: nowrap;
   }
   .bc-custom-fields {
-    border-top: 1px solid rgba(255, 255, 255, 0.14);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.14);
+    border-top: 1px solid var(--bc-border-gold);
+    border-bottom: 1px solid var(--bc-border-gold);
     padding: 16px 0 0;
     margin-bottom: 4px;
   }
   .bc-submit-btn {
     width: 100%;
-    border: 2px solid transparent;
+    border: 1.5px solid var(--bc-gold);
     border-radius: 9px;
     padding: 15px;
-    font-family: 'Lato', sans-serif;
-    font-weight: 900;
-    font-size: 15px;
-    letter-spacing: 1px;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
     cursor: not-allowed;
-    color: rgba(20, 19, 43, 0.45);
-    background: rgba(255, 207, 92, 0.45);
+    color: rgba(255, 207, 92, 0.35);
+    background: transparent;
+    opacity: 0.4;
+    transition: opacity 0.15s;
   }
   .bc-submit-btn:not(:disabled) {
     cursor: pointer;
-    color: #14132b;
+    color: #1a0e02;
     background: var(--bc-gold);
-    border-color: #14132b;
-    box-shadow: 4px 4px 0 #14132b;
+    opacity: 1;
   }
   .bc-status {
     margin: 12px 0 0;
-    font-family: 'Raleway', sans-serif;
+    font-family: 'Space Grotesk', sans-serif;
     font-weight: 700;
-    font-size: 11px;
-    letter-spacing: 1px;
-    color: #e2d6ff;
+    font-size: 12px;
+    color: var(--bc-blue);
     text-align: center;
   }
   .bc-status.is-error {
-    color: #ffc2c2;
+    color: var(--bc-error);
+  }
+  .bc-recent {
+    margin-top: 30px;
+    border-top: 1px solid var(--bc-border-gold);
+    padding-top: 20px;
+  }
+  .bc-recent-head {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.4);
+    margin-bottom: 12px;
+  }
+  .bc-recent-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .bc-recent-item {
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 8px;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 13px;
+  }
+  .bc-recent-player {
+    color: var(--bc-gold);
+    font-weight: 700;
+  }
+  .bc-recent-game {
+    color: rgba(255, 255, 255, 0.5);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 60%;
+  }
+  .bc-recent-date {
+    color: rgba(255, 255, 255, 0.3);
+    margin-left: auto;
+    font-size: 11px;
+  }
+  .bc-recent-notes {
+    flex-basis: 100%;
+    margin: 2px 0 0;
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: 12.5px;
+    color: rgba(255, 255, 255, 0.4);
   }
 
   .bc-list-head {
-    display: flex;
-    align-items: baseline;
-    justify-content: space-between;
-    border-bottom: 2px solid #e2e8f7;
-    padding-bottom: 14px;
-    margin-bottom: 24px;
+    margin-bottom: 4px;
   }
   .bc-list-title {
     margin: 0;
-    font-family: 'Lato', sans-serif;
-    font-weight: 900;
-    font-size: 30px;
-    color: var(--bc-ink-strong);
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: 24px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: #fff;
   }
-  .bc-count {
-    font-family: 'Raleway', sans-serif;
-    font-weight: 800;
-    font-size: 12px;
-    letter-spacing: 2px;
-    color: var(--bc-faint);
+  .bc-leader-caption {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: 15px;
+    color: rgba(255, 255, 255, 0.55);
+    margin: 8px 0 26px;
   }
-  .bc-list {
+  .bc-loading {
+    font-family: 'Space Grotesk', sans-serif;
+    color: rgba(255, 255, 255, 0.4);
+  }
+  .bc-leaderboard {
     display: flex;
     flex-direction: column;
     gap: 14px;
   }
-  .bc-loading {
-    font-family: 'Lato', sans-serif;
-    color: var(--bc-muted);
-  }
-  .bc-win-card {
-    border: 2px solid #6a4fb0;
-    border-radius: 12px;
-    background: var(--bc-card-purple);
-    box-shadow: 6px 6px 0 var(--bc-blue);
-    padding: 18px 24px;
-    display: flex;
+  .bc-lb-row {
+    display: grid;
+    grid-template-columns: 28px 120px 1fr 60px;
     align-items: center;
     gap: 12px;
-    flex-wrap: wrap;
-    font-family: 'Lato', sans-serif;
-    font-size: 15px;
   }
-  .bc-win-game {
-    color: #14132b;
-    background: var(--bc-gold);
-    border-radius: 20px;
-    padding: 6px 16px;
+  .bc-lb-rank {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: 15px;
+    text-align: center;
+  }
+  .bc-lb-name {
+    font-family: 'Space Grotesk', sans-serif;
     font-weight: 700;
     font-size: 14px;
+    color: rgba(255, 255, 255, 0.75);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
-  .bc-win-player {
-    color: var(--bc-card-title);
-    font-weight: 900;
-    font-size: 20px;
-    flex: 1;
+  .bc-lb-bar-track {
+    height: 10px;
+    border-radius: 5px;
+    background: rgba(255, 255, 255, 0.06);
+    overflow: hidden;
   }
-  .bc-win-points {
-    color: var(--bc-gold);
+  .bc-lb-bar-fill {
+    height: 100%;
+    border-radius: 5px;
+    background: linear-gradient(90deg, var(--bc-blue), var(--bc-gold));
+    width: var(--bar-w, 0%);
+    animation: bc-bar-grow 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+  @keyframes bc-bar-grow {
+    from {
+      width: 0;
+    }
+    to {
+      width: var(--bar-w, 0%);
+    }
+  }
+  .bc-lb-wins {
+    font-family: 'Space Grotesk', sans-serif;
     font-weight: 700;
-  }
-  .bc-win-date {
-    color: var(--bc-card-label);
-    font-size: 13px;
-  }
-
-  @media (max-width: 860px) {
-    .bc-wins-section {
-      grid-template-columns: 1fr;
-    }
-    .bc-win-form {
-      position: static;
-    }
+    font-size: 12px;
+    color: var(--bc-gold);
+    text-align: right;
   }
 
-  @media (max-width: 640px) {
-    .bc-podium-grid {
+  @media (max-width: 760px) {
+    .bc-split-2col {
       grid-template-columns: 1fr;
+      min-height: 0;
     }
-    .bc-podium-card[data-rank='1'] {
-      transform: none;
-      order: -1;
+    .bc-form-col {
+      border-right: none;
+      border-bottom: 1px solid var(--bc-border-gold);
+      padding: 8px 8px 30px;
+    }
+    .bc-board-col {
+      padding: 30px 8px 40px;
+    }
+    .bc-lb-row {
+      grid-template-columns: 24px 90px 1fr 50px;
+      gap: 8px;
     }
   }
 </style>
@@ -342,6 +345,7 @@ const gamePointsData = JSON.stringify(
 
   interface WinRow extends WinRowBase {
     id: number;
+    notes?: string | null;
     created_at: string;
   }
 
@@ -351,24 +355,28 @@ const gamePointsData = JSON.stringify(
   const gamePoints: Record<string, number> = pointsDataEl
     ? JSON.parse(pointsDataEl.textContent || '{}')
     : {};
+  const playersDataEl = document.getElementById('wins-player-options-data');
+  const playerOptions: string[] = playersDataEl ? JSON.parse(playersDataEl.textContent || '[]') : [];
 
   const gameSelect = document.getElementById('win-game') as HTMLSelectElement;
   const playerSelect = document.getElementById('win-player') as HTMLSelectElement;
+  const notesInput = document.getElementById('win-notes') as HTMLTextAreaElement;
   const previewEl = document.getElementById('win-preview') as HTMLSpanElement;
   const customFields = document.getElementById('win-custom-fields') as HTMLDivElement;
   const customNameInput = document.getElementById('win-custom-name') as HTMLInputElement;
   const customPointsInput = document.getElementById('win-custom-points') as HTMLInputElement;
   const submitBtn = document.getElementById('win-submit') as HTMLButtonElement;
   const statusEl = document.getElementById('win-status') as HTMLParagraphElement;
-  const listEl = document.getElementById('win-list') as HTMLDivElement;
-  const countEl = document.getElementById('win-count') as HTMLSpanElement;
-  const template = document.getElementById('win-card-template') as HTMLTemplateElement;
-  const podiumGrid = document.getElementById('podium-grid') as HTMLDivElement;
-  const podiumTemplate = document.getElementById('podium-card-template') as HTMLTemplateElement;
+  const recentWrap = document.getElementById('recent-wrap') as HTMLDivElement;
+  const recentList = document.getElementById('recent-list') as HTMLDivElement;
+  const recentTemplate = document.getElementById('recent-item-template') as HTMLTemplateElement;
+  const leaderboardEl = document.getElementById('leaderboard') as HTMLDivElement;
+  const leaderCaption = document.getElementById('leader-caption') as HTMLParagraphElement;
+  const leaderboardTemplate = document.getElementById('leaderboard-row-template') as HTMLTemplateElement;
 
   function formatDate(iso: string) {
     const d = new Date(iso);
-    return d.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
+    return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
   }
 
   function isCustomSelected() {
@@ -411,76 +419,68 @@ const gamePointsData = JSON.stringify(
     updateSubmitState();
   });
 
-  function renderLedger(rows: WinRow[]) {
-    listEl.innerHTML = '';
-    countEl.textContent = `${rows.length} ${rows.length === 1 ? 'WIN' : 'WINS'}`;
-    if (!rows.length) {
-      const p = document.createElement('p');
-      p.className = 'bc-loading';
-      p.textContent = 'No wins recorded yet — be the first to claim victory.';
-      listEl.appendChild(p);
-      return;
-    }
-    for (const r of rows) {
-      const node = template.content.cloneNode(true) as DocumentFragment;
-      (node.querySelector('.bc-win-game') as HTMLElement).textContent = r.game;
-      (node.querySelector('.bc-win-player') as HTMLElement).textContent = r.player;
-      const pts = pointsForWin(r, gamePoints);
-      (node.querySelector('.bc-win-points') as HTMLElement).textContent = `${pts} PTS`;
-      (node.querySelector('.bc-win-date') as HTMLElement).textContent = formatDate(r.created_at);
-      listEl.appendChild(node);
+  function renderRecent(rows: WinRow[]) {
+    recentList.innerHTML = '';
+    const recent = rows.slice(0, 8);
+    recentWrap.hidden = recent.length === 0;
+    for (const r of recent) {
+      const node = recentTemplate.content.cloneNode(true) as DocumentFragment;
+      (node.querySelector('.bc-recent-player') as HTMLElement).textContent = r.player;
+      (node.querySelector('.bc-recent-game') as HTMLElement).textContent = r.game;
+      (node.querySelector('.bc-recent-date') as HTMLElement).textContent = formatDate(r.created_at);
+      const notesEl = node.querySelector('.bc-recent-notes') as HTMLElement;
+      if (r.notes) {
+        notesEl.textContent = r.notes;
+        notesEl.hidden = false;
+      }
+      recentList.appendChild(node);
     }
   }
 
-  interface PlayerTally {
-    points: number;
-    wins: number;
-  }
-
-  function renderPodium(rows: WinRow[]) {
-    const totals = new Map<string, PlayerTally>();
+  function renderLeaderboard(rows: WinRow[]) {
+    const winCounts = new Map<string, number>();
     for (const r of rows) {
-      const entry = totals.get(r.player) || { points: 0, wins: 0 };
-      entry.points += pointsForWin(r, gamePoints);
-      entry.wins += 1;
-      totals.set(r.player, entry);
+      winCounts.set(r.player, (winCounts.get(r.player) || 0) + 1);
     }
-    // Rank by total points; ties go to whoever notched more wins to get there
-    // (quantity over quality). A remaining tie is settled by a d20 roll at
-    // the table, not something the site can decide — see the Rules page.
-    const ranked = Array.from(totals.entries())
-      .sort((a, b) => b[1].points - a[1].points || b[1].wins - a[1].wins || a[0].localeCompare(b[0]))
-      .slice(0, 3);
+    const sorted = playerOptions
+      .map((name) => ({ name, wins: winCounts.get(name) || 0 }))
+      .sort((a, b) => b.wins - a.wins || a.name.localeCompare(b.name));
 
-    podiumGrid.innerHTML = '';
-    if (!ranked.length) {
-      const p = document.createElement('p');
-      p.className = 'bc-loading';
-      p.textContent = 'No victors crowned yet — record the first win below.';
-      podiumGrid.appendChild(p);
-      return;
-    }
-    // Visual podium order: 2nd, 1st, 3rd (classic center-elevated layout).
-    const order = [1, 0, 2].filter((i) => i < ranked.length);
-    for (const i of order) {
-      const [name, stats] = ranked[i];
-      const node = podiumTemplate.content.cloneNode(true) as DocumentFragment;
-      const card = node.querySelector('.bc-podium-card') as HTMLElement;
-      card.dataset.rank = String(i + 1);
-      (node.querySelector('.bc-podium-rank') as HTMLElement).textContent =
-        i === 0 ? '1ST' : i === 1 ? '2ND' : '3RD';
-      (node.querySelector('.bc-podium-name') as HTMLElement).textContent = name;
-      (node.querySelector('.bc-podium-points') as HTMLElement).textContent = `${stats.points} PTS`;
-      (node.querySelector('.bc-podium-wins') as HTMLElement).textContent = `${stats.wins} ${stats.wins === 1 ? 'WIN' : 'WINS'}`;
-      podiumGrid.appendChild(node);
-    }
+    const topWins = sorted[0]?.wins || 0;
+    const rankColors = ['#ffcf5c', '#c8c8c8', '#cd7f32'];
+    const medals = ['🥇', '🥈', '🥉'];
+
+    leaderboardEl.innerHTML = '';
+    sorted.forEach((p, i) => {
+      const node = leaderboardTemplate.content.cloneNode(true) as DocumentFragment;
+      const rankEl = node.querySelector('.bc-lb-rank') as HTMLElement;
+      const hasMedal = i < 3 && p.wins > 0;
+      rankEl.textContent = hasMedal ? medals[i] : String(i + 1);
+      rankEl.style.color = i < 3 && p.wins > 0 ? rankColors[i] : 'rgba(255,255,255,0.35)';
+      const nameEl = node.querySelector('.bc-lb-name') as HTMLElement;
+      nameEl.textContent = p.name;
+      if (i === 0 && p.wins > 0) nameEl.style.color = '#fff';
+      const fill = node.querySelector('.bc-lb-bar-fill') as HTMLElement;
+      const barWidth = topWins > 0 ? `${Math.round((p.wins / topWins) * 100)}%` : '0%';
+      fill.style.setProperty('--bar-w', barWidth);
+      (node.querySelector('.bc-lb-wins') as HTMLElement).textContent = `${p.wins} ${p.wins === 1 ? 'WIN' : 'WINS'}`;
+      leaderboardEl.appendChild(node);
+    });
+
+    const leader = sorted[0];
+    leaderCaption.textContent =
+      leader && leader.wins > 0
+        ? leader.wins === 1
+          ? `${leader.name} is in the lead with 1 win. The quest continues.`
+          : `${leader.name} leads with ${leader.wins} wins. The others are getting desperate.`
+        : 'No wins recorded yet. The battlefield awaits.';
   }
 
   async function loadWins() {
     if (!supabaseConfigured) {
-      listEl.innerHTML = '<p class="bc-loading">Wins backend is not configured yet — ask the host to finish Supabase setup.</p>';
-      countEl.textContent = '0 WINS';
-      podiumGrid.innerHTML = '<p class="bc-loading">Leaderboard needs the Supabase backend configured.</p>';
+      recentWrap.hidden = true;
+      leaderboardEl.innerHTML = '<p class="bc-loading">Leaderboard needs the Supabase backend configured.</p>';
+      leaderCaption.textContent = '';
       return;
     }
     const { data, error } = await supabase
@@ -488,13 +488,12 @@ const gamePointsData = JSON.stringify(
       .select('*')
       .order('created_at', { ascending: false });
     if (error) {
-      listEl.innerHTML = `<p class="bc-loading">Could not load wins (${error.message}).</p>`;
-      podiumGrid.innerHTML = '<p class="bc-loading">Standings unavailable right now.</p>';
+      leaderboardEl.innerHTML = `<p class="bc-loading">Could not load standings (${error.message}).</p>`;
       return;
     }
     const rows = (data as WinRow[]) || [];
-    renderLedger(rows);
-    renderPodium(rows);
+    renderRecent(rows);
+    renderLeaderboard(rows);
   }
 
   async function submitWin() {
@@ -502,6 +501,7 @@ const gamePointsData = JSON.stringify(
     const custom = isCustomSelected();
     const game = custom ? customNameInput.value.trim() : gameSelect.value;
     const customPoints = Number(customPointsInput.value);
+    const notes = notesInput.value.trim();
     if (!game || !player) return;
     if (custom && !(customPoints >= 1)) return;
 
@@ -509,11 +509,9 @@ const gamePointsData = JSON.stringify(
     statusEl.hidden = true;
     statusEl.classList.remove('is-error');
 
-    // Only custom ("not listed") wins carry an explicit points override —
-    // known games keep inserting the same shape as before so recording a
-    // normal win never depends on the newer `points` column existing yet.
-    const payload: { game: string; player: string; points?: number } = { game, player };
+    const payload: { game: string; player: string; points?: number; notes?: string } = { game, player };
     if (custom) payload.points = customPoints;
+    if (notes) payload.notes = notes;
 
     const { error } = await supabase.from('wins').insert(payload);
     if (error) {
@@ -526,12 +524,16 @@ const gamePointsData = JSON.stringify(
 
     gameSelect.value = '';
     playerSelect.value = '';
+    notesInput.value = '';
     customFields.hidden = true;
     customNameInput.value = '';
     customPointsInput.value = '';
     updatePreview();
-    statusEl.textContent = 'Recorded! The ledger has been updated.';
+    statusEl.textContent = '✓ Win recorded!';
     statusEl.hidden = false;
+    setTimeout(() => {
+      statusEl.hidden = true;
+    }, 3000);
     updateSubmitState();
     await loadWins();
   }

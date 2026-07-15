@@ -1,289 +1,310 @@
 ---
 import { withBase } from '../lib/url';
-
-interface Stat {
-  label: string;
-  value: number;
-}
-
-interface Guest {
-  slug: string;
-  name: string;
-  title: string;
-  rarity: 'Mythic' | 'Epic' | 'Rare';
-  main: string;
-  align: string;
-  bio: string;
-  stats: Stat[];
-  num: string;
-  statusLine?: string;
-}
+import { rarityStyles, statusStyles, pips, type Guest } from '../data/guests';
 
 interface Props {
   guest: Guest;
 }
 
 const { guest } = Astro.props;
+const rs = rarityStyles[guest.rarity];
+const [str, chs, blf, sta] = guest.stats;
 
-const rarityColors: Record<string, string> = {
-  Mythic: '#ffcf5c',
-  Epic: '#a78bf0',
-  Rare: '#6fa0ff',
-};
-const rc = rarityColors[guest.rarity];
-
-function pips(n: number) {
-  return '◆'.repeat(n) + '◇'.repeat(5 - n);
-}
+const pStr = pips(str);
+const pChs = pips(chs);
+const pBlf = pips(blf);
+const pSta = pips(sta);
 ---
 
-<div class="bc-guest-card" id={guest.slug} data-name={guest.name} style={`border-top-color:${rc};`}>
-  <div class="bc-guest-namebar">
-    <div class="bc-guest-name">{guest.name}</div>
-    <div class="bc-guest-rarity">
-      <span class="bc-gem" style={`background:${rc};box-shadow:0 0 8px ${rc};`}></span>
-      <span class="bc-rarity-label" style={`color:${rc};`}>{guest.rarity}</span>
-    </div>
+<div
+  class="mtg-card"
+  id={guest.slug}
+  data-name={guest.name}
+  data-slug={guest.slug}
+  data-str={str}
+  data-chs={chs}
+  data-blf={blf}
+  data-sta={sta}
+  data-rarity-color={rs.rarityColor}
+  style={`--rc:${rs.rarityColor}; background:${rs.frameGrad};`}
+>
+  <div class="mtg-titlebar" style={`background:${rs.titleBg};`}>
+    <span class="mtg-name" style={`color:${rs.titleColor};`}>{guest.name}</span>
+    <span class="mtg-sta-pips" data-stat-pips="sta" style={`color:${rs.rarityColor};`}>{pSta.filled}</span>
   </div>
 
-  <div class="bc-portrait">
-    <div class="bc-portrait-placeholder">
+  <div class="mtg-art">
+    <div class="mtg-art-placeholder">
       <span>Drop {guest.name}&rsquo;s photo</span>
     </div>
     <img
       src={withBase(`/images/guests/${guest.slug}.jpg`)}
       alt={guest.name}
-      class="bc-portrait-image"
+      class="mtg-art-image"
       loading="lazy"
       onerror="this.style.display='none'"
     />
-    <span class="bc-score-pill" data-score-slot hidden></span>
-  </div>
-
-  <div class="bc-guest-body">
-    <div class="bc-guest-title" style={`color:${rc};`}>{guest.title}</div>
-
-    <div class="bc-stat-grid">
-      {guest.stats.map((s) => (
-        <div class="bc-stat-row">
-          <span class="bc-stat-label">{s.label}</span>
-          <span class="bc-stat-pips">{pips(s.value)}</span>
-        </div>
-      ))}
-    </div>
-
-    <div class="bc-guest-facts">
-      <div class="bc-fact-row">
-        <span class="bc-fact-label">MAIN GAME</span>
-        <span class="bc-fact-value">{guest.main}</span>
+    {guest.status && (
+      <div class="mtg-locked-scrim">
+        <span class="mtg-status-banner" style={`background:${statusStyles[guest.status].bg};color:${statusStyles[guest.status].color};`}>
+          {guest.status}
+        </span>
       </div>
-      <div class="bc-fact-row">
-        <span class="bc-fact-label">ALIGNMENT</span>
-        <span class="bc-fact-value">{guest.align}</span>
-      </div>
-    </div>
-
-    <p class="bc-guest-bio">{guest.bio}</p>
-  </div>
-
-  <div class="bc-guest-footer">
-    {guest.statusLine ? (
-      <span class="bc-guest-status">{guest.statusLine}</span>
-    ) : (
-      <span>No. {guest.num} / 12</span>
     )}
-    <span class="bc-guest-brand">BAILEYCON &#9670; III</span>
+    <span class="mtg-score-pill" data-score-slot hidden></span>
+    <span class="mtg-shine"></span>
+  </div>
+
+  <div class="mtg-typeline" style={`background:${rs.titleBg};`}>
+    <span>Legendary &mdash; {guest.title}</span>
+    <span class="mtg-rarity-symbol" style={`color:${rs.rarityColor};`}>{rs.raritySymbol}</span>
+  </div>
+
+  <div class="mtg-stats">
+    <div class="mtg-stat-row">
+      <span class="mtg-stat-label">Strategy</span>
+      <span class="mtg-stat-pips" data-stat-pips="str" style={`color:${rs.titleBg};`}>{pStr.filled}<span class="mtg-pip-empty">{pStr.empty}</span></span>
+    </div>
+    <div class="mtg-stat-row">
+      <span class="mtg-stat-label">Chaos</span>
+      <span class="mtg-stat-pips" data-stat-pips="chs" style={`color:${rs.titleBg};`}>{pChs.filled}<span class="mtg-pip-empty">{pChs.empty}</span></span>
+    </div>
+    <div class="mtg-stat-row">
+      <span class="mtg-stat-label">Bluff</span>
+      <span class="mtg-stat-pips" data-stat-pips="blf" style={`color:${rs.titleBg};`}>{pBlf.filled}<span class="mtg-pip-empty">{pBlf.empty}</span></span>
+    </div>
+    <div class="mtg-stat-divider"></div>
+    <p class="mtg-flavor">{guest.bio}</p>
+  </div>
+
+  <div class="mtg-footer" style={`background:${rs.titleBg};`}>
+    <span class="mtg-footer-fact">{guest.main} &middot; {guest.align}</span>
+    <span class="mtg-pt-pill" data-pt-pill style={`border-color:${rs.ptBorder};`}>{str}/{sta}</span>
   </div>
 </div>
 
 <style>
-  .bc-guest-card {
-    border: 1px solid rgba(125, 134, 255, 0.45);
-    border-top: 3px solid;
-    border-radius: 12px;
+  .mtg-card {
+    position: relative;
+    border: 6px solid #0a0805;
+    border-radius: 11px;
     overflow: hidden;
-    background: linear-gradient(180deg, #241a52, #130c34);
-    box-shadow: 0 10px 28px rgba(0, 0, 0, 0.4);
     display: flex;
     flex-direction: column;
     scroll-margin-top: 90px;
-    transition: box-shadow 0.22s ease;
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s;
   }
-  .bc-guest-card.bc-highlight {
+  .mtg-card:hover {
+    transform: perspective(700px) rotateY(6deg) rotateX(-4deg) translateY(-10px);
+    box-shadow: -8px 14px 40px rgba(0, 0, 0, 0.75), 0 0 28px var(--rc);
+    z-index: 10;
+  }
+  .mtg-card:hover .mtg-shine {
+    animation: mtg-shine 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+  .mtg-card.bc-highlight {
     animation: bc-guest-highlight-pulse 1.7s ease;
   }
   @keyframes bc-guest-highlight-pulse {
     0%,
     100% {
-      box-shadow: 0 10px 28px rgba(0, 0, 0, 0.4);
+      box-shadow: none;
     }
     25% {
-      box-shadow: 0 0 0 4px rgba(255, 207, 92, 0.85), 0 10px 28px rgba(0, 0, 0, 0.4);
+      box-shadow: 0 0 0 4px rgba(255, 207, 92, 0.85);
     }
   }
-  .bc-guest-namebar {
+  .mtg-card.battle-sel {
+    animation: battle-pulse 1.5s ease-in-out infinite;
+  }
+  @keyframes battle-pulse {
+    0%,
+    100% {
+      box-shadow: 0 0 0 3px #ffcf5c, 0 0 28px rgba(255, 207, 92, 0.4);
+    }
+    50% {
+      box-shadow: 0 0 0 3px #ffcf5c, 0 0 48px rgba(255, 207, 92, 0.75);
+    }
+  }
+  .mtg-titlebar {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 10px;
-    padding: 13px 16px 11px;
-  }
-  .bc-guest-name {
-    font-family: 'Cinzel Decorative', serif;
-    font-weight: 700;
-    font-size: 22px;
-    color: #ffcf5c;
-    line-height: 1;
-  }
-  .bc-guest-rarity {
-    display: flex;
-    align-items: center;
     gap: 6px;
+    padding: 7px 10px;
   }
-  .bc-gem {
-    width: 11px;
-    height: 11px;
-    transform: rotate(45deg);
-    display: inline-block;
+  .mtg-name {
+    font-family: 'Playfair Display', serif;
+    font-weight: 900;
+    font-size: 14px;
   }
-  .bc-rarity-label {
-    font-family: 'Cinzel', serif;
+  .mtg-sta-pips {
     font-size: 10px;
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
+    filter: drop-shadow(0 0 4px currentColor);
   }
-  .bc-portrait {
+  .mtg-art {
     position: relative;
-    aspect-ratio: 1 / 1;
-    border-top: 2px solid #ffcf5c;
-    border-bottom: 2px solid #ffcf5c;
+    height: 180px;
+    background: #04020c;
+    border-top: 2px solid #000;
+    border-bottom: 2px solid #000;
     overflow: hidden;
   }
-  .bc-portrait-placeholder {
+  .mtg-art-placeholder {
     position: absolute;
     inset: 0;
-    background: repeating-linear-gradient(135deg, rgba(125, 134, 255, 0.16) 0 10px, rgba(125, 134, 255, 0.06) 10px 20px);
+    background: repeating-linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0 10px, rgba(255, 255, 255, 0.03) 10px 20px);
     display: flex;
     align-items: center;
     justify-content: center;
     text-align: center;
-    padding: 0 20px;
+    padding: 0 16px;
   }
-  .bc-portrait-placeholder span {
+  .mtg-art-placeholder span {
     font-family: ui-monospace, Menlo, monospace;
-    font-size: 11px;
+    font-size: 10px;
     letter-spacing: 1px;
-    color: rgba(230, 221, 255, 0.5);
+    color: rgba(255, 255, 255, 0.4);
     text-transform: uppercase;
   }
-  .bc-portrait-image {
+  .mtg-art-image {
     position: absolute;
     inset: 0;
     width: 100%;
     height: 100%;
     object-fit: cover;
   }
-  .bc-score-pill {
+  .mtg-locked-scrim {
     position: absolute;
-    top: 10px;
-    right: 10px;
-    z-index: 1;
-    font-family: 'Cinzel', serif;
-    font-size: 10px;
-    letter-spacing: 1.5px;
-    color: #ffcf5c;
-    border: 1px solid #ffcf5c;
-    border-radius: 20px;
-    padding: 3px 10px;
-    text-transform: uppercase;
-    background: rgba(14, 10, 48, 0.55);
-    backdrop-filter: blur(2px);
+    inset: 0;
+    background: linear-gradient(180deg, transparent 45%, rgba(0, 0, 0, 0.75) 100%);
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    padding-bottom: 10px;
   }
-  .bc-guest-body {
-    padding: 15px 18px 8px;
-  }
-  .bc-guest-title {
-    font-family: 'Cinzel', serif;
-    font-size: 12px;
+  .mtg-status-banner {
+    transform: rotate(-5deg);
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: 9.5px;
     letter-spacing: 2px;
     text-transform: uppercase;
-    margin-bottom: 14px;
+    padding: 4px 12px;
+    border-radius: 3px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+  }
+  .mtg-score-pill {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    z-index: 3;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 9px;
+    letter-spacing: 1px;
+    color: var(--bc-gold);
+    border: 1px solid var(--bc-gold);
+    border-radius: 20px;
+    padding: 2px 8px;
+    text-transform: uppercase;
+    background: rgba(6, 4, 15, 0.6);
+    backdrop-filter: blur(2px);
+  }
+  .mtg-shine {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(108deg, transparent 28%, rgba(255, 255, 255, 0.18) 50%, transparent 72%);
+    transform: translateX(-120%) skewX(-18deg);
+    pointer-events: none;
+    z-index: 2;
+  }
+  @keyframes mtg-shine {
+    from {
+      transform: translateX(-120%) skewX(-18deg);
+    }
+    to {
+      transform: translateX(280%) skewX(-18deg);
+    }
+  }
+  .mtg-typeline {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 4px 10px;
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: 8px;
+  }
+  .mtg-typeline span:first-child {
+    color: rgba(255, 255, 255, 0.75);
+  }
+  .mtg-rarity-symbol {
+    filter: drop-shadow(0 0 4px currentColor);
+  }
+  .mtg-stats {
+    flex: 1;
+    background: linear-gradient(180deg, #f2e6c2 0%, #e8d8a8 100%);
+    color: #2a1a06;
+    font-family: Georgia, Times, serif;
+    padding: 10px 12px 12px;
+  }
+  .mtg-stat-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 3px;
+  }
+  .mtg-stat-label {
+    font-weight: 700;
+    font-size: 7.5px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+  }
+  .mtg-stat-pips {
+    font-size: 11px;
+    letter-spacing: 1.5px;
+  }
+  .mtg-pip-empty {
+    color: rgba(42, 26, 6, 0.22);
+  }
+  .mtg-stat-divider {
+    height: 1px;
+    background: rgba(42, 26, 6, 0.22);
+    margin: 6px 0 8px;
+  }
+  .mtg-flavor {
+    font-style: italic;
+    font-size: 9.5px;
+    color: rgba(42, 26, 6, 0.7);
+    margin: 0;
     line-height: 1.4;
   }
-  .bc-stat-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 9px 16px;
-    margin-bottom: 15px;
-  }
-  .bc-stat-row {
+  .mtg-footer {
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 8px;
+    padding: 6px 10px;
   }
-  .bc-stat-label {
-    font-family: 'Cinzel', serif;
-    font-size: 11px;
-    letter-spacing: 1px;
-    color: #e2e4f5;
-  }
-  .bc-stat-pips {
-    font-size: 13px;
-    letter-spacing: 1px;
-    color: #ffcf5c;
-  }
-  .bc-guest-facts {
-    border-top: 1px solid rgba(125, 134, 255, 0.28);
-    padding-top: 12px;
-    margin-bottom: 13px;
-  }
-  .bc-fact-row {
-    display: flex;
-    justify-content: space-between;
-    gap: 8px;
-    margin-bottom: 6px;
-  }
-  .bc-fact-row:last-child {
-    margin-bottom: 0;
-  }
-  .bc-fact-label {
-    font-family: 'Cinzel', serif;
-    font-size: 11px;
-    letter-spacing: 1px;
-    color: #e2e4f5;
-  }
-  .bc-fact-value {
-    font-family: 'Cinzel', serif;
-    font-size: 14px;
-    color: #e6f0ff;
-  }
-  .bc-guest-bio {
-    font-family: 'Lato', sans-serif;
-    font-size: 17px;
-    line-height: 1.55;
-    color: #ffffff;
-    margin: 0;
-  }
-  .bc-guest-footer {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 10px;
-    padding: 11px 18px 15px;
-    font-family: 'Cinzel', serif;
-    font-size: 10px;
-    letter-spacing: 1.5px;
-    color: #e2e4f5;
-  }
-  .bc-guest-status {
-    flex: 1 1 auto;
-    min-width: 0;
-    color: #ff8a8a;
-    font-weight: 700;
-  }
-  .bc-guest-brand {
-    flex: none;
+  .mtg-footer-fact {
+    font-size: 7px;
+    color: rgba(255, 255, 255, 0.7);
     white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .mtg-pt-pill {
+    flex: none;
+    background: #e8d8a8;
+    border: 1px solid;
+    border-radius: 3px;
+    padding: 1px 7px;
+    font-family: Georgia, Times, serif;
+    font-weight: 700;
+    font-size: 12px;
+    color: #1a0e02;
   }
 </style>

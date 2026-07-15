@@ -1,5 +1,4 @@
 ---
-import Crest from './Crest.astro';
 import { withBase } from '../lib/url';
 
 const links = [
@@ -9,112 +8,68 @@ const links = [
   { label: 'Reviews', href: withBase('/reviews/') },
   { label: 'Wins', href: withBase('/wins/') },
   { label: 'Wall', href: withBase('/wall/') },
+  { label: 'Rules', href: withBase('/rules/') },
 ];
 ---
 
 <footer class="bc-footer">
   <div class="bc-footer-inner">
-    <div class="bc-footer-crest">
-      <Crest size={92} />
-    </div>
-    <div class="bc-footer-content">
-      <div class="bc-tagline">&ldquo;Long may thy dice roll true, and thy tankard ne&rsquo;er run dry.&rdquo;</div>
-      <div class="bc-meta">
-        <span>BaileyCon &middot; Third Annual</span>
-        <span class="bc-dot">&#9670;</span>
-        <span>Knight Watch Games, San Antonio TX</span>
-        <span class="bc-dot">&#9670;</span>
-        <span>Noon &ndash; Midnight</span>
-      </div>
-      <nav class="bc-footer-nav">
-        {links.map((l) => (
-          <a href={l.href}>{l.label}</a>
-        ))}
-      </nav>
-    </div>
+    <nav class="bc-footer-nav">
+      {links.map((l) => (
+        <a href={l.href}>{l.label}</a>
+      ))}
+    </nav>
+    <div class="bc-footer-tagline">BaileyCon &middot; III &middot; MMXXV</div>
   </div>
 </footer>
 
 <style>
   .bc-footer {
-    border-top: 3px solid var(--bc-gold);
+    border-top: 1px solid var(--bc-border-gold);
     background: var(--bc-chrome);
     margin-top: 40px;
   }
   .bc-footer-inner {
     max-width: var(--bc-max-width);
     margin: 0 auto;
-    padding: 40px 28px;
-    display: flex;
-    align-items: center;
-    gap: 36px;
-  }
-  .bc-footer-crest {
-    flex: none;
-  }
-  .bc-footer-content {
+    padding: 36px 28px;
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
-    gap: 14px;
-    text-align: left;
-  }
-  .bc-tagline {
-    font-family: 'Lato', sans-serif;
-    font-size: 17px;
-    font-style: italic;
-    color: #c9cdec;
-  }
-  .bc-meta {
-    display: flex;
     align-items: center;
-    gap: 10px;
-    flex-wrap: wrap;
-    justify-content: flex-start;
-    font-family: 'Raleway', sans-serif;
-    font-weight: 700;
-    font-size: 11px;
-    letter-spacing: 1.5px;
-    color: #8f93bd;
-    text-transform: uppercase;
-  }
-  .bc-dot {
-    color: var(--bc-gold);
+    gap: 18px;
+    text-align: center;
   }
   .bc-footer-nav {
     display: flex;
-    gap: 22px;
+    gap: 24px;
     flex-wrap: wrap;
-    justify-content: flex-start;
-    margin-top: 4px;
+    justify-content: center;
   }
   .bc-footer-nav a {
-    font-family: 'Raleway', sans-serif;
+    font-family: 'Space Grotesk', sans-serif;
     font-weight: 700;
     font-size: 11px;
     letter-spacing: 2px;
-    color: #7fb4ff;
+    color: rgba(255, 207, 92, 0.5);
     text-transform: uppercase;
     text-decoration: none;
+    transition: color 0.12s;
   }
   .bc-footer-nav a:hover {
     color: var(--bc-gold);
   }
+  .bc-footer-tagline {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 1px;
+    color: rgba(255, 255, 255, 0.35);
+  }
 
-  @media (max-width: 640px) {
+  @media (max-width: 480px) {
     .bc-footer-inner {
-      flex-direction: column;
-      align-items: center;
-      gap: 14px;
-      padding: 36px 24px 44px;
-    }
-    .bc-footer-content {
-      align-items: center;
-      text-align: center;
-    }
-    .bc-meta,
-    .bc-footer-nav {
-      justify-content: center;
+      padding: 30px 22px;
     }
   }
 </style>

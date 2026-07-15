@@ -92,29 +92,64 @@ uses [Supabase](https://supabase.com) (free tier is plenty for this use case).
      game text not null check (char_length(game) <= 120),
      player text not null check (char_length(player) <= 80),
      points integer check (points is null or points >= 1),
+     notes text check (char_length(notes) <= 500),
      created_at timestamptz not null default now()
    );
    alter table wins enable row level security;
    create policy "public read" on wins for select using (true);
    create policy "public insert" on wins for insert with check (true);
+
+   create table games_played (
+     game_slug text primary key,
+     played boolean not null default true,
+     updated_at timestamptz not null default now()
+   );
+   alter table games_played enable row level security;
+   create policy "public read" on games_played for select using (true);
+   create policy "public insert" on games_played for insert with check (true);
+   create policy "public update" on games_played for update using (true) with check (true);
+
+   create table player_stats (
+     player_slug text primary key,
+     str smallint not null check (str between 1 and 5),
+     chs smallint not null check (chs between 1 and 5),
+     blf smallint not null check (blf between 1 and 5),
+     sta smallint not null check (sta between 1 and 5),
+     updated_at timestamptz not null default now()
+   );
+   alter table player_stats enable row level security;
+   create policy "public read" on player_stats for select using (true);
+   create policy "public insert" on player_stats for insert with check (true);
+   create policy "public update" on player_stats for update using (true) with check (true);
    ```
+
+   `games_played` backs the Games page's shared "Already Played" toggle, and
+   `player_stats` backs the Stat Trial quiz's re-rolled stats on the Players
+   page — both are shared across every visitor (not per-device), so anyone
+   marking a game played or retaking the quiz updates what everyone else
+   sees. Unlike the other tables here, both need a public **update** policy
+   (not just insert) since they hold a small mutable flag/record rather than
+   an append-only log.
 
    `points` is only ever set by the Wins page's "Game not listed" option (a
    manual win-value override for a game not in `src/data/games.ts`); normal
    wins leave it `null` and get their point value from the live `winPoints()`
    formula instead (see `pointsForWin` in `src/lib/wins.ts`).
 
-   **If you already created the `wins` table before this column existed**,
+   **If you already created the `wins` table before these columns existed**,
    run this migration once instead of the `create table` above:
 
    ```sql
    alter table wins add column if not exists points integer
      check (points is null or points >= 1);
+   alter table wins add column if not exists notes text
+     check (char_length(notes) <= 500);
    ```
 
-   Recording a normal (listed) win never touches this column, so it's safe to
-   deploy the site before running the migration — only the "Game not listed"
-   option will fail (with a visible error message) until it's applied.
+   A normal win only touches `notes` (an optional "how did it happen?"
+   field) and never `points`; recording one without a migrated `notes`
+   column, or using "Game not listed" without a migrated `points` column,
+   fails with a visible error until the migration is applied.
 
    Note: `emoji` stores a plain ASCII key (`heart`/`laugh`/`shock`/`dice`), not
    the emoji glyph itself — pasting literal emoji into a `check` constraint is

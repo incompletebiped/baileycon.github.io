@@ -2,118 +2,137 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import GameCard from '../components/GameCard.astro';
 import { games } from '../data/games';
-import { guests } from '../data/guests';
 import { withBase } from '../lib/url';
-
-const company = guests.map((g) => ({ initial: g.name[0], slug: g.slug }));
 ---
 
 <BaseLayout title="BaileyCon — Third Annual" active="home">
   <!-- ===== HERO ===== -->
   <section class="bc-hero">
-    <div class="bc-hero-40">40</div>
+    <div class="bc-hero-bg" style={`background-image:url(${withBase('/images/hero-comic.jpg')});`}></div>
+    <div class="bc-hero-scrim"></div>
+
+    <span class="bc-hero-corner bc-hero-corner-tl"></span>
+    <span class="bc-hero-corner bc-hero-corner-tr"></span>
+    <span class="bc-hero-corner bc-hero-corner-bl"></span>
+    <span class="bc-hero-corner bc-hero-corner-br"></span>
+
+    <div class="bc-hero-side bc-hero-side-l">III &middot; ANNUAL &middot; 2025</div>
+    <div class="bc-hero-side bc-hero-side-r">KNIGHT WATCH GAMES</div>
 
     <div class="bc-hero-inner">
-      <div class="bc-hero-eyebrow">THIRD ANNUAL &middot; <span class="bc-nowrap">SAN ANTONIO, TX</span></div>
       <h1 class="bc-hero-title">
-        <span class="bc-hero-bailey">BAILEY</span><span class="bc-hero-con">CON</span>
+        <span class="bc-slam-l">BAILEY</span>
+        <span class="bc-slam-r">CON</span>
       </h1>
-      <p class="bc-hero-subtitle">
-        Twelve hours. Two taverns&rsquo; worth of halls. Ten players of honour. One knight turning <span class="bc-hero-forty">FORTY</span>.
-      </p>
-
-      <div class="bc-badge-card">
-        <div class="bc-badge-punch"></div>
-        <div class="bc-badge-grid">
-          <div><div class="bc-badge-label">WHEN</div><div class="bc-badge-value">Sat, July 25</div></div>
-          <div><div class="bc-badge-label">HOURS</div><div class="bc-badge-value">Noon &ndash; Midnight</div></div>
-          <div><div class="bc-badge-label">WHERE</div><div class="bc-badge-value">Knight Watch Games</div></div>
-          <div><div class="bc-badge-label">DRESS</div><div class="bc-badge-value">Cloak optional</div></div>
-        </div>
+      <div class="bc-hero-strip">
+        <span class="bc-hero-line"></span>
+        <span class="bc-hero-sublabel">Third Annual &middot; San Antonio, TX</span>
+        <span class="bc-hero-line"></span>
       </div>
+    </div>
 
-      <div class="bc-hero-ctas">
-        <a href={withBase('/players/')} class="bc-btn bc-btn--solid">MEET THE PARTY</a>
-        <a href={withBase('/games/')} class="bc-btn bc-btn--outline-hero">BROWSE THE GAMES</a>
-      </div>
+    <div class="bc-scroll-hint">
+      <span>Scroll</span>
+      <span class="bc-scroll-tick"></span>
     </div>
   </section>
 
-  <!-- ===== THE TALE ===== -->
-  <section class="bc-tale">
-    <div class="bc-fleuron">&#10087;</div>
-    <div class="bc-eyebrow">THE TALE THUS FAR</div>
+  <!-- ===== EVENT STATS BAND ===== -->
+  <section class="bc-stats-band">
+    <div class="bc-stats-grid">
+      <div><div class="bc-stat-label bc-stat-label--blue">WHEN</div><div class="bc-stat-value">Sat, July 25</div></div>
+      <div><div class="bc-stat-label bc-stat-label--blue">HOURS</div><div class="bc-stat-value">Noon &ndash; Midnight</div></div>
+      <div><div class="bc-stat-label bc-stat-label--gold">WHERE</div><div class="bc-stat-value">Knight Watch Games</div></div>
+      <div><div class="bc-stat-label bc-stat-label--gold">DRESS</div><div class="bc-stat-value">Cloak optional</div></div>
+    </div>
+  </section>
+
+  <!-- ===== STORY ===== -->
+  <section class="bc-tale p5-el p5-snap-u">
+    <p class="bc-tale-lead">One knight turning <span class="bc-tale-highlight">Forty.</span></p>
     <p class="bc-tale-text">
       Two years running we&rsquo;ve stormed the tavern with meeples and mischief. For the third annual &mdash; and Bailey&rsquo;s
-      <span class="bc-tale-highlight">fortieth</span> trip &rsquo;round the sun &mdash; we return to Knight Watch Games for a
-      full twelve hours of board games, card games, and glorious tabletop shenanigans. Bring your A-game and your worst poker face.
+      fortieth trip &rsquo;round the sun &mdash; we return to Knight Watch Games for a full twelve hours of board games, card
+      games, and glorious tabletop shenanigans. Bring your A-game and your worst poker face.
     </p>
   </section>
 
   <!-- ===== THE TWO HALLS ===== -->
-  <section class="bc-section">
+  <section class="bc-section p5-el p5-snap-u">
     <div class="bc-section-head">
-      <div class="bc-eyebrow">TWO RESERVED HALLS</div>
-      <h2 class="bc-h2">Choose Thy Battlefield</h2>
+      <div class="bc-divider">
+        <span class="bc-divider-line"></span>
+        <span>&#10231;</span>
+        <h2 class="bc-h2">Choose Thy Battlefield</h2>
+        <span>&#10230;</span>
+        <span class="bc-divider-line"></span>
+      </div>
     </div>
     <div class="bc-halls-grid">
       <div class="bc-hall-card bc-hall-card--blue">
-        <div class="bc-hall-eyebrow bc-hall-eyebrow--blue">HALL THE FIRST</div>
         <h3 class="bc-hall-title bc-hall-title--blue">The Renaissance Room</h3>
-        <p class="bc-hall-text bc-hall-text--blue">Where the deep thinkers dwell. Big-box strategy, sprawling campaigns, and games that eat an afternoon whole. Settle in.</p>
+        <p class="bc-hall-text">Big-box strategy, sprawling campaigns, and games that eat an afternoon whole. Settle in.</p>
       </div>
-      <div class="bc-hall-card bc-hall-card--violet">
-        <div class="bc-hall-eyebrow bc-hall-eyebrow--violet">HALL THE SECOND</div>
-        <h3 class="bc-hall-title bc-hall-title--violet">The Dark Ages Room</h3>
-        <p class="bc-hall-text bc-hall-text--violet">Where alliances go to die. Party games, bluffing, betrayal, and loud accusations. No friendships guaranteed to survive.</p>
+      <div class="bc-hall-card bc-hall-card--gold">
+        <h3 class="bc-hall-title bc-hall-title--gold">The Dark Ages Room</h3>
+        <p class="bc-hall-text">Party games, bluffing, betrayal, and loud accusations. No friendships guaranteed to survive.</p>
       </div>
     </div>
   </section>
 
   <!-- ===== FEATURED GAMES ===== -->
-  <section class="bc-section">
-    <div class="bc-section-row">
-      <div>
-        <div class="bc-eyebrow">ON THE TABLES</div>
+  <section class="bc-section p5-el p5-snap-u">
+    <div class="bc-section-head">
+      <div class="bc-divider">
+        <span class="bc-divider-line"></span>
+        <span>&#10231;</span>
         <h2 class="bc-h2">Featured Quests</h2>
+        <span>&#10230;</span>
+        <span class="bc-divider-line"></span>
       </div>
-      <a href={withBase('/games/')} class="bc-see-all">SEE ALL GAMES &rarr;</a>
     </div>
     <div class="bc-featured-grid">
-      {games.map((g) => (
-        <a href={withBase(`/games/#${g.slug}`)} class="bc-featured-link" data-featured-item style="display:none;">
+      {games.map((g, i) => (
+        <a
+          href={withBase(`/games/#${g.slug}`)}
+          class:list={['bc-featured-link', i % 2 === 0 ? 'bc-featured-link--gold' : 'bc-featured-link--blue']}
+          data-featured-item
+          style="display:none;"
+        >
           <GameCard game={g} compact />
         </a>
       ))}
     </div>
+    <div class="bc-see-all-row">
+      <a href={withBase('/games/')} class="bc-see-all">See All Games &rarr;</a>
+    </div>
   </section>
 
   <!-- ===== THE PARTY ===== -->
-  <section class="bc-section bc-company">
-    <div class="bc-eyebrow">TEN PLAYERS OF HONOUR</div>
-    <h2 class="bc-h2 bc-h2--tight">Assemble the Party</h2>
-    <div class="bc-avatar-row">
-      {company.map((c) => (
-        <a href={withBase(`/players/#${c.slug}`)} class="bc-avatar-link">
-          <div class="bc-avatar">{c.initial}</div>
-        </a>
-      ))}
+  <section class="bc-section bc-party p5-el p5-snap-u">
+    <div class="bc-divider bc-divider--center">
+      <span class="bc-divider-line"></span>
+      <span>&#9671;</span>
+      <span class="bc-divider-dot">&#9678;</span>
+      <span>&#9671;</span>
+      <span class="bc-divider-line"></span>
     </div>
-    <div class="bc-company-link">
-      <a href={withBase('/players/')}>MEET THE PARTY &rarr;</a>
-    </div>
+    <div class="bc-eyebrow">THE PARTY</div>
+    <h2 class="bc-h2">The Party Assembled.</h2>
+    <p class="bc-party-text">Twelve players of honour. Collect them all.</p>
+    <a href={withBase('/players/')} class="bc-btn bc-btn--solid">View the Roster &rarr;</a>
   </section>
 
   <!-- ===== CTA BAND ===== -->
-  <section class="bc-cta-section">
+  <section class="bc-cta-section p5-el p5-snap-u">
     <div class="bc-cta-band">
       <div>
         <h2 class="bc-cta-title">Played something grand?</h2>
         <p class="bc-cta-text">Leave a review, or scrawl a secret upon the anonymous wall.</p>
       </div>
       <div class="bc-cta-buttons">
-        <a href={withBase('/reviews/')} class="bc-btn bc-btn--solid">LEAVE A REVIEW</a>
-        <a href={withBase('/wall/')} class="bc-btn bc-btn--outline">THE WALL</a>
+        <a href={withBase('/reviews/')} class="bc-btn bc-btn--solid">Leave a Review</a>
+        <a href={withBase('/wall/')} class="bc-btn bc-btn--outline">The Wall</a>
       </div>
     </div>
   </section>
@@ -123,162 +142,265 @@ const company = guests.map((g) => ({ initial: g.name[0], slug: g.slug }));
   .bc-hero {
     position: relative;
     overflow: hidden;
-    background: var(--bc-hero-gradient);
-    padding: 66px 28px 74px;
+    min-height: calc(100vh - 52px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: #06040f;
   }
-  .bc-hero-40 {
+  .bc-hero-bg {
     position: absolute;
-    right: 0;
-    bottom: -90px;
-    font-family: 'Bangers', cursive;
-    font-size: 440px;
-    line-height: 0.8;
-    color: rgba(119, 66, 220, 0.14);
-    pointer-events: none;
-    user-select: none;
+    inset: 0;
+    background-size: cover;
+    background-position: center;
+    opacity: 0.5;
   }
-  .bc-hero-inner {
-    max-width: var(--bc-max-width);
-    margin: 0 auto;
-    position: relative;
+  .bc-hero-scrim {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 50% 40%, rgba(6, 4, 15, 0.25) 0%, rgba(6, 4, 15, 0.82) 78%);
+  }
+  .bc-hero-corner {
+    position: absolute;
+    width: 34px;
+    height: 34px;
     z-index: 2;
   }
-  .bc-hero-eyebrow {
-    font-family: 'Raleway', sans-serif;
-    font-weight: 700;
-    font-size: 14px;
-    letter-spacing: 5px;
-    color: #7fb4ff;
-    margin-bottom: 10px;
+  .bc-hero-corner::before,
+  .bc-hero-corner::after {
+    content: '';
+    position: absolute;
+    background: rgba(255, 207, 92, 0.55);
   }
-  .bc-nowrap {
-    white-space: nowrap;
+  .bc-hero-corner::before {
+    width: 100%;
+    height: 1px;
+  }
+  .bc-hero-corner::after {
+    width: 1px;
+    height: 100%;
+  }
+  .bc-hero-corner-tl {
+    top: 26px;
+    left: 26px;
+  }
+  .bc-hero-corner-tl::before,
+  .bc-hero-corner-tl::after {
+    top: 0;
+    left: 0;
+  }
+  .bc-hero-corner-tr {
+    top: 26px;
+    right: 26px;
+  }
+  .bc-hero-corner-tr::before,
+  .bc-hero-corner-tr::after {
+    top: 0;
+    right: 0;
+  }
+  .bc-hero-corner-bl {
+    bottom: 26px;
+    left: 26px;
+  }
+  .bc-hero-corner-bl::before,
+  .bc-hero-corner-bl::after {
+    bottom: 0;
+    left: 0;
+  }
+  .bc-hero-corner-br {
+    bottom: 26px;
+    right: 26px;
+  }
+  .bc-hero-corner-br::before,
+  .bc-hero-corner-br::after {
+    bottom: 0;
+    right: 0;
+  }
+  .bc-hero-side {
+    position: absolute;
+    top: 50%;
+    writing-mode: vertical-rl;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 10px;
+    letter-spacing: 4px;
+    color: rgba(255, 255, 255, 0.3);
+    z-index: 2;
+    transform: translateY(-50%);
+  }
+  .bc-hero-side-l {
+    left: 40px;
+    color: rgba(255, 207, 92, 0.4);
+  }
+  .bc-hero-side-r {
+    right: 40px;
+    color: rgba(77, 163, 255, 0.4);
+  }
+  .bc-hero-inner {
+    position: relative;
+    z-index: 2;
+    text-align: center;
   }
   .bc-hero-title {
-    margin: 10px 0 20px;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     font-family: 'Bangers', cursive;
     font-weight: 400;
-    font-size: 118px;
-    line-height: 0.9;
-    letter-spacing: 2px;
-    transform: skewX(-4deg);
-    text-shadow: 5px 6px 0 #12112e;
-    white-space: nowrap;
+    font-size: 140px;
+    line-height: 0.85;
+    letter-spacing: 10px;
   }
-  .bc-hero-bailey {
+  .bc-slam-l {
     color: var(--bc-blue);
+    text-shadow: 8px 8px 0 #0a0716, 0 0 34px rgba(77, 163, 255, 0.5);
+    animation: bc-slam-l 0.65s cubic-bezier(0.25, 0, 0.3, 1) 0.15s both;
   }
-  .bc-hero-con {
+  .bc-slam-r {
     color: var(--bc-gold);
+    text-shadow: 8px 8px 0 #0a0716, 0 0 34px rgba(255, 207, 92, 0.55);
+    animation: bc-slam-r 0.65s cubic-bezier(0.25, 0, 0.3, 1) 0.35s both;
   }
-  .bc-hero-subtitle {
-    font-family: 'Lato', sans-serif;
-    font-size: 24px;
-    line-height: 1.45;
-    color: #d7dcff;
-    max-width: 560px;
-    margin: 0 0 30px;
+  @keyframes bc-slam-l {
+    0% {
+      opacity: 0;
+      transform: translateX(-260px) skewX(-14deg) scale(0.88);
+    }
+    58% {
+      opacity: 1;
+      transform: translateX(24px) skewX(3deg) scale(1.04);
+    }
+    76% {
+      transform: translateX(-10px) skewX(-1.5deg);
+    }
+    90% {
+      transform: translateX(5px);
+    }
+    100% {
+      opacity: 1;
+      transform: none;
+    }
   }
-  .bc-hero-forty {
-    font-weight: 900;
-    color: var(--bc-gold);
+  @keyframes bc-slam-r {
+    0% {
+      opacity: 0;
+      transform: translateX(260px) skewX(14deg) scale(0.88);
+    }
+    58% {
+      opacity: 1;
+      transform: translateX(-24px) skewX(-3deg) scale(1.04);
+    }
+    76% {
+      transform: translateX(10px) skewX(1.5deg);
+    }
+    90% {
+      transform: translateX(-5px);
+    }
+    100% {
+      opacity: 1;
+      transform: none;
+    }
   }
-  .bc-badge-card {
-    position: relative;
-    background: var(--bc-page);
-    border-radius: 14px;
-    padding: 26px 30px;
-    box-shadow: 0 24px 50px -16px rgba(0, 0, 0, 0.55);
-    margin-bottom: 28px;
+  .bc-hero-strip {
+    margin-top: 26px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+  }
+  .bc-hero-line {
+    width: 46px;
+    height: 1px;
+    background: rgba(255, 255, 255, 0.25);
+  }
+  .bc-hero-sublabel {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.55);
+  }
+  .bc-scroll-hint {
+    position: absolute;
+    bottom: 28px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    z-index: 2;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.35);
+  }
+  .bc-scroll-tick {
+    width: 1px;
+    height: 26px;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.4), transparent);
+  }
+
+  .bc-stats-band {
+    border-top: 1px solid var(--bc-border-gold);
+    border-bottom: 1px solid var(--bc-border-gold);
+    padding: 34px 28px;
+  }
+  .bc-stats-grid {
     max-width: 640px;
-  }
-  .bc-badge-punch {
-    width: 44px;
-    height: 5px;
-    border-radius: 3px;
-    background: #c8d1ec;
-    margin: 0 auto 20px;
-  }
-  .bc-badge-grid {
+    margin: 0 auto;
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 20px 40px;
+    gap: 22px 40px;
+    text-align: center;
   }
-  .bc-badge-label {
-    font-family: 'Raleway', sans-serif;
-    font-weight: 800;
+  .bc-stat-label {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
     font-size: 11px;
-    letter-spacing: 2px;
+    letter-spacing: 3px;
+  }
+  .bc-stat-label--blue {
     color: var(--bc-blue);
   }
-  .bc-badge-value {
-    font-family: 'Cinzel Decorative', serif;
+  .bc-stat-label--gold {
+    color: var(--bc-gold);
+  }
+  .bc-stat-value {
+    margin-top: 6px;
+    font-family: 'Oswald', sans-serif;
     font-weight: 700;
-    font-size: 22px;
-    color: var(--bc-ink-strong);
-  }
-  .bc-hero-ctas {
-    display: flex;
-    gap: 16px;
-    flex-wrap: wrap;
-  }
-  .bc-btn {
-    display: inline-block;
-    padding: 16px 30px;
-    font-family: 'Lato', sans-serif;
-    font-weight: 700;
-    font-size: 15px;
-    letter-spacing: 1px;
-    border-radius: 9px;
-    border: 2px solid transparent;
-  }
-  .bc-btn--solid {
-    background: var(--bc-blue);
+    font-size: 20px;
     color: #fff;
-    box-shadow: 0 10px 26px -6px rgba(77, 163, 255, 0.85);
-  }
-  .bc-btn--outline-hero {
-    background: transparent;
-    border-color: var(--bc-gold);
-    color: var(--bc-gold);
-  }
-  .bc-btn--outline {
-    background: transparent;
-    border-color: var(--bc-gold);
-    color: var(--bc-gold);
   }
 
   .bc-tale {
-    max-width: 880px;
+    max-width: 780px;
     margin: 0 auto;
-    padding: 70px 28px 90px;
+    padding: 70px 28px 60px;
     text-align: center;
   }
-  .bc-fleuron {
-    color: var(--bc-blue-violet);
-    font-size: 22px;
-    margin-bottom: 14px;
-  }
-  .bc-eyebrow {
-    font-family: 'Raleway', sans-serif;
-    font-weight: 800;
-    font-size: 14px;
-    letter-spacing: 6px;
-    color: var(--bc-eyebrow);
-    margin-bottom: 22px;
-    text-transform: uppercase;
-  }
-  .bc-tale-text {
-    font-family: 'Lato', sans-serif;
-    font-size: 26px;
-    line-height: 1.6;
-    color: var(--bc-ink);
-    margin: 0;
-    text-wrap: pretty;
+  .bc-tale-lead {
+    margin: 0 0 22px;
+    font-family: 'Playfair Display', serif;
+    font-weight: 900;
+    font-style: italic;
+    font-size: 28px;
+    color: #fff;
   }
   .bc-tale-highlight {
-    color: #c79a1f;
-    font-weight: 900;
+    color: var(--bc-gold);
+  }
+  .bc-tale-text {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 17px;
+    line-height: 1.7;
+    color: rgba(255, 255, 255, 0.6);
+    margin: 0;
   }
 
   .bc-section {
@@ -290,32 +412,53 @@ const company = guests.map((g) => ({ initial: g.name[0], slug: g.slug }));
     text-align: center;
     margin-bottom: 34px;
   }
-  .bc-section-row {
+  .bc-divider {
     display: flex;
-    align-items: flex-end;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 12px;
-    margin-bottom: 28px;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    color: var(--bc-gold);
+  }
+  .bc-divider-line {
+    width: 60px;
+    height: 1px;
+    background: rgba(255, 207, 92, 0.3);
+  }
+  .bc-divider-dot {
+    color: var(--bc-blue);
   }
   .bc-h2 {
     margin: 0;
-    font-family: 'Cinzel Decorative', serif;
-    font-weight: 900;
-    font-size: 42px;
-    color: var(--bc-ink-strong);
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: 15px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--bc-gold);
   }
-  .bc-h2--tight {
-    margin-bottom: 24px;
+  .bc-eyebrow {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 12px;
+    letter-spacing: 4px;
+    color: var(--bc-eyebrow);
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+  .bc-see-all-row {
+    text-align: center;
+    margin-top: 30px;
   }
   .bc-see-all {
-    font-family: 'Raleway', sans-serif;
-    font-weight: 800;
-    font-size: 12px;
-    letter-spacing: 2px;
-    color: var(--bc-blue);
-    border-bottom: 1px solid rgba(77, 163, 255, 0.5);
-    padding-bottom: 2px;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: rgba(255, 207, 92, 0.6);
+  }
+  .bc-see-all:hover {
+    color: var(--bc-gold);
   }
 
   .bc-halls-grid {
@@ -324,46 +467,42 @@ const company = guests.map((g) => ({ initial: g.name[0], slug: g.slug }));
     gap: 24px;
   }
   .bc-hall-card {
-    border-radius: 14px;
-    padding: 32px 30px;
-    position: relative;
-    overflow: hidden;
+    border-radius: 12px;
+    padding: 28px 26px;
+    transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s;
   }
   .bc-hall-card--blue {
-    border: 2px solid var(--bc-gold);
-    background: var(--bc-card-blue);
-    box-shadow: 6px 6px 0 var(--bc-blue-violet);
+    background: rgba(77, 163, 255, 0.07);
+    border: 1px solid rgba(77, 163, 255, 0.3);
   }
-  .bc-hall-card--violet {
-    border: 2px solid #6a4fb0;
-    background: var(--bc-card-purple);
-    box-shadow: 6px 6px 0 var(--bc-blue);
+  .bc-hall-card--blue:hover {
+    box-shadow: 7px 7px 0 rgba(77, 163, 255, 0.25);
   }
-  .bc-hall-eyebrow {
-    font-family: 'Raleway', sans-serif;
-    font-weight: 800;
-    font-size: 11px;
-    letter-spacing: 3px;
+  .bc-hall-card--gold {
+    background: rgba(255, 207, 92, 0.05);
+    border: 1px solid rgba(255, 207, 92, 0.28);
   }
-  .bc-hall-eyebrow--blue {
-    color: #bcd4ff;
-  }
-  .bc-hall-eyebrow--violet {
-    color: var(--bc-epic);
+  .bc-hall-card--gold:hover {
+    box-shadow: 7px 7px 0 rgba(255, 207, 92, 0.25);
   }
   .bc-hall-title {
-    margin: 8px 0 12px;
-    font-family: 'Lato', sans-serif;
+    margin: 0 0 12px;
+    font-family: 'Playfair Display', serif;
     font-weight: 900;
-    font-size: 28px;
-    color: var(--bc-card-title);
+    font-size: 24px;
+  }
+  .bc-hall-title--blue {
+    color: var(--bc-blue);
+  }
+  .bc-hall-title--gold {
+    color: var(--bc-gold);
   }
   .bc-hall-text {
-    font-family: 'Lato', sans-serif;
-    font-size: 16px;
-    line-height: 1.55;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 15px;
+    line-height: 1.6;
     margin: 0;
-    color: var(--bc-card-desc);
+    color: rgba(255, 255, 255, 0.6);
   }
 
   .bc-featured-grid {
@@ -375,53 +514,70 @@ const company = guests.map((g) => ({ initial: g.name[0], slug: g.slug }));
     display: block;
     text-decoration: none;
     color: inherit;
+    border-top: 3px solid transparent;
+    border-radius: 10px 10px 0 0;
+    transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .bc-featured-link--gold {
+    border-top-color: var(--bc-gold);
+  }
+  .bc-featured-link--blue {
+    border-top-color: var(--bc-blue);
+  }
+  .bc-featured-link:hover {
+    transform: translateY(-6px);
   }
 
-  .bc-company {
+  .bc-party {
     text-align: center;
     padding-bottom: 24px;
   }
-  .bc-avatar-row {
-    display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
+  .bc-divider--center {
+    margin-bottom: 20px;
   }
-  .bc-avatar-link {
-    display: inline-block;
-    text-decoration: none;
-  }
-  .bc-avatar {
-    width: 66px;
-    height: 66px;
-    border-radius: 50%;
-    border: 2px solid var(--bc-gold);
-    background: var(--bc-card-purple);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-family: 'Lato', sans-serif;
+  .bc-party .bc-h2 {
+    font-family: 'Playfair Display', serif;
     font-weight: 900;
-    font-size: 20px;
-    color: var(--bc-gold);
-    margin: 0 6px 12px;
-    box-shadow: 0 4px 12px rgba(31, 30, 95, 0.28);
-    transition: transform 0.22s ease, box-shadow 0.22s ease;
+    font-size: 34px;
+    letter-spacing: 0.5px;
+    text-transform: none;
+    color: #fff;
+    margin: 6px 0 10px;
   }
-  .bc-avatar-link:hover .bc-avatar {
-    transform: scale(1.15);
-    box-shadow: 0 6px 18px rgba(31, 30, 95, 0.4);
+  .bc-party-text {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 16px;
+    color: rgba(255, 255, 255, 0.55);
+    margin: 0 0 26px;
   }
-  .bc-company-link {
-    margin-top: 14px;
-  }
-  .bc-company-link a {
-    font-family: 'Raleway', sans-serif;
-    font-weight: 800;
-    font-size: 12px;
+
+  .bc-btn {
+    display: inline-block;
+    padding: 15px 28px;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
     letter-spacing: 2px;
-    color: var(--bc-blue);
-    border-bottom: 1px solid rgba(77, 163, 255, 0.5);
-    padding-bottom: 2px;
+    text-transform: uppercase;
+    border-radius: 8px;
+    border: 1.5px solid transparent;
+    transition: transform 0.15s ease, background 0.15s ease;
+  }
+  .bc-btn--solid {
+    background: var(--bc-gold);
+    color: #1a0e02;
+  }
+  .bc-btn--solid:hover {
+    transform: skewX(-4deg) scale(1.05);
+  }
+  .bc-btn--outline {
+    background: transparent;
+    border-color: var(--bc-gold);
+    color: var(--bc-gold);
+  }
+  .bc-btn--outline:hover {
+    background: rgba(255, 207, 92, 0.12);
+    transform: skewX(-4deg) scale(1.05);
   }
 
   .bc-cta-section {
@@ -430,10 +586,9 @@ const company = guests.map((g) => ({ initial: g.name[0], slug: g.slug }));
     padding: 0 28px 20px;
   }
   .bc-cta-band {
-    border: 2px solid var(--bc-gold);
+    border: 1px solid var(--bc-border-gold);
     border-radius: 14px;
-    background: var(--bc-card-blueviolet);
-    box-shadow: 6px 6px 0 var(--bc-deep-twilight);
+    background: var(--bc-panel);
     padding: 40px 36px;
     display: flex;
     align-items: center;
@@ -443,16 +598,16 @@ const company = guests.map((g) => ({ initial: g.name[0], slug: g.slug }));
   }
   .bc-cta-title {
     margin: 0 0 6px;
-    font-family: 'Cinzel Decorative', serif;
-    font-weight: 900;
-    font-size: 34px;
-    color: var(--bc-gold);
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: 26px;
+    color: #fff;
   }
   .bc-cta-text {
     margin: 0;
-    font-family: 'Lato', sans-serif;
-    font-size: 17px;
-    color: #eae5fb;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 15px;
+    color: rgba(255, 255, 255, 0.55);
   }
   .bc-cta-buttons {
     display: flex;
@@ -460,10 +615,29 @@ const company = guests.map((g) => ({ initial: g.name[0], slug: g.slug }));
     flex-wrap: wrap;
   }
 
+  /* ===== scroll-reveal ===== */
+  /* Content stays fully visible unless JS confirms it can reveal it on scroll
+     (html.js-reveal), so a script error or no-JS never leaves it stuck at opacity:0. */
+  :global(html.js-reveal) .p5-el {
+    opacity: 0;
+  }
+  :global(html.js-reveal) .p5-el.vis.p5-snap-u {
+    animation: p5-snap-u 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+  @keyframes p5-snap-u {
+    from {
+      opacity: 0;
+      transform: translateY(28px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
   @media (max-width: 900px) {
     .bc-hero-title {
-      white-space: normal;
-      font-size: 84px;
+      font-size: 90px;
     }
     .bc-halls-grid {
       grid-template-columns: 1fr;
@@ -473,33 +647,22 @@ const company = guests.map((g) => ({ initial: g.name[0], slug: g.slug }));
     }
   }
 
+  @media (max-width: 760px) {
+    .bc-hero-side {
+      display: none;
+    }
+  }
+
   @media (max-width: 480px) {
-    .bc-hero {
-      padding: 44px 18px 48px;
-    }
     .bc-hero-title {
-      font-size: 58px;
+      font-size: 58px !important;
+      letter-spacing: 4px !important;
     }
-    .bc-hero-subtitle {
-      font-size: 20px;
-    }
-    .bc-badge-card {
-      padding: 20px 18px 18px;
-    }
-    .bc-badge-grid {
+    .bc-stats-grid {
       gap: 16px 20px;
     }
-    .bc-badge-value {
-      font-size: 19px;
-    }
     .bc-tale-text {
-      font-size: 21px;
-    }
-    .bc-h2 {
-      font-size: 32px;
-    }
-    .bc-hall-title {
-      font-size: 25px;
+      font-size: 16px;
     }
     .bc-featured-grid {
       grid-template-columns: 1fr;
@@ -508,7 +671,7 @@ const company = guests.map((g) => ({ initial: g.name[0], slug: g.slug }));
       padding: 28px 22px;
     }
     .bc-cta-title {
-      font-size: 27px;
+      font-size: 22px;
     }
   }
 </style>
@@ -528,4 +691,26 @@ const company = guests.map((g) => ({ initial: g.name[0], slug: g.slug }));
   items.forEach((el, i) => {
     if (chosen.has(i)) el.style.display = '';
   });
+
+  // Scroll-reveal: fires each .p5-el once it enters the viewport. Only switch
+  // on the CSS that hides them (html.js-reveal) once the observer is actually
+  // wired up, so a script error or disabled JS never leaves content invisible.
+  function initScrollReveal() {
+    if (typeof IntersectionObserver === 'undefined') return;
+    document.documentElement.classList.add('js-reveal');
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('vis');
+            io.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.05 }
+    );
+    document.querySelectorAll('.p5-el:not(.vis)').forEach((el) => io.observe(el));
+  }
+  setTimeout(initScrollReveal, 150);
+  setTimeout(initScrollReveal, 800);
 </script>

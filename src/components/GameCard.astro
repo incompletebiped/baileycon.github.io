@@ -1,33 +1,29 @@
 ---
 import { withBase } from '../lib/url';
+import type { Game } from '../data/games';
 
-interface Game {
-  slug: string;
-  name: string;
-  tag: string;
-  players: string;
-  time: string;
-  weight?: string;
-  pips?: string;
-  hall?: string;
-  hallColor?: string;
-  playersMin?: number;
-  playersMax?: number;
-  timeMin?: number;
-  neverPlayed?: boolean;
-  winPoints?: number;
+interface DisplayGame extends Game {
+  pips: string;
+  weightLabel: string;
+  hallColor: string;
+  playersMin: number;
+  playersMax: number;
+  timeMin: number;
+  timeMax: number;
+  winPoints: number;
 }
 
 interface Props {
-  game: Game;
+  game: DisplayGame;
   compact?: boolean;
+  idx?: number;
 }
 
-const { game, compact = false } = Astro.props;
+const { game, compact = false, idx = 0 } = Astro.props;
 ---
 
 {compact ? (
-  <div class="bc-game-card bc-game-card--compact">
+  <div class="bc-game-card--compact">
     <div class="bc-game-name">{game.name}</div>
     <p class="bc-game-tag">{game.tag}</p>
     <div class="bc-game-meta">
@@ -35,24 +31,44 @@ const { game, compact = false } = Astro.props;
     </div>
   </div>
 ) : (
-  <div
-    class="bc-game-card"
-    id={game.slug}
-    data-name={game.name}
-    data-players-min={game.playersMin ?? 0}
-    data-players-max={game.playersMax ?? 99}
-    data-time-min={game.timeMin ?? 0}
-    data-weight={game.weight ?? 1}
-  >
-    <div
-      class="bc-art-wrap"
-      data-lightbox-trigger
-      data-lightbox-img={withBase(`/images/games/${game.slug}.jpg`)}
-      data-lightbox-name={game.name}
-      role="button"
-      tabindex="0"
-      aria-label={`View full box art for ${game.name}`}
-    >
+  <div class="bc-hero" data-hero data-idx={idx} data-slug={game.slug} hidden={idx !== 0}>
+    <div class="bc-hero-info">
+      <div class="bc-hero-badges">
+        <span class="bc-room-badge" style={`background:${game.hallColor};`}>{game.hall}</span>
+        {game.neverPlayed && <span class="bc-badge-outline">First Run</span>}
+        <span class="bc-badge-played" data-played-badge hidden>&#10003; Played</span>
+      </div>
+      <h2 class="bc-hero-title">{game.name}</h2>
+      <div class="bc-hero-diamonds" style={`color:${game.hallColor};`}>{game.pips}</div>
+      <p class="bc-hero-desc">{game.tag}</p>
+      <div class="bc-hero-meta">
+        <div class="bc-hero-stat">
+          <div class="bc-hero-stat-label">Players</div>
+          <div class="bc-hero-stat-value">{game.players}</div>
+        </div>
+        <div class="bc-hero-stat">
+          <div class="bc-hero-stat-label">Time</div>
+          <div class="bc-hero-stat-value">{game.time}</div>
+        </div>
+        <div class="bc-hero-stat">
+          <div class="bc-hero-stat-label">Win Value</div>
+          <div class="bc-hero-stat-value" style={`color:${game.hallColor};`}>{game.winPoints} PTS</div>
+        </div>
+      </div>
+      <div class="bc-hero-rating" data-rating-slot hidden></div>
+
+      <div class="bc-hero-controls">
+        <button type="button" class="bc-randomize-btn" data-randomize-btn>
+          <span data-randomize-label>&#127922; Randomize</span>
+        </button>
+        <label class="bc-played-toggle" data-toggle-played>
+          <span class="bc-played-box" data-played-box></span>
+          <span class="bc-played-label" data-played-label>Already Played</span>
+        </label>
+      </div>
+    </div>
+
+    <div class="bc-hero-art">
       <div class="bc-art-placeholder">
         <span>box art &mdash; drop image</span>
       </div>
@@ -63,115 +79,219 @@ const { game, compact = false } = Astro.props;
         loading="lazy"
         onerror="this.style.display='none'"
       />
-      <span class="bc-art-zoom-hint" aria-hidden="true">&#10021;</span>
-      {game.neverPlayed && <span class="bc-never-played-pill">Never Played</span>}
-      <span class="bc-hall-pill" style={`color:${game.hallColor};border-color:${game.hallColor};`}>{game.hall}</span>
-    </div>
-    <div class="bc-game-body">
-      <div class="bc-game-head">
-        <div class="bc-game-name">{game.name}</div>
-        <div class="bc-game-pips">{game.pips}</div>
-      </div>
-      <div class="bc-game-rating" data-rating-slot hidden></div>
-      <p class="bc-game-tag bc-game-tag--full">{game.tag}</p>
-      <div class="bc-game-stats">
-        <div class="bc-stat">
-          <div class="bc-stat-label">PLAYERS</div>
-          <div class="bc-stat-value">{game.players}</div>
-        </div>
-        <div class="bc-stat">
-          <div class="bc-stat-label">TIME</div>
-          <div class="bc-stat-value">{game.time}</div>
-        </div>
-        <div class="bc-stat bc-stat--last">
-          <div class="bc-stat-label">WIN VALUE</div>
-          <div class="bc-stat-value">{game.winPoints ?? game.weight} PTS</div>
-        </div>
-      </div>
     </div>
   </div>
 )}
 
 <style>
-  .bc-game-card {
-    border: 2px solid #6a4fb0;
-    border-radius: 14px;
-    background: var(--bc-card-purple);
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    box-shadow: 6px 6px 0 var(--bc-blue);
-    height: 100%;
-    scroll-margin-top: 90px;
-    transition: transform 0.22s ease, box-shadow 0.22s ease;
-  }
-  .bc-game-card:hover {
-    transform: translate(-2px, -2px);
-    box-shadow: 9px 9px 0 var(--bc-blue);
-  }
-  .bc-game-card.bc-highlight {
-    animation: bc-highlight-pulse 1.7s ease;
-  }
-  @keyframes bc-highlight-pulse {
-    0%,
-    100% {
-      box-shadow: 6px 6px 0 var(--bc-blue);
-    }
-    25% {
-      box-shadow: 0 0 0 4px rgba(255, 207, 92, 0.85), 6px 6px 0 var(--bc-blue);
-    }
-  }
   .bc-game-card--compact {
-    border-radius: 14px;
+    border-radius: 10px 10px 0 0;
     padding: 20px 20px 22px;
+    background: var(--bc-panel);
+    border: 1px solid var(--bc-border-gold);
+    border-top: none;
+    height: 100%;
   }
-  .bc-art-wrap {
-    position: relative;
-    height: 150px;
-    border-bottom: 1px solid var(--bc-card-divider);
-    overflow: hidden;
-    cursor: pointer;
+  .bc-game-name {
+    font-family: 'Playfair Display', serif;
+    font-weight: 900;
+    font-size: 20px;
+    color: #fff;
+    line-height: 1.1;
   }
-  .bc-art-wrap:focus-visible {
-    outline: 2px solid var(--bc-gold);
-    outline-offset: -2px;
+  .bc-game-tag {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.55);
+    margin: 10px 0 0;
+    line-height: 1.5;
   }
-  .bc-art-zoom-hint {
-    position: absolute;
-    bottom: 8px;
-    right: 8px;
-    width: 26px;
-    height: 26px;
-    border-radius: 50%;
-    background: rgba(14, 10, 48, 0.7);
-    border: 1px solid var(--bc-gold);
+  .bc-game-meta {
+    display: flex;
+    gap: 10px;
+    margin-top: 14px;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.4);
+  }
+
+  .bc-hero[hidden] {
+    display: none;
+  }
+  .bc-hero {
+    display: flex;
+    gap: 40px;
+    align-items: flex-start;
+  }
+  .bc-hero-info {
+    flex: 1;
+    min-width: 0;
+  }
+  .bc-hero-badges {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 14px;
+  }
+  .bc-room-badge {
+    color: #06040f;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 8.5px;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    padding: 5px 12px;
+    border-radius: 3px;
+  }
+  .bc-badge-outline {
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: rgba(255, 255, 255, 0.48);
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 8.5px;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    padding: 5px 12px;
+    border-radius: 3px;
+  }
+  .bc-badge-played {
+    background: rgba(77, 163, 255, 0.2);
+    border: 1px solid rgba(77, 163, 255, 0.55);
+    color: var(--bc-blue);
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 8.5px;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    padding: 5px 12px;
+    border-radius: 3px;
+  }
+  .bc-hero-title {
+    margin: 0 0 10px;
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: clamp(30px, 3.8vw, 58px);
+    color: #fff;
+    line-height: 1.05;
+  }
+  .bc-hero-diamonds {
+    font-size: 18px;
+    letter-spacing: 3px;
+    margin-bottom: 16px;
+  }
+  .bc-hero-desc {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: 17px;
+    color: rgba(255, 255, 255, 0.7);
+    max-width: 520px;
+    margin: 0 0 22px;
+    line-height: 1.55;
+  }
+  .bc-hero-meta {
+    display: flex;
+    gap: 34px;
+    margin-bottom: 10px;
+  }
+  .bc-hero-stat-label {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.4);
+  }
+  .bc-hero-stat-value {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: 20px;
+    color: #fff;
+    margin-top: 4px;
+  }
+  .bc-hero-rating {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
     color: var(--bc-gold);
+    margin-bottom: 6px;
+  }
+  .bc-hero-controls {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    flex-wrap: wrap;
+    margin-top: 18px;
+  }
+  .bc-randomize-btn {
+    background: transparent;
+    border: 1px solid rgba(255, 207, 92, 0.4);
+    color: var(--bc-gold);
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 1px;
+    padding: 12px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .bc-randomize-btn:hover {
+    background: rgba(255, 207, 92, 0.1);
+  }
+  .bc-played-toggle {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    cursor: pointer;
+    user-select: none;
+  }
+  .bc-played-box {
+    width: 22px;
+    height: 22px;
+    border-radius: 5px;
+    border: 1.5px solid rgba(255, 255, 255, 0.35);
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 13px;
-    opacity: 0;
-    transition: opacity 0.18s ease;
-    pointer-events: none;
-    z-index: 1;
+    color: #06040f;
+    flex: none;
+    transition: background 0.15s, border-color 0.15s;
   }
-  .bc-art-wrap:hover .bc-art-zoom-hint,
-  .bc-art-wrap:focus-visible .bc-art-zoom-hint {
-    opacity: 1;
+  .bc-played-label {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.5);
+    transition: color 0.15s;
+  }
+
+  .bc-hero-art {
+    position: relative;
+    flex: none;
+    width: min(320px, 34vw);
+    aspect-ratio: 3 / 4;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid var(--bc-border-gold);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
   }
   .bc-art-placeholder {
     position: absolute;
     inset: 0;
-    background: repeating-linear-gradient(45deg, #eef2fb 0 10px, #e3ebfb 10px 20px);
+    background: repeating-linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0 10px, rgba(255, 255, 255, 0.03) 10px 20px);
     display: flex;
     align-items: center;
     justify-content: center;
+    text-align: center;
+    padding: 0 20px;
   }
   .bc-art-placeholder span {
     font-family: ui-monospace, Menlo, monospace;
-    font-size: 12px;
+    font-size: 11px;
     letter-spacing: 1px;
-    color: #93a1c4;
+    color: rgba(255, 255, 255, 0.4);
     text-transform: uppercase;
   }
   .bc-art-image {
@@ -181,241 +301,19 @@ const { game, compact = false } = Astro.props;
     height: 100%;
     object-fit: cover;
   }
-  .bc-hall-pill {
-    position: absolute;
-    top: 12px;
-    right: 12px;
-    font-family: 'Raleway', sans-serif;
-    font-weight: 700;
-    font-size: 9px;
-    letter-spacing: 1.5px;
-    border: 1.5px solid;
-    border-radius: 20px;
-    padding: 4px 10px;
-    text-transform: uppercase;
-    background: rgba(255, 255, 255, 0.85);
-  }
-  .bc-never-played-pill {
-    position: absolute;
-    top: 12px;
-    left: 12px;
-    z-index: 1;
-    font-family: 'Raleway', sans-serif;
-    font-weight: 700;
-    font-size: 9px;
-    letter-spacing: 1.5px;
-    color: #c79a1f;
-    border: 1.5px solid #c79a1f;
-    border-radius: 20px;
-    padding: 4px 10px;
-    text-transform: uppercase;
-    background: rgba(255, 255, 255, 0.85);
-  }
-  .bc-game-body {
-    padding: 20px 22px 22px;
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-  }
-  .bc-game-head {
-    display: flex;
-    align-items: baseline;
-    justify-content: space-between;
-    gap: 10px;
-  }
-  .bc-game-name {
-    font-family: 'Lato', sans-serif;
-    font-weight: 900;
-    font-size: 26px;
-    color: var(--bc-card-title);
-    line-height: 1.05;
-  }
-  .bc-game-card--compact .bc-game-name {
-    font-size: 22px;
-  }
-  .bc-game-pips {
-    font-size: 15px;
-    letter-spacing: 2px;
-    white-space: nowrap;
-    color: var(--bc-gold);
-  }
-  .bc-game-rating {
-    font-family: 'Raleway', sans-serif;
-    font-weight: 700;
-    font-size: 12px;
-    letter-spacing: 1px;
-    color: var(--bc-gold);
-    margin-top: 4px;
-  }
-  .bc-game-tag {
-    font-family: 'Lato', sans-serif;
-    font-size: 16px;
-    color: var(--bc-card-desc);
-    margin: 12px 0 20px;
-    line-height: 1.5;
-  }
-  .bc-game-card--compact .bc-game-tag {
-    font-size: 15px;
-    margin-top: 8px;
-    margin-bottom: 0;
-  }
-  .bc-game-tag--full {
-    flex: 1;
-  }
-  .bc-game-meta {
-    display: flex;
-    gap: 14px;
-    margin-top: 14px;
-    font-family: 'Lato', sans-serif;
-    font-weight: 700;
-    font-size: 13px;
-    letter-spacing: 0.5px;
-    color: var(--bc-card-desc);
-  }
-  .bc-game-stats {
-    display: flex;
-    gap: 0;
-    border-top: 1px solid var(--bc-card-divider);
-    padding-top: 14px;
-  }
-  .bc-stat {
-    flex: 1;
-    text-align: center;
-    border-right: 1px solid var(--bc-card-divider);
-  }
-  .bc-stat--last {
-    border-right: none;
-  }
-  .bc-stat-label {
-    font-family: 'Raleway', sans-serif;
-    font-weight: 800;
-    font-size: 10px;
-    letter-spacing: 1px;
-    color: var(--bc-card-label);
-  }
-  .bc-stat-value {
-    font-family: 'Lato', sans-serif;
-    font-weight: 700;
-    font-size: 16px;
-    color: var(--bc-card-title);
-    margin-top: 4px;
+
+  @media (max-width: 760px) {
+    .bc-hero {
+      flex-direction: column;
+      gap: 24px;
+    }
+    .bc-hero-art {
+      width: 100%;
+      max-width: 320px;
+      align-self: center;
+    }
+    .bc-hero-desc {
+      max-width: none;
+    }
   }
 </style>
-
-<style is:global>
-  .bc-lightbox {
-    position: fixed;
-    inset: 0;
-    z-index: 1000;
-    display: none;
-    align-items: center;
-    justify-content: center;
-    padding: 60px 40px;
-    background: rgba(8, 6, 26, 0.88);
-    backdrop-filter: blur(3px);
-  }
-  .bc-lightbox.is-open {
-    display: flex;
-  }
-  .bc-lightbox-img {
-    max-width: 90vw;
-    max-height: 80vh;
-    border: 2px solid var(--bc-gold);
-    border-radius: 8px;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
-    object-fit: contain;
-  }
-  .bc-lightbox-caption {
-    position: absolute;
-    bottom: 26px;
-    left: 0;
-    right: 0;
-    text-align: center;
-    font-family: 'Cinzel', serif;
-    letter-spacing: 1px;
-    font-size: 15px;
-    color: var(--bc-gold);
-  }
-  .bc-lightbox-close {
-    position: absolute;
-    top: 22px;
-    right: 30px;
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    background: rgba(14, 10, 48, 0.7);
-    border: 1px solid var(--bc-gold);
-    color: var(--bc-gold);
-    font-size: 22px;
-    line-height: 1;
-    cursor: pointer;
-  }
-  body.bc-lightbox-lock {
-    overflow: hidden;
-  }
-</style>
-
-<script>
-  function ensureLightbox(): HTMLElement {
-    let modal = document.getElementById('bc-lightbox') as HTMLElement | null;
-    if (modal) return modal;
-
-    modal = document.createElement('div');
-    modal.id = 'bc-lightbox';
-    modal.className = 'bc-lightbox';
-    modal.innerHTML = `
-      <button type="button" class="bc-lightbox-close" aria-label="Close">&times;</button>
-      <img class="bc-lightbox-img" alt="" />
-      <div class="bc-lightbox-caption"></div>
-    `;
-    document.body.appendChild(modal);
-
-    const close = () => {
-      modal!.classList.remove('is-open');
-      document.body.classList.remove('bc-lightbox-lock');
-    };
-
-    modal.addEventListener('click', (e) => {
-      const target = e.target as HTMLElement;
-      if (target === modal || target.closest('.bc-lightbox-close')) close();
-    });
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') close();
-    });
-
-    return modal;
-  }
-
-  function openLightbox(src: string, name: string) {
-    const modal = ensureLightbox();
-    const img = modal.querySelector('.bc-lightbox-img') as HTMLImageElement;
-    const caption = modal.querySelector('.bc-lightbox-caption') as HTMLElement;
-    img.src = src;
-    img.alt = name;
-    caption.textContent = name;
-    modal.classList.add('is-open');
-    document.body.classList.add('bc-lightbox-lock');
-  }
-
-  function triggerFrom(target: EventTarget | null): HTMLElement | null {
-    return target instanceof HTMLElement ? target.closest('[data-lightbox-trigger]') : null;
-  }
-
-  document.addEventListener('click', (e) => {
-    const trigger = triggerFrom(e.target);
-    if (!trigger) return;
-    const src = trigger.getAttribute('data-lightbox-img');
-    const name = trigger.getAttribute('data-lightbox-name') || '';
-    if (src) openLightbox(src, name);
-  });
-
-  document.addEventListener('keydown', (e) => {
-    if (e.key !== 'Enter' && e.key !== ' ') return;
-    const trigger = triggerFrom(e.target);
-    if (!trigger) return;
-    e.preventDefault();
-    const src = trigger.getAttribute('data-lightbox-img');
-    const name = trigger.getAttribute('data-lightbox-name') || '';
-    if (src) openLightbox(src, name);
-  });
-</script>

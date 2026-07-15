@@ -2,14 +2,9 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import PageBanner from '../components/PageBanner.astro';
 import GuestCard from '../components/GuestCard.astro';
-import { guests, guestStats, guestNum } from '../data/guests';
+import { guests } from '../data/guests';
 import { games, winPoints } from '../data/games';
-
-const displayGuests = guests.map((g, i) => ({
-  ...g,
-  stats: guestStats(g),
-  num: guestNum(i),
-}));
+import { withBase } from '../lib/url';
 
 const gamePointsData = JSON.stringify(
   Object.fromEntries(games.map((g) => [g.name, winPoints(g)]))
@@ -18,32 +13,255 @@ const gamePointsData = JSON.stringify(
 
 <BaseLayout title="The Party — BaileyCon" active="players">
   <PageBanner
-    eyebrow="TEN PLAYERS OF HONOUR"
-    title="The Party"
-    subtitle="The party assembled for the third annual. Collect all ten."
+    eyebrow="Third Annual Roster"
+    title="The Party Assembled"
+    subtitle="Collect all ten. Click two cards below to settle any dispute in the arena."
   />
 
   <section class="bc-guests-section">
-    <div class="bc-guests-grid">
-      {displayGuests.map((g) => (
+    <div class="bc-battle-bar" id="battle-instruction">Select two players to battle</div>
+
+    <div class="bc-guests-grid" id="guest-grid">
+      {guests.map((g) => (
         <GuestCard guest={g} />
       ))}
     </div>
+
+    <div class="bc-quiz-cta">
+      <div class="bc-quiz-eyebrow">Unhappy with your pips?</div>
+      <h2 class="bc-quiz-title">Think your stats sell you short?</h2>
+      <p class="bc-quiz-text">Take the Stat Trial &mdash; a short quest that re-rolls your four stats. Your card art and title stay; only the pips change.</p>
+      <a href={withBase('/quiz/')} class="bc-quiz-btn">&#9876; Take the Stat Trial</a>
+    </div>
   </section>
+
+  <!-- ===== BATTLE OVERLAY ===== -->
+  <div class="bc-battle-overlay" id="battle-overlay" hidden>
+    <button type="button" class="bc-battle-close" id="battle-close">&#10005; Clear</button>
+    <div class="bc-battle-flash" id="battle-flash"></div>
+    <div class="bc-battle-arena">
+      <div class="bc-battle-slot" id="battle-slot-1"></div>
+      <div class="bc-battle-vs">VS</div>
+      <div class="bc-battle-slot" id="battle-slot-2"></div>
+    </div>
+    <div class="bc-battle-stats" id="battle-stats"></div>
+    <div class="bc-battle-result" id="battle-result" hidden>
+      <div class="bc-battle-result-label" id="battle-result-label"></div>
+      <div class="bc-battle-result-sub" id="battle-result-sub"></div>
+      <button type="button" class="bc-battle-btn" id="battle-again">Fight Again</button>
+    </div>
+    <button type="button" class="bc-battle-btn bc-battle-fight" id="battle-fight">FIGHT!</button>
+  </div>
 </BaseLayout>
 
 <script type="application/json" id="wins-game-points-data" set:html={gamePointsData}></script>
 
-<style>
+<style is:global>
   .bc-guests-section {
     max-width: 1140px;
     margin: 0 auto;
     padding: 0 28px 30px;
   }
+  .bc-battle-bar {
+    text-align: center;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: rgba(255, 207, 92, 0.55);
+    margin-bottom: 24px;
+  }
   .bc-guests-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(min(310px, 100%), 1fr));
-    gap: 24px;
+    grid-template-columns: repeat(auto-fill, 220px);
+    justify-content: center;
+    gap: 18px;
+    margin-bottom: 60px;
+  }
+
+  .bc-quiz-cta {
+    text-align: center;
+    border-top: 1px solid var(--bc-border-gold);
+    padding-top: 50px;
+  }
+  .bc-quiz-eyebrow {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 12px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--bc-blue);
+    margin-bottom: 10px;
+  }
+  .bc-quiz-title {
+    margin: 0 0 12px;
+    font-family: 'Playfair Display', serif;
+    font-weight: 900;
+    font-style: italic;
+    font-size: 28px;
+    color: #fff;
+  }
+  .bc-quiz-text {
+    max-width: 480px;
+    margin: 0 auto 24px;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 15px;
+    line-height: 1.6;
+    color: rgba(255, 255, 255, 0.55);
+  }
+  .bc-quiz-btn {
+    display: inline-block;
+    background: var(--bc-gold);
+    color: #1a0e02;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 15px 28px;
+    border-radius: 8px;
+    transition: transform 0.15s ease;
+  }
+  .bc-quiz-btn:hover {
+    transform: skewX(-4deg) scale(1.05);
+  }
+
+  /* ===== battle overlay ===== */
+  .bc-battle-overlay[hidden] {
+    display: none;
+  }
+  .bc-battle-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    padding: 40px 20px;
+    overflow-y: auto;
+    background: #08041a;
+  }
+  .bc-battle-close {
+    position: absolute;
+    top: 18px;
+    right: 24px;
+    background: none;
+    border: 1px solid rgba(255, 207, 92, 0.4);
+    border-radius: 7px;
+    color: var(--bc-gold);
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 12px;
+    letter-spacing: 1px;
+    padding: 8px 14px;
+    cursor: pointer;
+  }
+  .bc-battle-flash {
+    position: fixed;
+    inset: 0;
+    background: #fff;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.35s;
+    z-index: 5;
+  }
+  .bc-battle-arena {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 30px;
+    z-index: 2;
+  }
+  .bc-battle-slot {
+    width: 220px;
+    transition: transform 0.55s cubic-bezier(0.16, 1, 0.3, 1), filter 0.5s, opacity 0.5s;
+  }
+  .bc-battle-slot :global(.mtg-card:hover) {
+    transform: none;
+    box-shadow: none;
+  }
+  .bc-battle-vs {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: 56px;
+    color: rgba(255, 255, 255, 0.85);
+    flex: none;
+  }
+  .bc-battle-stats {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: min(560px, 90vw);
+    z-index: 2;
+  }
+  .bc-battle-stat-row {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    gap: 10px;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 13px;
+  }
+  .bc-battle-stat-p1 {
+    text-align: right;
+  }
+  .bc-battle-stat-label {
+    text-align: center;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    font-size: 10px;
+    font-weight: 700;
+  }
+  .bc-battle-result {
+    text-align: center;
+    z-index: 2;
+  }
+  .bc-battle-result-label {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: 26px;
+    color: #fff;
+    margin-bottom: 6px;
+  }
+  .bc-battle-result-sub {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.55);
+    margin-bottom: 16px;
+  }
+  .bc-battle-btn {
+    background: var(--bc-gold);
+    color: #1a0e02;
+    border: none;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 13px 26px;
+    border-radius: 8px;
+    cursor: pointer;
+    z-index: 2;
+  }
+  .bc-battle-fight {
+    font-size: 15px;
+    padding: 15px 34px;
+  }
+
+  @media (max-width: 760px) {
+    .bc-battle-arena {
+      gap: 12px;
+    }
+    .bc-battle-slot {
+      width: 150px;
+    }
+    .bc-battle-vs {
+      font-size: 32px;
+    }
   }
 
   @media (max-width: 480px) {
@@ -51,7 +269,8 @@ const gamePointsData = JSON.stringify(
       padding: 0 18px 30px;
     }
     .bc-guests-grid {
-      gap: 18px;
+      grid-template-columns: 1fr;
+      justify-content: stretch;
     }
   }
 </style>
@@ -60,7 +279,7 @@ const gamePointsData = JSON.stringify(
   const slug = window.location.hash.slice(1);
   if (slug) {
     const target = document.getElementById(slug);
-    if (target && target.classList.contains('bc-guest-card')) {
+    if (target && target.classList.contains('mtg-card')) {
       target.classList.add('bc-highlight');
       setTimeout(() => target.classList.remove('bc-highlight'), 1700);
     }
@@ -79,8 +298,6 @@ const gamePointsData = JSON.stringify(
       ? JSON.parse(pointsDataEl.textContent || '{}')
       : {};
 
-    // select('*') rather than naming columns: safe whether or not the
-    // `points` column (used only by custom "Game not listed" wins) exists yet.
     const { data, error } = await supabase.from('wins').select('*');
     if (error || !data) return;
 
@@ -89,7 +306,7 @@ const gamePointsData = JSON.stringify(
       totals.set(row.player, (totals.get(row.player) || 0) + pointsForWin(row, gamePoints));
     }
 
-    document.querySelectorAll<HTMLElement>('.bc-guest-card').forEach((card) => {
+    document.querySelectorAll<HTMLElement>('.mtg-card').forEach((card) => {
       const name = card.dataset.name || '';
       const total = totals.get(name);
       if (!total) return;
@@ -103,4 +320,274 @@ const gamePointsData = JSON.stringify(
   }
 
   loadScores();
+</script>
+
+<script>
+  // Stat Trial overrides: shared across visitors via Supabase `player_stats`.
+  import { supabase, supabaseConfigured } from '../lib/supabase';
+
+  function pipStrings(n: number) {
+    const c = Math.max(1, Math.min(5, n));
+    return { filled: '◆'.repeat(c), empty: '◇'.repeat(5 - c) };
+  }
+
+  async function applyStatOverrides() {
+    if (!supabaseConfigured) return;
+    const { data, error } = await supabase.from('player_stats').select('*');
+    if (error || !data) return;
+
+    for (const row of data as { player_slug: string; str: number; chs: number; blf: number; sta: number }[]) {
+      const card = document.querySelector<HTMLElement>(`.mtg-card[data-slug="${row.player_slug}"]`);
+      if (!card) continue;
+
+      const stats: Record<'str' | 'chs' | 'blf' | 'sta', number> = {
+        str: row.str,
+        chs: row.chs,
+        blf: row.blf,
+        sta: row.sta,
+      };
+
+      card.dataset.str = String(stats.str);
+      card.dataset.chs = String(stats.chs);
+      card.dataset.blf = String(stats.blf);
+      card.dataset.sta = String(stats.sta);
+
+      (['str', 'chs', 'blf', 'sta'] as const).forEach((key) => {
+        const pipEl = card.querySelector<HTMLElement>(`[data-stat-pips="${key}"]`);
+        if (!pipEl) return;
+        const { filled, empty } = pipStrings(stats[key]);
+        if (key === 'sta') {
+          pipEl.textContent = filled;
+        } else {
+          pipEl.textContent = '';
+          pipEl.append(filled, Object.assign(document.createElement('span'), { className: 'mtg-pip-empty', textContent: empty }));
+        }
+      });
+
+      const ptPill = card.querySelector<HTMLElement>('[data-pt-pill]');
+      if (ptPill) ptPill.textContent = `${stats.str}/${stats.sta}`;
+    }
+  }
+
+  applyStatOverrides();
+</script>
+
+<script>
+  // Card battle mini-game.
+  type Phase = 'idle' | 'fighting' | 'result';
+
+  const grid = document.getElementById('guest-grid');
+  const instruction = document.getElementById('battle-instruction');
+  const overlay = document.getElementById('battle-overlay');
+  const closeBtn = document.getElementById('battle-close');
+  const fightBtn = document.getElementById('battle-fight');
+  const againBtn = document.getElementById('battle-again');
+  const flash = document.getElementById('battle-flash');
+  const slot1 = document.getElementById('battle-slot-1');
+  const slot2 = document.getElementById('battle-slot-2');
+  const statsEl = document.getElementById('battle-stats');
+  const resultEl = document.getElementById('battle-result');
+  const resultLabel = document.getElementById('battle-result-label');
+  const resultSub = document.getElementById('battle-result-sub');
+
+  if (grid && instruction && overlay && closeBtn && fightBtn && againBtn && flash && slot1 && slot2 && statsEl && resultEl && resultLabel && resultSub) {
+    let selected: HTMLElement[] = [];
+    let phase: Phase = 'idle';
+    let fightTimer: number | undefined;
+
+    const STAT_KEYS = ['str', 'chs', 'blf', 'sta'] as const;
+    const STAT_LABELS: Record<(typeof STAT_KEYS)[number], string> = {
+      str: 'Strategy',
+      chs: 'Chaos',
+      blf: 'Bluff',
+      sta: 'Stamina',
+    };
+
+    function cardStat(card: HTMLElement, key: string): number {
+      return Number(card.dataset[key] || 0);
+    }
+
+    function computeResult(p1: HTMLElement, p2: HTMLElement) {
+      let s1 = 0;
+      let s2 = 0;
+      STAT_KEYS.forEach((k) => {
+        const n1 = cardStat(p1, k);
+        const n2 = cardStat(p2, k);
+        if (n1 > n2) s1++;
+        else if (n2 > n1) s2++;
+      });
+      const winner = s1 > s2 ? 1 : s2 > s1 ? 2 : 0;
+      return { winner, s1, s2 };
+    }
+
+    function updateInstruction() {
+      instruction!.textContent = selected.length === 0 ? 'Select two players to battle' : 'Select one more →';
+    }
+
+    function renderStatsBar(p1: HTMLElement, p2: HTMLElement, showResult: boolean) {
+      statsEl!.innerHTML = '';
+      const p1rc = p1.dataset.rarityColor || '#fff';
+      const p2rc = p2.dataset.rarityColor || '#fff';
+      STAT_KEYS.forEach((key) => {
+        const n1 = cardStat(p1, key);
+        const n2 = cardStat(p2, key);
+        const rw = n1 > n2 ? 1 : n2 > n1 ? 2 : 0;
+        const row = document.createElement('div');
+        row.className = 'bc-battle-stat-row';
+
+        const left = document.createElement('div');
+        left.className = 'bc-battle-stat-p1';
+        left.style.color = !showResult ? p1rc : rw === 2 ? 'rgba(255,255,255,0.18)' : p1rc;
+        left.style.fontWeight = showResult && rw === 1 ? 'bold' : 'normal';
+        left.textContent = '◆'.repeat(n1) + '◇'.repeat(5 - n1);
+
+        const label = document.createElement('div');
+        label.className = 'bc-battle-stat-label';
+        label.style.color = !showResult ? 'rgba(255,255,255,0.3)' : rw === 1 ? p1rc : rw === 2 ? p2rc : '#fff';
+        label.textContent = STAT_LABELS[key];
+
+        const right = document.createElement('div');
+        right.style.color = !showResult ? p2rc : rw === 1 ? 'rgba(255,255,255,0.18)' : p2rc;
+        right.style.fontWeight = showResult && rw === 2 ? 'bold' : 'normal';
+        right.textContent = '◆'.repeat(n2) + '◇'.repeat(5 - n2);
+
+        row.append(left, label, right);
+        statsEl!.append(row);
+      });
+    }
+
+    function applyCardVisuals(p1: HTMLElement, p2: HTMLElement) {
+      const p1rc = p1.dataset.rarityColor || '#fff';
+      const p2rc = p2.dataset.rarityColor || '#fff';
+      const result = phase === 'result' ? computeResult(p1, p2) : null;
+
+      let t1 = 'perspective(1000px) rotateY(12deg)';
+      let t2 = 'perspective(1000px) rotateY(-12deg)';
+      let o1 = '1';
+      let o2 = '1';
+      let f1 = `drop-shadow(12px 0 36px ${p1rc})`;
+      let f2 = `drop-shadow(-12px 0 36px ${p2rc})`;
+
+      if (phase === 'fighting') {
+        t1 = 'perspective(1000px) rotateY(12deg) translateX(76px) scale(1.07)';
+        t2 = 'perspective(1000px) rotateY(-12deg) translateX(-76px) scale(1.07)';
+        f1 = 'brightness(1.15)';
+        f2 = 'brightness(1.15)';
+      } else if (phase === 'result' && result) {
+        if (result.winner === 2) {
+          t1 = 'perspective(1000px) rotateY(28deg) translateY(20px) scale(0.88)';
+          o1 = '0.38';
+          f1 = 'grayscale(0.7) brightness(0.48)';
+          f2 = `drop-shadow(0 0 52px ${p2rc}) brightness(1.2)`;
+        } else if (result.winner === 1) {
+          t2 = 'perspective(1000px) rotateY(-28deg) translateY(20px) scale(0.88)';
+          o2 = '0.38';
+          f2 = 'grayscale(0.7) brightness(0.48)';
+          f1 = `drop-shadow(0 0 52px ${p1rc}) brightness(1.2)`;
+        }
+      }
+
+      slot1!.style.transform = t1;
+      slot1!.style.opacity = o1;
+      slot1!.style.filter = f1;
+      slot2!.style.transform = t2;
+      slot2!.style.opacity = o2;
+      slot2!.style.filter = f2;
+    }
+
+    function render() {
+      const [p1, p2] = selected;
+      if (!p1 || !p2) return;
+
+      const showResult = phase === 'result';
+      renderStatsBar(p1, p2, showResult);
+      applyCardVisuals(p1, p2);
+
+      fightBtn!.hidden = phase !== 'idle';
+      resultEl!.hidden = !showResult;
+      flash!.style.opacity = phase === 'fighting' ? '0.65' : '0';
+
+      const p1rc = p1.dataset.rarityColor || '#4da3ff';
+      const p2rc = p2.dataset.rarityColor || '#ffcf5c';
+      overlay!.style.background = `radial-gradient(ellipse at 16% 50%, ${p1rc}55 0%, transparent 48%), radial-gradient(ellipse at 84% 50%, ${p2rc}55 0%, transparent 48%), radial-gradient(ellipse at 50% 100%, rgba(46,33,102,0.55) 0%, transparent 50%), #08041a`;
+
+      if (showResult) {
+        const result = computeResult(p1, p2);
+        if (result.winner === 0) {
+          resultLabel!.textContent = 'DRAW!';
+          resultSub!.textContent = `${result.s1} — ${result.s2} across all stats`;
+        } else {
+          const winnerCard = result.winner === 1 ? p1 : p2;
+          resultLabel!.textContent = `${winnerCard.dataset.name} wins!`;
+          resultSub!.textContent = `Won ${result.winner === 1 ? result.s1 : result.s2} of 4 stats`;
+        }
+      }
+    }
+
+    function openBattle() {
+      const [p1, p2] = selected;
+      if (!p1 || !p2) return;
+      slot1!.innerHTML = '';
+      slot2!.innerHTML = '';
+      const c1 = p1.cloneNode(true) as HTMLElement;
+      const c2 = p2.cloneNode(true) as HTMLElement;
+      c1.removeAttribute('id');
+      c2.removeAttribute('id');
+      c1.classList.remove('battle-sel');
+      c2.classList.remove('battle-sel');
+      slot1!.append(c1);
+      slot2!.append(c2);
+      overlay!.hidden = false;
+      document.body.style.overflow = 'hidden';
+      render();
+    }
+
+    function closeBattle() {
+      clearTimeout(fightTimer);
+      phase = 'idle';
+      overlay!.hidden = true;
+      document.body.style.overflow = '';
+      selected.forEach((c) => c.classList.remove('battle-sel'));
+      selected = [];
+      updateInstruction();
+    }
+
+    function fight() {
+      if (phase !== 'idle') return;
+      phase = 'fighting';
+      render();
+      clearTimeout(fightTimer);
+      fightTimer = window.setTimeout(() => {
+        phase = 'result';
+        render();
+      }, 700);
+    }
+
+    function toggleCard(card: HTMLElement) {
+      if (selected.includes(card)) {
+        selected = selected.filter((c) => c !== card);
+        card.classList.remove('battle-sel');
+        phase = 'idle';
+        updateInstruction();
+        return;
+      }
+      if (selected.length >= 2) return;
+      selected.push(card);
+      card.classList.add('battle-sel');
+      updateInstruction();
+      if (selected.length === 2) openBattle();
+    }
+
+    grid.querySelectorAll<HTMLElement>('.mtg-card').forEach((card) => {
+      card.style.cursor = 'pointer';
+      card.addEventListener('click', () => toggleCard(card));
+    });
+
+    closeBtn.addEventListener('click', closeBattle);
+    fightBtn.addEventListener('click', fight);
+    againBtn.addEventListener('click', () => {
+      phase = 'idle';
+      render();
+    });
+  }
 </script>

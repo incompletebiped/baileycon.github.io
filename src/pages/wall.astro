@@ -5,7 +5,7 @@ import PageBanner from '../components/PageBanner.astro';
 
 <BaseLayout title="The Anonymous Wall — BaileyCon" active="wall">
   <PageBanner
-    eyebrow="NO NAMES, NO SHAME"
+    eyebrow="No Names &middot; No Shame"
     title="The Anonymous Wall"
     subtitle="Confessions, hot takes, unsolicited prophecies. Nail thy secret to the tavern board &mdash; no one shall know it was thee."
   />
@@ -13,10 +13,10 @@ import PageBanner from '../components/PageBanner.astro';
   <!-- POST FORM -->
   <section class="bc-wall-form-section">
     <div class="bc-wall-form">
-      <textarea class="bc-wallfield" id="wall-text" placeholder="Speak freely, stranger&hellip;" rows="3" style="margin-bottom:14px;"></textarea>
+      <textarea class="bc-field" id="wall-text" placeholder="Speak freely, stranger&hellip;" rows="3" style="margin-bottom:14px;"></textarea>
       <div class="bc-wall-form-row">
         <span class="bc-wall-note">Posted anonymously &mdash; a random alias is assigned for thee.</span>
-        <button id="wall-submit" class="bc-submit-btn" disabled>NAIL IT TO THE BOARD</button>
+        <button id="wall-submit" class="bc-submit-btn" disabled>Nail It To The Board</button>
       </div>
       <p id="wall-status" class="bc-status" hidden></p>
     </div>
@@ -27,60 +27,36 @@ import PageBanner from '../components/PageBanner.astro';
     <div id="wall-board" class="bc-board">
       <p class="bc-loading">Fetching the board&hellip;</p>
     </div>
-    <p class="bc-board-count"><span id="wall-count">&hellip;</span> PINNED TO THE BOARD</p>
+    <p class="bc-board-count"><span id="wall-count">&hellip;</span> Pinned To The Board</p>
   </section>
 </BaseLayout>
 
 <template id="wall-note-template">
-  <div class="bc-note-wrap">
-    <div class="bc-note">
-      <div class="bc-note-seal"></div>
-      <p class="bc-note-text"></p>
-      <div class="bc-note-alias"></div>
-      <div class="bc-note-reactions">
-        <button type="button" class="bc-reaction-btn" data-emoji="heart">&#10084;&#65039; <span class="bc-reaction-count">0</span></button>
-        <button type="button" class="bc-reaction-btn" data-emoji="laugh">&#128514; <span class="bc-reaction-count">0</span></button>
-        <button type="button" class="bc-reaction-btn" data-emoji="shock">&#128558; <span class="bc-reaction-count">0</span></button>
-        <button type="button" class="bc-reaction-btn" data-emoji="dice">&#127922; <span class="bc-reaction-count">0</span></button>
-      </div>
+  <div class="bc-note">
+    <div class="bc-note-pin"></div>
+    <p class="bc-note-text"></p>
+    <div class="bc-note-alias"></div>
+    <div class="bc-note-reactions">
+      <button type="button" class="bc-reaction-btn" data-emoji="heart">&#10084;&#65039; <span class="bc-reaction-count">0</span></button>
+      <button type="button" class="bc-reaction-btn" data-emoji="laugh">&#128514; <span class="bc-reaction-count">0</span></button>
+      <button type="button" class="bc-reaction-btn" data-emoji="shock">&#128558; <span class="bc-reaction-count">0</span></button>
+      <button type="button" class="bc-reaction-btn" data-emoji="dice">&#127922; <span class="bc-reaction-count">0</span></button>
     </div>
   </div>
 </template>
 
-<style>
-  .bc-wallfield {
-    width: 100%;
-    box-sizing: border-box;
-    background: #ffffff;
-    border: 1.5px solid #cdd6ee;
-    border-radius: 10px;
-    color: var(--bc-ink-strong);
-    font-family: 'Lato', sans-serif;
-    font-size: 17px;
-    padding: 16px;
-    outline: none;
-    resize: vertical;
-    transition: outline-color 0.12s;
-  }
-  .bc-wallfield:focus {
-    outline: 2px solid var(--bc-blue);
-    outline-offset: 1px;
-  }
-  .bc-wallfield::placeholder {
-    color: #9aa3c4;
-  }
-
+<style is:global>
   .bc-wall-form-section {
-    max-width: 900px;
+    max-width: 860px;
     margin: 0 auto;
     padding: 0 28px 44px;
   }
   .bc-wall-form {
-    border: 2px solid var(--bc-gold);
+    border: 1px solid var(--bc-border-gold);
     border-radius: 14px;
-    background: var(--bc-card-blueviolet);
-    padding: 28px;
-    box-shadow: 6px 6px 0 var(--bc-deep-twilight);
+    background: var(--bc-panel);
+    padding: 22px;
+    box-shadow: 0 18px 44px rgba(0, 0, 0, 0.45);
   }
   .bc-wall-form-row {
     display: flex;
@@ -91,41 +67,42 @@ import PageBanner from '../components/PageBanner.astro';
     margin-top: 14px;
   }
   .bc-wall-note {
-    font-family: 'Lato', sans-serif;
-    font-size: 14px;
-    color: #e2d6ff;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.4);
   }
   .bc-submit-btn {
-    border: 2px solid transparent;
+    border: 1.5px solid var(--bc-gold);
     border-radius: 9px;
-    padding: 13px 26px;
-    font-family: 'Lato', sans-serif;
-    font-weight: 900;
-    font-size: 14px;
-    letter-spacing: 1px;
+    padding: 13px 24px;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
     cursor: not-allowed;
-    color: rgba(20, 19, 43, 0.45);
-    background: rgba(255, 207, 92, 0.45);
+    color: rgba(255, 207, 92, 0.35);
+    background: transparent;
+    opacity: 0.4;
     white-space: nowrap;
+    transition: opacity 0.15s;
   }
   .bc-submit-btn:not(:disabled) {
     cursor: pointer;
-    color: #14132b;
+    color: #1a0e02;
     background: var(--bc-gold);
-    border-color: #14132b;
-    box-shadow: 4px 4px 0 #14132b;
+    opacity: 1;
   }
   .bc-status {
     margin: 12px 0 0;
-    font-family: 'Raleway', sans-serif;
+    font-family: 'Space Grotesk', sans-serif;
     font-weight: 700;
-    font-size: 11px;
-    letter-spacing: 1px;
-    color: #e2d6ff;
+    font-size: 12px;
+    color: var(--bc-blue);
     text-align: center;
   }
   .bc-status.is-error {
-    color: #ffc2c2;
+    color: var(--bc-error);
   }
 
   .bc-board-section {
@@ -134,86 +111,92 @@ import PageBanner from '../components/PageBanner.astro';
     padding: 0 28px 20px;
   }
   .bc-board {
-    column-count: 3;
+    column-width: 320px;
     column-gap: 22px;
   }
   .bc-loading {
-    font-family: 'Lato', sans-serif;
-    color: var(--bc-muted);
-  }
-  .bc-note-wrap {
-    break-inside: avoid;
-    -webkit-column-break-inside: avoid;
-    display: inline-block;
-    width: 100%;
-    margin-bottom: 24px;
+    font-family: 'Space Grotesk', sans-serif;
+    color: rgba(255, 255, 255, 0.4);
   }
   .bc-note {
     position: relative;
-    border-radius: 3px;
-    padding: 26px 22px 18px;
-    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.45);
-    border: 1px solid rgba(0, 0, 0, 0.08);
+    break-inside: avoid;
+    display: inline-block;
+    width: 100%;
+    margin-bottom: 26px;
+    padding-top: 12px;
+    background: var(--bc-panel);
+    border: 1px solid var(--bc-border-gold);
+    border-radius: 12px;
+    transition: border-color 0.15s, transform 0.15s, box-shadow 0.15s;
   }
-  .bc-note-seal {
+  .bc-note:hover {
+    border-color: var(--bc-border-gold-strong);
+    box-shadow: 0 14px 30px rgba(0, 0, 0, 0.4);
+    transform: translateY(-4px);
+  }
+  .bc-note-pin {
     position: absolute;
-    top: -11px;
+    top: -8px;
     left: 50%;
     transform: translateX(-50%);
-    width: 26px;
-    height: 26px;
+    width: 16px;
+    height: 16px;
     border-radius: 50%;
-    background: radial-gradient(circle at 40% 35%, #8b5be0, #4a1f9e);
-    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.5), inset 0 1px 2px rgba(255, 255, 255, 0.35);
-    border: 2px solid var(--bc-gold);
+    background: radial-gradient(circle at 35% 30%, #ffe9a8, #ffcf5c 55%, #a07020);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5), 0 0 12px rgba(255, 207, 92, 0.4);
+    border: 1px solid rgba(0, 0, 0, 0.3);
+    z-index: 3;
   }
   .bc-note-text {
-    font-family: 'Lato', sans-serif;
-    font-size: 19px;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 16px;
     line-height: 1.5;
-    color: #2a2740;
-    margin: 14px 0 16px;
+    color: rgba(255, 255, 255, 0.9);
+    margin: 8px 22px 16px;
   }
   .bc-note-alias {
-    font-family: 'Lato', sans-serif;
+    font-family: 'Playfair Display', serif;
     font-style: italic;
     font-size: 14px;
-    color: #b7861f;
+    color: var(--bc-gold);
     text-align: right;
+    margin: 0 22px 16px;
   }
   .bc-note-reactions {
     display: flex;
-    gap: 6px;
+    gap: 8px;
     flex-wrap: wrap;
-    margin-top: 12px;
-    padding-top: 10px;
-    border-top: 1px solid rgba(42, 26, 14, 0.15);
+    margin: 0 22px;
+    padding: 12px 0 16px;
+    border-top: 1px solid rgba(255, 207, 92, 0.1);
   }
   .bc-reaction-btn {
     display: inline-flex;
     align-items: center;
     gap: 4px;
-    border: 1px solid rgba(42, 26, 14, 0.2);
+    border: 1px solid var(--bc-border-gold);
     border-radius: 20px;
-    background: rgba(255, 255, 255, 0.35);
-    color: #4a341c;
-    font-family: 'Raleway', sans-serif;
+    background: transparent;
+    color: rgba(255, 255, 255, 0.6);
+    font-family: 'Space Grotesk', sans-serif;
     font-size: 12px;
-    padding: 3px 9px;
+    padding: 4px 10px;
     cursor: pointer;
-    transition: background 0.15s ease, transform 0.1s ease;
+    transition: background 0.15s ease, transform 0.1s ease, border-color 0.15s ease;
   }
   .bc-reaction-btn:hover:not(:disabled) {
-    background: rgba(255, 255, 255, 0.65);
-    transform: scale(1.05);
+    background: rgba(255, 207, 92, 0.1);
+    border-color: var(--bc-border-gold-strong);
+    transform: scale(1.1);
   }
   .bc-reaction-btn:disabled {
     cursor: default;
     opacity: 0.75;
   }
   .bc-reaction-btn.is-reacted {
-    background: rgba(255, 255, 255, 0.75);
-    border-color: rgba(42, 26, 14, 0.35);
+    border-color: var(--bc-gold);
+    color: var(--bc-gold);
     font-weight: 700;
   }
   .bc-reaction-count {
@@ -221,23 +204,13 @@ import PageBanner from '../components/PageBanner.astro';
   }
   .bc-board-count {
     text-align: center;
-    font-family: 'Raleway', sans-serif;
-    font-weight: 800;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
     font-size: 12px;
     letter-spacing: 3px;
-    color: var(--bc-faint);
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.3);
     margin-top: 44px;
-  }
-
-  @media (max-width: 900px) {
-    .bc-board {
-      column-count: 2;
-    }
-  }
-  @media (max-width: 560px) {
-    .bc-board {
-      column-count: 1;
-    }
   }
 </style>
 
@@ -254,26 +227,9 @@ import PageBanner from '../components/PageBanner.astro';
   }
 
   const ALIASES = [
-    'A Hooded Stranger',
-    'Anonymous Squire',
-    'A Tavern Ghost',
-    'The Masked Meeple',
-    'A Wandering Bard',
-    'Someone Who Rolled a 1',
-    'A Concerned Peasant',
-    'A Salty Loser',
-    'An Unnamed Knight',
-    'The Court Jester',
-    'A Retired Dragon',
-    'Nobody In Particular',
+    'Squire', 'Bard', 'Rogue', 'Cleric', 'Paladin', 'Wizard', 'Ranger', 'Druid', 'Bishop', 'Knight',
+    'Jester', 'Monk', 'Sorcerer', 'Warlock', 'Barbarian', 'Alchemist', 'Herald', 'Oracle', 'Minstrel', 'Scribe',
   ];
-  const TINTS = ['#f0e6cc', '#ece0f2', '#e2ecf5', '#f2e8de'];
-  const SEAL_BY_TINT: Record<string, string> = {
-    '#f0e6cc': 'radial-gradient(circle at 40% 35%, #8b5be0, #4a1f9e)',
-    '#ece0f2': 'radial-gradient(circle at 40% 35%, #8b5be0, #4a1f9e)',
-    '#e2ecf5': 'radial-gradient(circle at 40% 35%, #5a8bff, #1f4fc4)',
-    '#f2e8de': 'radial-gradient(circle at 40% 35%, #5a8bff, #1f4fc4)',
-  };
   const REACTED_STORAGE_KEY = 'bc-wall-reacted';
 
   interface ReactionRow {
@@ -339,13 +295,9 @@ import PageBanner from '../components/PageBanner.astro';
     for (const n of rows) {
       const node = template.content.cloneNode(true) as DocumentFragment;
       const noteEl = node.querySelector('.bc-note') as HTMLElement;
-      noteEl.style.background = n.tint;
-      noteEl.style.transform = `rotate(${n.rotation}deg)`;
       noteEl.dataset.postId = String(n.id);
-      const sealEl = node.querySelector('.bc-note-seal') as HTMLElement;
-      sealEl.style.background = SEAL_BY_TINT[n.tint] || SEAL_BY_TINT['#f0e6cc'];
       (node.querySelector('.bc-note-text') as HTMLElement).textContent = n.body;
-      (node.querySelector('.bc-note-alias') as HTMLElement).textContent = `— ${n.alias}`;
+      (node.querySelector('.bc-note-alias') as HTMLElement).textContent = `— Anonymous ${n.alias}`;
 
       node.querySelectorAll<HTMLButtonElement>('.bc-reaction-btn').forEach((btn) => {
         const emoji = btn.dataset.emoji || '';
@@ -425,8 +377,8 @@ import PageBanner from '../components/PageBanner.astro';
     statusEl.classList.remove('is-error');
 
     const alias = rand(ALIASES);
-    const tint = rand(TINTS);
-    const rotation = Math.random() * 6 - 3;
+    const tint = '#0d0a1c';
+    const rotation = 0;
 
     const { error } = await supabase.from('wall_posts').insert({ body, alias, tint, rotation });
     if (error) {
@@ -438,7 +390,7 @@ import PageBanner from '../components/PageBanner.astro';
     }
 
     textInput.value = '';
-    statusEl.textContent = `Nailed to the board as "${alias}".`;
+    statusEl.textContent = `Nailed to the board as "Anonymous ${alias}".`;
     statusEl.hidden = false;
     updateSubmitState();
     await loadBoard();

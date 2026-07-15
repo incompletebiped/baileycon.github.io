@@ -2,130 +2,341 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import PageBanner from '../components/PageBanner.astro';
 import GameCard from '../components/GameCard.astro';
-import Crest from '../components/Crest.astro';
 import { games, withDisplay } from '../data/games';
+import { withBase } from '../lib/url';
 
 const displayGames = games.map(withDisplay);
-const rollerData = JSON.stringify(games.map((g) => ({ slug: g.slug, name: g.name })));
+const slugsData = JSON.stringify(displayGames.map((g) => ({ slug: g.slug, hall: g.hall, hallColor: g.hallColor })));
 ---
 
 <BaseLayout title="The Games — BaileyCon" active="games">
   <PageBanner
-    eyebrow="THE ARMORY"
+    eyebrow="The Armory"
     title="The Games"
     subtitle="A growing muster of the finest board & card games the tavern can hold. More shall be added as the day draws near."
   />
 
-  <section class="bc-legend">
-    <span>COMPLEXITY:</span>
-    <span><span class="bc-legend-gold">&#9670;</span>&#9671;&#9671; LIGHT</span>
-    <span><span class="bc-legend-gold">&#9670;&#9670;</span>&#9671; MEDIUM</span>
-    <span><span class="bc-legend-gold">&#9670;&#9670;&#9670;</span> HEAVY</span>
+  <section class="bc-hero-section" id="hero-section">
+    <div class="bc-backdrop">
+      <img class="bc-backdrop-img" id="backdrop-img" src={withBase(`/images/games/${displayGames[0].slug}.jpg`)} alt="" />
+      <div class="bc-backdrop-tint" id="backdrop-tint"></div>
+    </div>
+    <div class="bc-hero-wrap" id="hero-wrap">
+      {displayGames.map((g, i) => <GameCard game={g} idx={i} />)}
+    </div>
   </section>
 
-  <section class="bc-controls">
-    <label class="bc-control">
-      <span class="bc-control-label">SORT BY</span>
-      <select id="games-sort" class="bc-control-select">
-        <option value="default">Collection Order</option>
-        <option value="name">Name (A&ndash;Z)</option>
-        <option value="time">Time (Quickest First)</option>
-        <option value="players">Players (Fewest First)</option>
-        <option value="weight">Complexity (Lightest First)</option>
-      </select>
-    </label>
-    <label class="bc-control">
-      <span class="bc-control-label">PARTY SIZE</span>
-      <select id="games-players-filter" class="bc-control-select">
-        <option value="any">Any</option>
-        <option value="1">1 player</option>
-        <option value="2">2 players</option>
-        <option value="3">3 players</option>
-        <option value="4">4 players</option>
-        <option value="5">5 players</option>
-        <option value="6">6 players</option>
-        <option value="7">7 players</option>
-        <option value="8">8+ players</option>
-      </select>
-    </label>
-  </section>
-
-  <section class="bc-games-section">
-    <div class="bc-games-grid" id="games-grid">
-      {displayGames.map((g) => (
-        <GameCard game={g} />
+  <section class="bc-carousel-section">
+    <div class="bc-carousel-head">
+      <span>All Games</span>
+      <span class="bc-carousel-count">{games.length} Titles</span>
+    </div>
+    <div class="bc-carousel" id="carousel">
+      {displayGames.map((g, i) => (
+        <button type="button" class="bc-thumb" data-thumb data-idx={i} data-slug={g.slug}>
+          <div class="bc-thumb-art">
+            <div class="bc-thumb-placeholder"></div>
+            <img src={withBase(`/images/games/${g.slug}.jpg`)} alt="" onerror="this.style.display='none'" loading="lazy" />
+            <span class="bc-thumb-played" data-thumb-played hidden>&#10003;</span>
+          </div>
+          <div class="bc-thumb-name">{g.name}</div>
+          <div class="bc-thumb-hall" style={`color:${g.hallColor};`}>{g.hall}</div>
+        </button>
       ))}
     </div>
-    <p class="bc-games-empty" id="games-empty" hidden>No games fit that party size &mdash; try a different number.</p>
     <p class="bc-games-note">&hellip;and many more to be added. Got one to bring? Tell the host!</p>
-  </section>
-
-  <!-- ===== DICE ROLLER ===== -->
-  <section class="bc-roller-section">
-    <div class="bc-roller-card">
-      <div class="bc-eyebrow-roller">CAN&rsquo;T DECIDE?</div>
-      <h2 class="bc-roller-title">Let the Dice Choose</h2>
-      <button type="button" id="dice-roll-btn" class="bc-dice-btn" aria-label="Roll the dice to pick a random game">
-        <div class="bc-dice-visual" id="dice-visual"><Crest size={78} /></div>
-      </button>
-      <p class="bc-roller-hint">Tap the die to summon tonight&rsquo;s game.</p>
-      <p id="dice-result" class="bc-dice-result" aria-live="polite">&nbsp;</p>
-    </div>
   </section>
 </BaseLayout>
 
-<script>
-  interface CardData {
-    el: HTMLElement;
-    name: string;
-    playersMin: number;
-    playersMax: number;
-    timeMin: number;
-    weight: number;
+<script type="application/json" id="games-slugs-data" set:html={slugsData}></script>
+
+<style>
+  .bc-hero-section {
+    position: relative;
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 40px 28px;
+    border-radius: 16px;
+    overflow: hidden;
+  }
+  .bc-backdrop {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+  }
+  .bc-backdrop-img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: blur(60px) brightness(0.32) saturate(0.5);
+    transform: scale(1.15);
+  }
+  .bc-backdrop-tint {
+    position: absolute;
+    inset: 0;
+    transition: background 0.4s ease;
+  }
+  .bc-hero-wrap {
+    position: relative;
+    z-index: 1;
   }
 
-  const grid = document.getElementById('games-grid');
-  const emptyMsg = document.getElementById('games-empty');
-  const sortSelect = document.getElementById('games-sort') as HTMLSelectElement | null;
-  const playersSelect = document.getElementById('games-players-filter') as HTMLSelectElement | null;
+  .bc-carousel-section {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 50px 28px 70px;
+  }
+  .bc-carousel-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 16px;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 12px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.4);
+  }
+  .bc-carousel-count {
+    color: var(--bc-gold);
+  }
+  .bc-carousel {
+    display: flex;
+    gap: 12px;
+    overflow-x: auto;
+    padding: 4px 4px 16px;
+    scrollbar-width: thin;
+  }
+  .bc-thumb {
+    flex: none;
+    width: 130px;
+    background: var(--bc-panel);
+    border: 1px solid var(--bc-border-gold);
+    border-radius: 10px;
+    padding: 8px;
+    cursor: pointer;
+    transition: transform 0.15s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.15s, border-color 0.15s;
+    text-align: left;
+  }
+  .bc-thumb:hover {
+    transform: translateY(-6px) skewX(-2deg);
+    box-shadow: 5px 5px 0 rgba(255, 207, 92, 0.4);
+  }
+  .bc-thumb.is-active {
+    border-color: var(--bc-gold);
+  }
+  .bc-thumb-art {
+    position: relative;
+    aspect-ratio: 3 / 4;
+    border-radius: 6px;
+    overflow: hidden;
+    margin-bottom: 8px;
+  }
+  .bc-thumb-placeholder {
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0 8px, rgba(255, 255, 255, 0.03) 8px 16px);
+  }
+  .bc-thumb-art img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .bc-thumb-played[hidden] {
+    display: none;
+  }
+  .bc-thumb-played {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--bc-blue);
+    color: #06040f;
+    font-size: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+  }
+  .bc-thumb-name {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 11.5px;
+    color: #fff;
+    line-height: 1.3;
+  }
+  .bc-thumb-hall {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 9px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-top: 3px;
+    opacity: 0.7;
+  }
+  .bc-games-note {
+    text-align: center;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.35);
+    margin-top: 30px;
+  }
+</style>
 
-  if (grid && sortSelect && playersSelect) {
-    const cards: CardData[] = Array.from(grid.querySelectorAll<HTMLElement>('.bc-game-card')).map((el) => ({
-      el,
-      name: el.dataset.name || '',
-      playersMin: Number(el.dataset.playersMin) || 0,
-      playersMax: Number(el.dataset.playersMax) || 99,
-      timeMin: Number(el.dataset.timeMin) || 0,
-      weight: Number(el.dataset.weight) || 1,
-    }));
+<script>
+  import { supabase, supabaseConfigured } from '../lib/supabase';
+  import { withBase } from '../lib/url';
 
-    function applyControls() {
-      const playerFilter = playersSelect!.value;
-      const sortBy = sortSelect!.value;
+  interface GameMeta {
+    slug: string;
+    hall: string;
+    hallColor: string;
+  }
 
-      const visible =
-        playerFilter === 'any'
-          ? cards
-          : cards.filter((c) => Number(playerFilter) >= c.playersMin && Number(playerFilter) <= c.playersMax);
-      const visibleSet = new Set(visible);
+  const metaEl = document.getElementById('games-slugs-data');
+  const gamesMeta: GameMeta[] = metaEl ? JSON.parse(metaEl.textContent || '[]') : [];
 
-      cards.forEach((c) => {
-        c.el.style.display = visibleSet.has(c) ? '' : 'none';
+  const heroWrap = document.getElementById('hero-wrap');
+  const carousel = document.getElementById('carousel');
+  const backdropImg = document.getElementById('backdrop-img') as HTMLImageElement | null;
+  const backdropTint = document.getElementById('backdrop-tint');
+
+  if (heroWrap && carousel && backdropImg && backdropTint && gamesMeta.length) {
+    const heroes = Array.from(heroWrap.querySelectorAll<HTMLElement>('[data-hero]'));
+    const thumbs = Array.from(carousel.querySelectorAll<HTMLElement>('[data-thumb]'));
+    let selected = 0;
+    let played: Record<string, boolean> = {};
+    let isSpinning = false;
+    let spinTimer: number | undefined;
+
+    function updatePlayedUI() {
+      heroes.forEach((hero) => {
+        const slug = hero.dataset.slug || '';
+        const isPlayed = !!played[slug];
+        const badge = hero.querySelector<HTMLElement>('[data-played-badge]');
+        const box = hero.querySelector<HTMLElement>('[data-played-box]');
+        const label = hero.querySelector<HTMLElement>('[data-played-label]');
+        if (badge) badge.hidden = !isPlayed;
+        if (box) {
+          box.style.background = isPlayed ? '#4da3ff' : 'transparent';
+          box.style.borderColor = isPlayed ? '#4da3ff' : 'rgba(255,255,255,0.35)';
+          box.textContent = isPlayed ? '✓' : '';
+        }
+        if (label) label.style.color = isPlayed ? '#4da3ff' : 'rgba(255,255,255,0.5)';
       });
-
-      const ordered = cards.slice();
-      if (sortBy === 'name') ordered.sort((a, b) => a.name.localeCompare(b.name));
-      else if (sortBy === 'time') ordered.sort((a, b) => a.timeMin - b.timeMin);
-      else if (sortBy === 'players') ordered.sort((a, b) => a.playersMin - b.playersMin);
-      else if (sortBy === 'weight') ordered.sort((a, b) => a.weight - b.weight);
-
-      ordered.forEach((c) => grid!.appendChild(c.el));
-
-      if (emptyMsg) emptyMsg.hidden = visible.length > 0;
+      thumbs.forEach((thumb) => {
+        const slug = thumb.dataset.slug || '';
+        const mark = thumb.querySelector<HTMLElement>('[data-thumb-played]');
+        if (mark) mark.hidden = !played[slug];
+      });
     }
 
-    sortSelect.addEventListener('change', applyControls);
-    playersSelect.addEventListener('change', applyControls);
+    function render() {
+      heroes.forEach((hero, i) => {
+        hero.hidden = i !== selected;
+      });
+      thumbs.forEach((thumb, i) => {
+        thumb.classList.toggle('is-active', i === selected);
+      });
+
+      const meta = gamesMeta[selected];
+      backdropImg.src = withBase(`/images/games/${meta.slug}.jpg`);
+      backdropTint.style.background = `radial-gradient(ellipse at 72% 45%, ${meta.hallColor}33 0%, ${meta.hallColor}08 42%, transparent 62%)`;
+
+      const activeThumb = thumbs[selected];
+      if (activeThumb) {
+        const target = activeThumb.offsetLeft - carousel!.clientWidth / 2 + activeThumb.clientWidth / 2;
+        carousel!.scrollTo({ left: Math.max(0, target), behavior: 'smooth' });
+      }
+    }
+
+    function select(idx: number, updateHash = true) {
+      selected = idx;
+      render();
+      if (updateHash) history.replaceState(null, '', `#${gamesMeta[idx].slug}`);
+    }
+
+    function spinTo(target: number) {
+      if (isSpinning) return;
+      isSpinning = true;
+      document.querySelectorAll<HTMLElement>('[data-randomize-label]').forEach((el) => (el.textContent = '⏳ Selecting…'));
+      const delays = [45, 48, 52, 60, 72, 90, 115, 148, 190, 245, 320];
+      const steps = delays.map(() => Math.floor(Math.random() * gamesMeta.length));
+      steps.push(target);
+      let i = 0;
+      const tick = () => {
+        select(steps[i], false);
+        i++;
+        if (i < steps.length) {
+          spinTimer = window.setTimeout(tick, delays[i - 1] ?? 320);
+        } else {
+          spinTimer = window.setTimeout(() => {
+            isSpinning = false;
+            document.querySelectorAll<HTMLElement>('[data-randomize-label]').forEach((el) => (el.textContent = '🎲 Randomize'));
+            history.replaceState(null, '', `#${gamesMeta[target].slug}`);
+          }, 500);
+        }
+      };
+      spinTimer = window.setTimeout(tick, 40);
+    }
+
+    function randomize() {
+      if (isSpinning) return;
+      const allIdx = gamesMeta.map((_, i) => i);
+      const fresh = allIdx.filter((i) => !played[gamesMeta[i].slug] && i !== selected);
+      const pool = fresh.length ? fresh : allIdx.filter((i) => i !== selected);
+      if (!pool.length) return;
+      const target = pool[Math.floor(Math.random() * pool.length)];
+      spinTo(target);
+    }
+
+    async function togglePlayed(slug: string) {
+      const next = !played[slug];
+      played = { ...played, [slug]: next };
+      updatePlayedUI();
+      if (!supabaseConfigured) return;
+      await supabase.from('games_played').upsert({ game_slug: slug, played: next, updated_at: new Date().toISOString() });
+    }
+
+    async function loadPlayed() {
+      if (!supabaseConfigured) return;
+      const { data, error } = await supabase.from('games_played').select('game_slug, played');
+      if (error || !data) return;
+      const next: Record<string, boolean> = {};
+      for (const row of data as { game_slug: string; played: boolean }[]) {
+        if (row.played) next[row.game_slug] = true;
+      }
+      played = next;
+      updatePlayedUI();
+    }
+
+    thumbs.forEach((thumb, i) => {
+      thumb.addEventListener('click', () => select(i));
+    });
+
+    heroWrap.querySelectorAll<HTMLElement>('[data-randomize-btn]').forEach((btn) => {
+      btn.addEventListener('click', randomize);
+    });
+    heroWrap.querySelectorAll<HTMLElement>('[data-toggle-played]').forEach((toggle) => {
+      toggle.addEventListener('click', () => {
+        const hero = toggle.closest<HTMLElement>('[data-hero]');
+        const slug = hero?.dataset.slug;
+        if (slug) togglePlayed(slug);
+      });
+    });
+
+    const initialSlug = window.location.hash.slice(1);
+    const initialIdx = initialSlug ? gamesMeta.findIndex((g) => g.slug === initialSlug) : 0;
+    select(initialIdx >= 0 ? initialIdx : 0, false);
+    loadPlayed();
   }
 </script>
 
@@ -151,12 +362,13 @@ const rollerData = JSON.stringify(games.map((g) => ({ slug: g.slug, name: g.name
       totals.set(row.game, entry);
     }
 
-    document.querySelectorAll<HTMLElement>('.bc-game-card').forEach((card) => {
-      const name = card.dataset.name || '';
+    document.querySelectorAll<HTMLElement>('[data-hero]').forEach((hero) => {
+      const nameEl = hero.querySelector<HTMLElement>('.bc-hero-title');
+      const name = nameEl?.textContent || '';
       const entry = totals.get(name);
       if (!entry) return;
 
-      const slot = card.querySelector<HTMLElement>('[data-rating-slot]');
+      const slot = hero.querySelector<HTMLElement>('[data-rating-slot]');
       if (!slot) return;
 
       const avg = (entry.sum / entry.count).toFixed(1);
@@ -168,230 +380,3 @@ const rollerData = JSON.stringify(games.map((g) => ({ slug: g.slug, name: g.name
 
   loadRatings();
 </script>
-
-<script type="application/json" id="roller-games-data" set:html={rollerData}></script>
-<script>
-  interface RollerGame {
-    slug: string;
-    name: string;
-  }
-
-  const dataEl = document.getElementById('roller-games-data');
-  const rollerGames: RollerGame[] = dataEl ? JSON.parse(dataEl.textContent || '[]') : [];
-
-  const btn = document.getElementById('dice-roll-btn') as HTMLButtonElement | null;
-  const visual = document.getElementById('dice-visual') as HTMLDivElement | null;
-  const resultEl = document.getElementById('dice-result') as HTMLParagraphElement | null;
-
-  let rolling = false;
-
-  function rollDice() {
-    if (!btn || !visual || !resultEl || rolling || !rollerGames.length) return;
-    rolling = true;
-    btn.disabled = true;
-
-    visual.classList.remove('is-rolling');
-    // Force reflow so the animation restarts on repeated clicks.
-    void visual.offsetWidth;
-    visual.classList.add('is-rolling');
-
-    setTimeout(() => {
-      const pick = rollerGames[Math.floor(Math.random() * rollerGames.length)];
-
-      resultEl.textContent = '';
-      resultEl.append("Tonight's fate: ");
-      const link = document.createElement('a');
-      link.href = `#${pick.slug}`;
-      link.textContent = pick.name;
-      resultEl.append(link);
-
-      const target = document.getElementById(pick.slug);
-      if (target) {
-        target.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        target.classList.remove('bc-highlight');
-        void (target as HTMLElement).offsetWidth;
-        target.classList.add('bc-highlight');
-        setTimeout(() => target.classList.remove('bc-highlight'), 1700);
-      }
-
-      visual.classList.remove('is-rolling');
-      rolling = false;
-      btn.disabled = false;
-    }, 700);
-  }
-
-  btn?.addEventListener('click', rollDice);
-</script>
-
-<style>
-  .bc-legend {
-    max-width: 1180px;
-    margin: 0 auto;
-    padding: 0 28px 24px;
-    display: flex;
-    justify-content: center;
-    gap: 22px;
-    flex-wrap: wrap;
-    font-family: 'Raleway', sans-serif;
-    font-weight: 800;
-    font-size: 12px;
-    letter-spacing: 2px;
-    color: var(--bc-faint);
-  }
-  .bc-legend-gold {
-    color: var(--bc-gold);
-  }
-  .bc-controls {
-    max-width: 1180px;
-    margin: 0 auto;
-    padding: 0 28px 44px;
-    display: flex;
-    justify-content: center;
-    gap: 40px;
-    flex-wrap: wrap;
-  }
-  .bc-control {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-  }
-  .bc-control-label {
-    font-family: 'Raleway', sans-serif;
-    font-weight: 800;
-    font-size: 12px;
-    letter-spacing: 2px;
-    color: var(--bc-faint);
-    white-space: nowrap;
-  }
-  .bc-control-select {
-    background: #ffffff;
-    border: 1.5px solid #cdd6ee;
-    border-radius: 8px;
-    color: var(--bc-ink-strong);
-    font-family: 'Lato', sans-serif;
-    font-size: 15px;
-    padding: 11px 16px;
-    outline: none;
-    cursor: pointer;
-    transition: outline-color 0.12s;
-  }
-  .bc-control-select:focus {
-    outline: 2px solid var(--bc-blue);
-    outline-offset: 1px;
-  }
-  .bc-games-section {
-    max-width: 1180px;
-    margin: 0 auto;
-    padding: 0 28px 40px;
-  }
-  .bc-games-empty {
-    text-align: center;
-    font-family: 'Lato', sans-serif;
-    font-size: 16px;
-    color: var(--bc-muted);
-    padding: 30px 0;
-  }
-  .bc-games-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 30px;
-  }
-  .bc-games-note {
-    text-align: center;
-    font-family: 'Lato', sans-serif;
-    font-size: 16px;
-    color: var(--bc-muted);
-    margin-top: 44px;
-  }
-
-  @media (max-width: 980px) {
-    .bc-games-grid {
-      grid-template-columns: repeat(2, 1fr);
-    }
-  }
-  @media (max-width: 620px) {
-    .bc-games-grid {
-      grid-template-columns: 1fr;
-    }
-  }
-
-  .bc-roller-section {
-    max-width: 600px;
-    margin: 0 auto;
-    padding: 0 28px 72px;
-    text-align: center;
-  }
-  .bc-roller-card {
-    border: 2px solid var(--bc-gold);
-    border-radius: 14px;
-    background: var(--bc-card-blueviolet);
-    padding: 34px 28px 30px;
-    box-shadow: 6px 6px 0 var(--bc-deep-twilight);
-  }
-  .bc-eyebrow-roller {
-    font-family: 'Raleway', sans-serif;
-    font-weight: 800;
-    font-size: 12px;
-    letter-spacing: 5px;
-    color: #cbb8ff;
-    margin-bottom: 10px;
-    text-transform: uppercase;
-  }
-  .bc-roller-title {
-    margin: 0 0 20px;
-    font-family: 'Lato', sans-serif;
-    font-weight: 900;
-    font-size: 30px;
-    color: var(--bc-gold);
-  }
-  .bc-dice-btn {
-    background: none;
-    border: none;
-    padding: 0;
-    cursor: pointer;
-  }
-  .bc-dice-visual {
-    display: inline-flex;
-    transition: transform 0.18s ease;
-  }
-  .bc-dice-btn:hover .bc-dice-visual:not(.is-rolling) {
-    transform: scale(1.1);
-  }
-  .bc-dice-visual.is-rolling {
-    animation: bc-dice-spin 0.7s cubic-bezier(0.34, 1.56, 0.64, 1);
-  }
-  @keyframes bc-dice-spin {
-    0% {
-      transform: rotate(0deg) scale(1);
-    }
-    35% {
-      transform: rotate(230deg) scale(1.18);
-    }
-    65% {
-      transform: rotate(500deg) scale(0.92);
-    }
-    100% {
-      transform: rotate(720deg) scale(1);
-    }
-  }
-  .bc-roller-hint {
-    margin: 14px 0 0;
-    font-family: 'Lato', sans-serif;
-    font-size: 14px;
-    color: #e2d6ff;
-  }
-  .bc-dice-result {
-    margin: 14px 0 0;
-    min-height: 24px;
-    font-family: 'Lato', sans-serif;
-    font-weight: 700;
-    font-size: 16px;
-    letter-spacing: 0.5px;
-    color: #ffffff;
-  }
-  .bc-dice-result a {
-    color: var(--bc-gold);
-    text-decoration: underline;
-    text-underline-offset: 3px;
-  }
-</style>

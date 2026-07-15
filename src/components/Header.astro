@@ -1,5 +1,4 @@
 ---
-import Crest from './Crest.astro';
 import { withBase } from '../lib/url';
 
 interface Props {
@@ -26,9 +25,12 @@ const resourceLinks = [
 <header class="bc-header">
   <div class="bc-header-inner">
     <a href={withBase('/')} class="bc-brand">
-      <Crest size={40} />
-      <span class="bc-wordmark">BaileyCon</span>
-      <span class="bc-badge">III</span>
+      <span class="bc-wordmark">BAILEYCON</span>
+      <span class="bc-badge" title="Third Annual">
+        <span class="bc-badge-bar"></span>
+        <span class="bc-badge-bar"></span>
+        <span class="bc-badge-bar"></span>
+      </span>
     </a>
 
     <button
@@ -84,14 +86,18 @@ const resourceLinks = [
     position: sticky;
     top: 0;
     z-index: 50;
+    height: 52px;
+    display: flex;
+    align-items: center;
     background: var(--bc-chrome);
-    border-bottom: 3px solid var(--bc-gold);
-    box-shadow: 0 6px 20px -8px rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--bc-border-gold);
   }
   .bc-header-inner {
+    width: 100%;
     max-width: var(--bc-max-width);
     margin: 0 auto;
-    padding: 16px 28px;
+    padding: 0 28px;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -101,25 +107,34 @@ const resourceLinks = [
   .bc-brand {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 10px;
     text-decoration: none;
   }
   .bc-wordmark {
     font-family: 'Bangers', cursive;
     font-weight: 400;
-    font-size: 28px;
-    letter-spacing: 1px;
-    color: var(--bc-gold);
+    font-size: 26px;
+    letter-spacing: 6px;
+    background: linear-gradient(135deg, var(--bc-gold-light), var(--bc-gold));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
   }
   .bc-badge {
-    font-family: 'Lato', sans-serif;
-    font-weight: 700;
-    font-size: 11px;
-    letter-spacing: 1px;
-    color: var(--bc-chrome);
+    display: inline-flex;
+    align-items: center;
+    gap: 2.5px;
     background: var(--bc-blue);
-    padding: 3px 9px;
     border-radius: 5px;
+    padding: 5px 7px;
+    box-shadow: 0 0 12px rgba(77, 163, 255, 0.45);
+  }
+  .bc-badge-bar {
+    display: block;
+    width: 2.5px;
+    height: 11px;
+    background: var(--bc-blue-deep);
+    border-radius: 1px;
   }
   .bc-nav {
     display: flex;
@@ -128,25 +143,41 @@ const resourceLinks = [
     flex-wrap: wrap;
   }
   .bc-nav-link {
-    font-family: 'Raleway', sans-serif;
-    font-size: 12.5px;
-    letter-spacing: 2px;
+    position: relative;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 11px;
+    letter-spacing: 3px;
     text-transform: uppercase;
     font-weight: 700;
-    color: #c3c8ea;
+    color: rgba(255, 207, 92, 0.45);
     padding-bottom: 4px;
-    border-bottom: 2px solid transparent;
+    border-bottom: 1px solid transparent;
     text-decoration: none;
     white-space: nowrap;
     transition: color 0.12s, border-color 0.12s;
   }
+  .bc-nav-link::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -1px;
+    height: 1px;
+    background: var(--bc-gold);
+    transform: scaleX(0) skewX(-8deg);
+    transform-origin: left;
+    transition: transform 0.18s ease;
+  }
   .bc-nav-link:hover {
     color: var(--bc-gold);
   }
+  .bc-nav-link:hover::after {
+    transform: scaleX(1) skewX(-8deg);
+  }
   .bc-nav-link.is-active {
-    font-weight: 800;
+    font-weight: 700;
     color: var(--bc-gold);
-    border-bottom-color: var(--bc-gold);
+    border-bottom-color: rgba(255, 207, 92, 0.4);
   }
 
   .bc-nav-dropdown {
@@ -158,8 +189,13 @@ const resourceLinks = [
     gap: 5px;
     background: none;
     border: none;
-    border-bottom: 2px solid transparent;
-    color: #8f93bd;
+    border-bottom: 1px solid transparent;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    font-weight: 700;
+    color: rgba(255, 207, 92, 0.45);
     cursor: pointer;
   }
   .bc-nav-dropdown-trigger:hover,
@@ -179,11 +215,11 @@ const resourceLinks = [
     top: calc(100% + 14px);
     right: 0;
     min-width: 220px;
-    background: var(--bc-chrome);
-    border: 1px solid rgba(255, 207, 92, 0.4);
-    border-radius: 8px;
+    background: #0d0a1c;
+    border: 1px solid rgba(255, 207, 92, 0.2);
+    border-radius: 9px;
     padding: 8px;
-    box-shadow: 0 14px 28px rgba(0, 0, 0, 0.45);
+    box-shadow: 0 14px 34px rgba(0, 0, 0, 0.55);
     z-index: 60;
   }
   .bc-nav-dropdown-menu.is-open {
@@ -193,18 +229,18 @@ const resourceLinks = [
     display: block;
     padding: 10px 12px;
     border-radius: 5px;
-    font-family: 'Lato', sans-serif;
+    font-family: 'Space Grotesk', sans-serif;
     font-weight: 700;
-    font-size: 13px;
+    font-size: 12.5px;
     letter-spacing: 0.5px;
     text-transform: none;
-    color: #e6e9ff;
+    color: rgba(255, 255, 255, 0.75);
     text-decoration: none;
     white-space: nowrap;
     transition: background 0.12s ease, color 0.12s ease;
   }
   .bc-nav-dropdown-link:hover {
-    background: rgba(119, 66, 220, 0.28);
+    background: rgba(255, 207, 92, 0.1);
     color: var(--bc-gold);
   }
 
@@ -218,9 +254,9 @@ const resourceLinks = [
     height: 36px;
     padding: 0;
     flex: none;
-    border: 1px solid rgba(255, 207, 92, 0.5);
+    border: 1px solid rgba(255, 207, 92, 0.4);
     border-radius: 6px;
-    background: rgba(125, 134, 255, 0.12);
+    background: rgba(255, 207, 92, 0.08);
     cursor: pointer;
   }
   .bc-nav-toggle-bar {
@@ -240,14 +276,18 @@ const resourceLinks = [
     transform: translateY(-7px) rotate(-45deg);
   }
 
-  @media (max-width: 640px) {
+  @media (max-width: 760px) {
+    .bc-header {
+      height: auto;
+    }
     .bc-header-inner {
       padding: 10px 18px;
       gap: 8px;
       position: relative;
     }
     .bc-wordmark {
-      font-size: 23px;
+      font-size: 22px;
+      letter-spacing: 4px;
     }
     .bc-nav-toggle {
       display: flex;
@@ -262,7 +302,8 @@ const resourceLinks = [
       align-items: stretch;
       gap: 0;
       background: var(--bc-chrome);
-      border-bottom: 3px solid var(--bc-gold);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--bc-border-gold);
       box-shadow: 0 14px 28px rgba(0, 0, 0, 0.45);
       padding: 4px 18px 10px;
     }
@@ -272,7 +313,7 @@ const resourceLinks = [
     .bc-nav-link {
       padding: 13px 4px;
       text-align: center;
-      border-bottom: 1px solid rgba(125, 134, 255, 0.18);
+      border-bottom: 1px solid rgba(255, 207, 92, 0.12);
     }
     .bc-nav-link:last-child {
       border-bottom: none;
@@ -291,7 +332,7 @@ const resourceLinks = [
     .bc-nav-dropdown-menu {
       position: static;
       min-width: 0;
-      background: rgba(125, 134, 255, 0.07);
+      background: rgba(255, 207, 92, 0.05);
       border: none;
       border-radius: 0;
       box-shadow: none;
