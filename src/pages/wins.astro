@@ -69,8 +69,8 @@ const playerOptionsData = JSON.stringify(playerOptions);
     <div class="bc-board-col">
       <div class="bc-list-head">
         <h2 class="bc-list-title">Leaderboard</h2>
+        <span class="bc-lb-count" id="lb-count">&hellip;</span>
       </div>
-      <p class="bc-leader-caption" id="leader-caption">&hellip;</p>
       <div id="leaderboard" class="bc-leaderboard">
         <p class="bc-loading">Fetching the standings&hellip;</p>
       </div>
@@ -94,10 +94,7 @@ const playerOptionsData = JSON.stringify(playerOptions);
   <div class="bc-lb-row">
     <span class="bc-lb-rank"></span>
     <span class="bc-lb-name"></span>
-    <div class="bc-lb-bar-track">
-      <div class="bc-lb-bar-fill"></div>
-    </div>
-    <span class="bc-lb-wins"></span>
+    <span class="bc-lb-score"></span>
   </div>
 </template>
 
@@ -159,7 +156,7 @@ const playerOptionsData = JSON.stringify(playerOptions);
   .bc-submit-btn {
     width: 100%;
     border: 1.5px solid var(--bc-gold);
-    border-radius: 9px;
+    border-radius: 0;
     padding: 15px;
     font-family: 'Space Grotesk', sans-serif;
     font-weight: 700;
@@ -242,7 +239,11 @@ const playerOptionsData = JSON.stringify(playerOptions);
   }
 
   .bc-list-head {
-    margin-bottom: 4px;
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 18px;
   }
   .bc-list-title {
     margin: 0;
@@ -253,12 +254,14 @@ const playerOptionsData = JSON.stringify(playerOptions);
     text-transform: uppercase;
     color: #fff;
   }
-  .bc-leader-caption {
-    font-family: 'Playfair Display', serif;
-    font-style: italic;
-    font-size: 15px;
-    color: rgba(255, 255, 255, 0.55);
-    margin: 8px 0 26px;
+  .bc-lb-count {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.35);
+    white-space: nowrap;
   }
   .bc-loading {
     font-family: 'Space Grotesk', sans-serif;
@@ -267,55 +270,35 @@ const playerOptionsData = JSON.stringify(playerOptions);
   .bc-leaderboard {
     display: flex;
     flex-direction: column;
-    gap: 14px;
   }
   .bc-lb-row {
     display: grid;
-    grid-template-columns: 28px 120px 1fr 60px;
+    grid-template-columns: 24px 1fr auto;
     align-items: center;
-    gap: 12px;
+    gap: 16px;
+    padding: 14px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   }
   .bc-lb-rank {
     font-family: 'Oswald', sans-serif;
     font-weight: 700;
-    font-size: 15px;
-    text-align: center;
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.35);
   }
   .bc-lb-name {
     font-family: 'Space Grotesk', sans-serif;
     font-weight: 700;
-    font-size: 14px;
-    color: rgba(255, 255, 255, 0.75);
+    font-size: 15px;
+    color: #fff;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
   }
-  .bc-lb-bar-track {
-    height: 10px;
-    border-radius: 5px;
-    background: rgba(255, 255, 255, 0.06);
-    overflow: hidden;
-  }
-  .bc-lb-bar-fill {
-    height: 100%;
-    border-radius: 5px;
-    background: linear-gradient(90deg, var(--bc-blue), var(--bc-gold));
-    width: var(--bar-w, 0%);
-    animation: bc-bar-grow 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
-  }
-  @keyframes bc-bar-grow {
-    from {
-      width: 0;
-    }
-    to {
-      width: var(--bar-w, 0%);
-    }
-  }
-  .bc-lb-wins {
-    font-family: 'Space Grotesk', sans-serif;
+  .bc-lb-score {
+    font-family: 'Oswald', sans-serif;
     font-weight: 700;
-    font-size: 12px;
-    color: var(--bc-gold);
+    font-size: 15px;
+    color: rgba(255, 255, 255, 0.5);
     text-align: right;
   }
 
@@ -333,8 +316,7 @@ const playerOptionsData = JSON.stringify(playerOptions);
       padding: 30px 8px 40px;
     }
     .bc-lb-row {
-      grid-template-columns: 24px 90px 1fr 50px;
-      gap: 8px;
+      gap: 10px;
     }
   }
 </style>
@@ -371,7 +353,7 @@ const playerOptionsData = JSON.stringify(playerOptions);
   const recentList = document.getElementById('recent-list') as HTMLDivElement;
   const recentTemplate = document.getElementById('recent-item-template') as HTMLTemplateElement;
   const leaderboardEl = document.getElementById('leaderboard') as HTMLDivElement;
-  const leaderCaption = document.getElementById('leader-caption') as HTMLParagraphElement;
+  const lbCount = document.getElementById('lb-count') as HTMLSpanElement;
   const leaderboardTemplate = document.getElementById('leaderboard-row-template') as HTMLTemplateElement;
 
   function formatDate(iso: string) {
@@ -438,49 +420,46 @@ const playerOptionsData = JSON.stringify(playerOptions);
   }
 
   function renderLeaderboard(rows: WinRow[]) {
-    const winCounts = new Map<string, number>();
+    // Rank by total points; ties go to whoever notched more wins to get
+    // there (quantity over quality) — see Rules III/IV.
+    const totals = new Map<string, { points: number; wins: number }>();
     for (const r of rows) {
-      winCounts.set(r.player, (winCounts.get(r.player) || 0) + 1);
+      const entry = totals.get(r.player) || { points: 0, wins: 0 };
+      entry.points += pointsForWin(r, gamePoints);
+      entry.wins += 1;
+      totals.set(r.player, entry);
     }
     const sorted = playerOptions
-      .map((name) => ({ name, wins: winCounts.get(name) || 0 }))
-      .sort((a, b) => b.wins - a.wins || a.name.localeCompare(b.name));
+      .map((name) => {
+        const t = totals.get(name) || { points: 0, wins: 0 };
+        return { name, points: t.points, wins: t.wins };
+      })
+      .sort((a, b) => b.points - a.points || b.wins - a.wins || a.name.localeCompare(b.name));
 
-    const topWins = sorted[0]?.wins || 0;
     const rankColors = ['#ffcf5c', '#c8c8c8', '#cd7f32'];
-    const medals = ['🥇', '🥈', '🥉'];
 
     leaderboardEl.innerHTML = '';
     sorted.forEach((p, i) => {
       const node = leaderboardTemplate.content.cloneNode(true) as DocumentFragment;
+      const isRanked = i < 3 && p.points > 0;
       const rankEl = node.querySelector('.bc-lb-rank') as HTMLElement;
-      const hasMedal = i < 3 && p.wins > 0;
-      rankEl.textContent = hasMedal ? medals[i] : String(i + 1);
-      rankEl.style.color = i < 3 && p.wins > 0 ? rankColors[i] : 'rgba(255,255,255,0.35)';
-      const nameEl = node.querySelector('.bc-lb-name') as HTMLElement;
-      nameEl.textContent = p.name;
-      if (i === 0 && p.wins > 0) nameEl.style.color = '#fff';
-      const fill = node.querySelector('.bc-lb-bar-fill') as HTMLElement;
-      const barWidth = topWins > 0 ? `${Math.round((p.wins / topWins) * 100)}%` : '0%';
-      fill.style.setProperty('--bar-w', barWidth);
-      (node.querySelector('.bc-lb-wins') as HTMLElement).textContent = `${p.wins} ${p.wins === 1 ? 'WIN' : 'WINS'}`;
+      rankEl.textContent = String(i + 1);
+      rankEl.style.color = isRanked ? rankColors[i] : 'rgba(255,255,255,0.35)';
+      (node.querySelector('.bc-lb-name') as HTMLElement).textContent = p.name;
+      const scoreEl = node.querySelector('.bc-lb-score') as HTMLElement;
+      scoreEl.textContent = String(p.points);
+      scoreEl.style.color = isRanked ? rankColors[i] : 'rgba(255,255,255,0.5)';
       leaderboardEl.appendChild(node);
     });
 
-    const leader = sorted[0];
-    leaderCaption.textContent =
-      leader && leader.wins > 0
-        ? leader.wins === 1
-          ? `${leader.name} is in the lead with 1 win. The quest continues.`
-          : `${leader.name} leads with ${leader.wins} wins. The others are getting desperate.`
-        : 'No wins recorded yet. The battlefield awaits.';
+    lbCount.textContent = `${rows.length} ${rows.length === 1 ? 'GAME PLAYED' : 'GAMES PLAYED'}`;
   }
 
   async function loadWins() {
     if (!supabaseConfigured) {
       recentWrap.hidden = true;
       leaderboardEl.innerHTML = '<p class="bc-loading">Leaderboard needs the Supabase backend configured.</p>';
-      leaderCaption.textContent = '';
+      lbCount.textContent = '';
       return;
     }
     const { data, error } = await supabase

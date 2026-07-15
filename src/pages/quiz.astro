@@ -78,7 +78,7 @@ const rosterData = JSON.stringify(activeGuests.map((g) => ({ slug: g.slug, name:
   .bc-panel {
     background: var(--bc-panel);
     border: 1px solid var(--bc-border-gold);
-    border-radius: 14px;
+    border-radius: 0;
     padding: 34px 32px;
   }
   .bc-panel-title {
@@ -124,13 +124,14 @@ const rosterData = JSON.stringify(activeGuests.map((g) => ({ slug: g.slug, name:
     letter-spacing: 1.5px;
     text-transform: uppercase;
     padding: 14px 26px;
-    border-radius: 8px;
+    border-radius: 0;
     cursor: pointer;
     margin-top: 22px;
     transition: transform 0.15s ease;
     text-decoration: none;
   }
   .bc-btn:hover {
+    color: #1a0e02;
     transform: skewX(-3deg) scale(1.03);
   }
   .bc-btn--outline {
@@ -179,7 +180,7 @@ const rosterData = JSON.stringify(activeGuests.map((g) => ({ slug: g.slug, name:
     text-align: left;
     background: rgba(255, 255, 255, 0.04);
     border: 1px solid var(--bc-border-gold);
-    border-radius: 9px;
+    border-radius: 0;
     color: rgba(255, 255, 255, 0.85);
     font-family: 'Space Grotesk', sans-serif;
     font-size: 14.5px;
