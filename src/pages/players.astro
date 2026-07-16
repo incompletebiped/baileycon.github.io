@@ -18,9 +18,9 @@ const gamePointsData = JSON.stringify(
     subtitle="Collect all ten. Click two cards below to settle any dispute in the arena."
   />
 
-  <section class="bc-guests-section">
-    <div class="bc-battle-bar" id="battle-instruction">Select two players to battle</div>
+  <div class="bc-battle-bar" id="battle-instruction">&#9876; Select two players to battle</div>
 
+  <section class="bc-guests-section">
     <div class="bc-guests-grid" id="guest-grid">
       {guests.map((g) => (
         <GuestCard guest={g} />
@@ -60,17 +60,19 @@ const gamePointsData = JSON.stringify(
   .bc-guests-section {
     max-width: 1140px;
     margin: 0 auto;
-    padding: 0 28px 30px;
+    padding: 28px 28px 30px;
   }
   .bc-battle-bar {
     text-align: center;
+    padding: 10px 24px;
+    background: rgba(255, 207, 92, 0.05);
+    border-bottom: 1px solid rgba(255, 207, 92, 0.1);
     font-family: 'Space Grotesk', sans-serif;
     font-weight: 700;
-    font-size: 13px;
-    letter-spacing: 2px;
+    font-size: 9px;
+    letter-spacing: 3px;
     text-transform: uppercase;
-    color: rgba(255, 207, 92, 0.55);
-    margin-bottom: 24px;
+    color: rgba(255, 207, 92, 0.5);
   }
   .bc-guests-grid {
     display: grid;
@@ -267,7 +269,7 @@ const gamePointsData = JSON.stringify(
 
   @media (max-width: 480px) {
     .bc-guests-section {
-      padding: 0 18px 30px;
+      padding: 28px 18px 30px;
     }
     .bc-guests-grid {
       grid-template-columns: 1fr;
@@ -422,7 +424,7 @@ const gamePointsData = JSON.stringify(
     }
 
     function updateInstruction() {
-      instruction!.textContent = selected.length === 0 ? 'Select two players to battle' : 'Select one more →';
+      instruction!.textContent = selected.length === 0 ? '⚔ Select two players to battle' : '⚔ Select one more →';
     }
 
     function renderStatsBar(p1: HTMLElement, p2: HTMLElement, showResult: boolean) {

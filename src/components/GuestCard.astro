@@ -45,11 +45,12 @@ const pSta = pips(sta);
       onerror="this.style.display='none'"
     />
     {guest.status && (
-      <div class="mtg-locked-scrim">
-        <span class="mtg-status-banner" style={`background:${statusStyles[guest.status].bg};color:${statusStyles[guest.status].color};`}>
-          {guest.status}
-        </span>
-      </div>
+      <>
+        <div class="mtg-locked-scrim"></div>
+        <div class="mtg-status-banner" style={`background:${statusStyles[guest.status].bg};`}>
+          <span class="mtg-status-label" style={`color:${statusStyles[guest.status].color};`}>{guest.status}</span>
+        </div>
+      </>
     )}
     <span class="mtg-score-pill" data-score-slot hidden></span>
     <span class="mtg-shine"></span>
@@ -177,22 +178,30 @@ const pSta = pips(sta);
   .mtg-locked-scrim {
     position: absolute;
     inset: 0;
-    background: linear-gradient(180deg, transparent 45%, rgba(0, 0, 0, 0.75) 100%);
-    display: flex;
-    align-items: flex-end;
-    justify-content: center;
-    padding-bottom: 10px;
+    background: linear-gradient(180deg, transparent 66%, rgba(6, 4, 15, 0.6) 100%);
+    z-index: 2;
+    pointer-events: none;
   }
   .mtg-status-banner {
+    position: absolute;
+    bottom: 9px;
+    left: -8%;
+    width: 116%;
     transform: rotate(-5deg);
+    z-index: 3;
+    text-align: center;
+    padding: 3px 0;
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.55);
+    border-top: 1px solid rgba(0, 0, 0, 0.35);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.35);
+    pointer-events: none;
+  }
+  .mtg-status-label {
     font-family: 'Oswald', sans-serif;
-    font-weight: 700;
     font-size: 9.5px;
+    font-weight: 700;
     letter-spacing: 2px;
     text-transform: uppercase;
-    padding: 4px 12px;
-    border-radius: 3px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
   }
   .mtg-score-pill {
     position: absolute;
