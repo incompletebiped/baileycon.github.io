@@ -319,6 +319,15 @@ export const games: Game[] = [
     neverPlayed: true,
   },
   {
+    slug: 'this-game-is-killer',
+    name: 'This Game Is Killer',
+    tag: 'An alien is loose on the ship. Pick a room, pick an action, hope you picked wrong less than everyone else.',
+    players: '3–10',
+    time: '10–15 min',
+    weight: 1,
+    hall: 'Dark Ages',
+  },
+  {
     slug: 'everdell',
     name: 'Everdell',
     tag: "Beavers run sawmills, squirrels cook dinner, and somebody wins by autumn.",
