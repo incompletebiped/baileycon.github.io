@@ -1,10 +1,10 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import PageBanner from '../components/PageBanner.astro';
-import { activeGuests } from '../data/guests';
+import { guests } from '../data/guests';
 import { withBase } from '../lib/url';
 
-const rosterData = JSON.stringify(activeGuests.map((g) => ({ slug: g.slug, name: g.name })));
+const rosterData = JSON.stringify(guests.map((g) => ({ slug: g.slug, name: g.name })));
 ---
 
 <BaseLayout title="The Stat Trial — BaileyCon" active="players">
@@ -23,7 +23,7 @@ const rosterData = JSON.stringify(activeGuests.map((g) => ({ slug: g.slug, name:
       <label class="bc-field-label" for="gate-player">Your Character</label>
       <select id="gate-player" class="bc-field">
         <option value="">Choose a player…</option>
-        {activeGuests.map((g) => (
+        {guests.map((g) => (
           <option value={g.slug}>{g.name}</option>
         ))}
       </select>
